@@ -22,8 +22,8 @@ func main() {
 	//ROUTING
 	router := gin.Default()
 	//Static Routing
-	router.Static("/public/avatars", "./storage/avatars")
-	router.Static("/public/campaigns", "./storage/campaigns")
+	router.Static("/statics/avatars", "./storage/avatars")
+	router.Static("/statics/campaigns", "./storage/campaigns")
 	//APIV1 Routing
 	apiV1 := router.Group("/api/v1")
 	routes.RoleRoute(apiV1, db)
