@@ -11,8 +11,9 @@ import (
 type RoleRepository interface {
 	Create(role entity.Role) (entity.Role, error)
 	FindBy(key string, value string) (entity.Role, error)
-	// Update(role entity.Role) (entity.Role, error)
+	// FindAll() ([]entity.Role, error)
 	// View(role entity.Role) (entity.Role, error)
+	// Update(role entity.Role) (entity.Role, error)
 	// Delete(role entity.Role) (entity.Role, error)
 }
 

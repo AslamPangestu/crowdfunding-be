@@ -12,6 +12,7 @@ import (
 type UserService interface {
 	Register(form entity.RegisterRequest) (entity.User, error)
 	Login(form entity.LoginRequest) (entity.User, error)
+	IsEmailAvaiable(form entity.EmailValidationRequest) (bool, error)
 }
 
 type userService struct {
@@ -64,4 +65,20 @@ func (s *userService) Login(form entity.LoginRequest) (entity.User, error) {
 		return model, errors.New("Password incorrect")
 	}
 	return model, nil
+}
+
+func (s *userService) IsEmailAvaiable(form entity.EmailValidationRequest) (bool, error) {
+	//Mapping Request
+	email := form.Email
+
+	//Find
+	model, err := s.repository.FindBy("email", email)
+	if err != nil {
+		return false, err
+	}
+	//Is Availabel
+	if model.ID == 0 {
+		return true, nil
+	}
+	return false, nil
 }

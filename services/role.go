@@ -8,6 +8,8 @@ import (
 // RoleService Contract
 type RoleService interface {
 	Create(form entity.RoleRequest) (entity.Role, error)
+	// Search(form entity.RoleRequest) (entity.Role, error)
+	// Remove(form entity.RoleRequest) (entity.Role, error)
 }
 
 type roleService struct {

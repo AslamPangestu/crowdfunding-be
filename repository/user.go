@@ -11,8 +11,9 @@ import (
 type UserRepository interface {
 	Create(user entity.User) (entity.User, error)
 	FindBy(key string, value string) (entity.User, error)
+	// FindAll() ([]entity.Role, error)
+	// View(role entity.Role) (entity.Role, error)
 	// Update(user entity.User) (entity.User, error)
-	// View(user entity.User) (entity.User, error)
 	// Delete(user entity.User) (entity.User, error)
 }
 

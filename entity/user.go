@@ -77,3 +77,10 @@ func LoginAdapter(user User, token string) LoginResponse {
 	}
 	return res
 }
+
+//EMAIL VALIDATION ENTITY
+
+//EmailValidationRequest : Mapping Login Request
+type EmailValidationRequest struct {
+	Email string `json:"email" binding:"required,email"`
+}

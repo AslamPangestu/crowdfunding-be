@@ -62,3 +62,32 @@ func (h *userHandler) Login(c *gin.Context) {
 	res := helper.ResponseHandler("Login Successful", http.StatusOK, "success", data)
 	c.JSON(http.StatusOK, res)
 }
+
+func (h *userHandler) IsEmailAvaiable(c *gin.Context) {
+	var request entity.EmailValidationRequest
+
+	err := c.ShouldBindJSON(&request)
+	if err != nil {
+		errorMessage := gin.H{"errors": helper.ErrResponseValidationHandler(err)}
+		errResponse := helper.ResponseHandler("IsEmailAvaiable Validation Failed", http.StatusUnprocessableEntity, "failed", errorMessage)
+		c.JSON(http.StatusUnprocessableEntity, errResponse)
+		return
+	}
+
+	isEmailAvaiable, err := h.service.IsEmailAvaiable(request)
+	if err != nil {
+		errorMessage := gin.H{"errors": err.Error()}
+		errResponse := helper.ResponseHandler("IsEmailAvaiable Failed", http.StatusUnprocessableEntity, "failed", errorMessage)
+		c.JSON(http.StatusBadRequest, errResponse)
+		return
+	}
+	data := gin.H{
+		"is_avaiable": isEmailAvaiable,
+	}
+	responseMessage := "Email already register"
+	if isEmailAvaiable {
+		responseMessage = "Email is avaiable"
+	}
+	res := helper.ResponseHandler(responseMessage, http.StatusOK, "success", data)
+	c.JSON(http.StatusOK, res)
+}
