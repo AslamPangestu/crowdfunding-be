@@ -35,7 +35,7 @@ func (h *userHandler) Register(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, errResponse)
 		return
 	}
-	token, err := h.authService.GenerateJwtToken(user.ID)
+	token, err := h.authService.GenerateToken(user.ID)
 	if err != nil {
 		errResponse := helper.ResponseHandler("Register Failed", http.StatusBadRequest, "failed", err.Error())
 		c.JSON(http.StatusBadRequest, errResponse)
@@ -64,7 +64,7 @@ func (h *userHandler) Login(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, errResponse)
 		return
 	}
-	token, err := h.authService.GenerateJwtToken(userLogged.ID)
+	token, err := h.authService.GenerateToken(userLogged.ID)
 	if err != nil {
 		errResponse := helper.ResponseHandler("Login Failed", http.StatusBadRequest, "failed", err.Error())
 		c.JSON(http.StatusBadRequest, errResponse)
