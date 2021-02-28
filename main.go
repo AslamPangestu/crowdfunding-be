@@ -24,5 +24,6 @@ func main() {
 	apiV1 := router.Group("/api/v1")
 	routes.RoleRoute(apiV1, db)
 	routes.UserRoute(apiV1, db)
+	routes.CampaignRoute(apiV1, db)
 	router.Run()
 }

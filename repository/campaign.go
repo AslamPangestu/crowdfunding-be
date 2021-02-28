@@ -17,6 +17,11 @@ type campaignRepository struct {
 	db *gorm.DB
 }
 
+// CampaignRepositoryInit Initiation
+func CampaignRepositoryInit(db *gorm.DB) *campaignRepository {
+	return &campaignRepository{db}
+}
+
 const (
 	TBL_CAMPAIGN_IMAGES   = "CampaignImages"
 	QUERY_CAMPAIGN_IMAGES = "campaign_images.is_primary = 1"

@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"crowdfunding/entity"
 	"crowdfunding/helper"
 	"crowdfunding/services"
 	"net/http"
@@ -32,7 +33,8 @@ func (h *campaignHandler) GetCampaigns(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, errResponse)
 		return
 	}
-	res := helper.ResponseHandler("GetCampaigns Successful", http.StatusOK, "success", campaigns)
+	data := entity.CampaignsAdapter(campaigns)
+	res := helper.ResponseHandler("GetCampaigns Successful", http.StatusOK, "success", data)
 	c.JSON(http.StatusOK, res)
 
 }
