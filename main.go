@@ -19,8 +19,12 @@ func main() {
 	//Initialize DB
 	db := config.InitDB()
 
-	//Routing
+	//ROUTING
 	router := gin.Default()
+	//Static Routing
+	router.Static("/public/avatars", "./storage/avatars")
+	router.Static("/public/campaigns", "./storage/campaigns")
+	//APIV1 Routing
 	apiV1 := router.Group("/api/v1")
 	routes.RoleRoute(apiV1, db)
 	routes.UserRoute(apiV1, db)
