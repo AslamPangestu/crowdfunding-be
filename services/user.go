@@ -3,13 +3,15 @@ package services
 import (
 	"crowdfunding/entity"
 	"crowdfunding/repository"
+	"errors"
 
 	"golang.org/x/crypto/bcrypt"
 )
 
 // UserService Contract
 type UserService interface {
-	Register(input entity.RegisterRequest) (entity.User, error)
+	Register(form entity.RegisterRequest) (entity.User, error)
+	Login(form entity.LoginRequest) (entity.User, error)
 }
 
 type userService struct {
@@ -21,12 +23,14 @@ func UserServiceInit(repository repository.UserRepository) *userService {
 	return &userService{repository}
 }
 
-func (s *userService) Register(input entity.RegisterRequest) (entity.User, error) {
+func (s *userService) Register(form entity.RegisterRequest) (entity.User, error) {
 	user := entity.User{}
-	user.Name = input.Name
-	user.Email = input.Email
-	user.Occupation = input.Occupation
-	passwordHash, err := bcrypt.GenerateFromPassword([]byte(input.Password), bcrypt.MinCost)
+	user.Name = form.Name
+	user.Username = form.Username
+	user.Email = form.Email
+	user.Occupation = form.Occupation
+	user.RoleID = 2
+	passwordHash, err := bcrypt.GenerateFromPassword([]byte(form.Password), bcrypt.MinCost)
 	if err != nil {
 		return user, err
 	}
@@ -38,4 +42,26 @@ func (s *userService) Register(input entity.RegisterRequest) (entity.User, error
 		return newUser, err
 	}
 	return newUser, nil
+}
+
+func (s *userService) Login(form entity.LoginRequest) (entity.User, error) {
+	//Mapping Request
+	email := form.Email
+	password := form.Password
+
+	//Find
+	model, err := s.repository.FindBy("email", email)
+	if err != nil {
+		return model, err
+	}
+	//Is Found?
+	if model.ID == 0 {
+		return model, errors.New("No user found")
+	}
+	//Decrypt Password Hash
+	err = bcrypt.CompareHashAndPassword([]byte(model.PasswordHash), []byte(password))
+	if err != nil {
+		return model, errors.New("Password incorrect")
+	}
+	return model, nil
 }

@@ -2,6 +2,7 @@ package repository
 
 import (
 	"crowdfunding/entity"
+	"fmt"
 
 	"gorm.io/gorm"
 )
@@ -9,6 +10,7 @@ import (
 // UserRepository Contract
 type UserRepository interface {
 	Create(user entity.User) (entity.User, error)
+	FindBy(key string, value string) (entity.User, error)
 	// Update(user entity.User) (entity.User, error)
 	// View(user entity.User) (entity.User, error)
 	// Delete(user entity.User) (entity.User, error)
@@ -29,4 +31,14 @@ func (r *userRepository) Create(user entity.User) (entity.User, error) {
 		return user, err
 	}
 	return user, nil
+}
+
+func (r *userRepository) FindBy(key string, value string) (entity.User, error) {
+	var model entity.User
+	query := fmt.Sprintf("%s = ?", key)
+	err := r.db.Where(query, value).Find(&model).Error
+	if err != nil {
+		return model, err
+	}
+	return model, nil
 }

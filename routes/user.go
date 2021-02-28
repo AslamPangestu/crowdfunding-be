@@ -15,4 +15,5 @@ func UserRoute(api *gin.RouterGroup, db *gorm.DB) {
 	service := services.UserServiceInit(repository)
 	handler := handler.UserHandlerInit(service)
 	api.POST("/register", handler.Register)
+	api.POST("/login", handler.Login)
 }

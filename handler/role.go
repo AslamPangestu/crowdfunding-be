@@ -19,17 +19,18 @@ func RoleHandlerInit(service services.RoleService) *roleHandler {
 }
 
 func (h *roleHandler) Create(c *gin.Context) {
-	var input entity.RoleRequest
-	err := c.ShouldBindJSON(&input)
+	var request entity.RoleRequest
+	err := c.ShouldBindJSON(&request)
 	if err != nil {
 		errorMessage := gin.H{"errors": helper.ErrResponseValidationHandler(err)}
 		errResponse := helper.ResponseHandler("Role Validation Failed", http.StatusUnprocessableEntity, "failed", errorMessage)
 		c.JSON(http.StatusUnprocessableEntity, errResponse)
 		return
 	}
-	role, err := h.service.Create(input)
+	role, err := h.service.Create(request)
 	if err != nil {
-		errResponse := helper.ResponseHandler("Role Failed Created", http.StatusBadRequest, "failed", err.Error())
+		errorMessage := gin.H{"errors": err.Error()}
+		errResponse := helper.ResponseHandler("Role Failed Created", http.StatusBadRequest, "failed", errorMessage)
 		c.JSON(http.StatusBadRequest, errResponse)
 		return
 	}
