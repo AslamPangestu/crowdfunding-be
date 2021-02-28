@@ -14,5 +14,7 @@ func RoleRoute(api *gin.RouterGroup, db *gorm.DB) {
 	repository := repository.RoleRepositoryInit(db)
 	service := services.RoleServiceInit(repository)
 	handler := handler.RoleHandlerInit(service)
-	api.POST("/roles", handler.Create)
+	api.POST("/roles", handler.AddRole)
+	api.GET("/roles", handler.GetRoles)
+	api.PATCH("/roles/:id", handler.EditRole)
 }

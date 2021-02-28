@@ -12,8 +12,8 @@ type RoleRepository interface {
 	FindAll() ([]entity.Role, error)
 	FindOneByName(name string) (entity.Role, error)
 	FindOneByID(id int) (entity.Role, error)
-	// Update(role entity.Role) (entity.Role, error)
-	// Delete(role entity.Role) (entity.Role, error)
+	Update(role entity.Role) (entity.Role, error)
+	// Delete(id int) (entity.Role, error)
 }
 
 type roleRepository struct {
@@ -58,4 +58,12 @@ func (r *roleRepository) FindOneByID(id int) (entity.Role, error) {
 		return model, err
 	}
 	return model, nil
+}
+
+func (r *roleRepository) Update(role entity.Role) (entity.Role, error) {
+	err := r.db.Save(&role).Error
+	if err != nil {
+		return role, err
+	}
+	return role, nil
 }

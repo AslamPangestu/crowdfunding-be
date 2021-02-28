@@ -36,5 +36,4 @@ func (h *campaignHandler) GetCampaigns(c *gin.Context) {
 	data := entity.CampaignsAdapter(campaigns)
 	res := helper.ResponseHandler("GetCampaigns Successful", http.StatusOK, "success", data)
 	c.JSON(http.StatusOK, res)
-
 }
