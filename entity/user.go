@@ -10,7 +10,7 @@ type User struct {
 	Username     string
 	Email        string
 	PasswordHash string
-	AvatarURL    string
+	AvatarPath   string
 	Token        string
 	RoleID       int
 	CreatedAt    time.Time

@@ -17,4 +17,5 @@ func UserRoute(api *gin.RouterGroup, db *gorm.DB) {
 	api.POST("/register", handler.Register)
 	api.POST("/login", handler.Login)
 	api.POST("/email-avaiable", handler.IsEmailAvaiable)
+	api.POST("/upload-avatar", handler.UploadAvatar)
 }

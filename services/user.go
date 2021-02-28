@@ -13,6 +13,7 @@ type UserService interface {
 	Register(form entity.RegisterRequest) (entity.User, error)
 	Login(form entity.LoginRequest) (entity.User, error)
 	IsEmailAvaiable(form entity.EmailValidationRequest) (bool, error)
+	UploadAvatar(id int, fileLocation string) (entity.User, error)
 }
 
 type userService struct {
@@ -81,4 +82,19 @@ func (s *userService) IsEmailAvaiable(form entity.EmailValidationRequest) (bool,
 		return true, nil
 	}
 	return false, nil
+}
+
+func (s *userService) UploadAvatar(id int, fileLocation string) (entity.User, error) {
+	//Find
+	model, err := s.repository.FindByID(id)
+	if err != nil {
+		return model, err
+	}
+	model.AvatarPath = fileLocation
+	updatedData, err := s.repository.Update(model)
+
+	if err != nil {
+		return updatedData, err
+	}
+	return updatedData, nil
 }

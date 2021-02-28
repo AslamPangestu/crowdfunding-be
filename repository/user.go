@@ -11,9 +11,10 @@ import (
 type UserRepository interface {
 	Create(user entity.User) (entity.User, error)
 	FindBy(key string, value string) (entity.User, error)
+	FindByID(id int) (entity.User, error)
 	// FindAll() ([]entity.Role, error)
 	// View(role entity.Role) (entity.Role, error)
-	// Update(user entity.User) (entity.User, error)
+	Update(user entity.User) (entity.User, error)
 	// Delete(user entity.User) (entity.User, error)
 }
 
@@ -42,4 +43,21 @@ func (r *userRepository) FindBy(key string, value string) (entity.User, error) {
 		return model, err
 	}
 	return model, nil
+}
+
+func (r *userRepository) FindByID(id int) (entity.User, error) {
+	var model entity.User
+	err := r.db.Where("id = ?", id).Find(&model).Error
+	if err != nil {
+		return model, err
+	}
+	return model, nil
+}
+
+func (r *userRepository) Update(user entity.User) (entity.User, error) {
+	err := r.db.Save(&user).Error
+	if err != nil {
+		return user, err
+	}
+	return user, nil
 }

@@ -53,7 +53,7 @@ func (h *userHandler) Login(c *gin.Context) {
 	logged, err := h.service.Login(request)
 	if err != nil {
 		errorMessage := gin.H{"errors": err.Error()}
-		errResponse := helper.ResponseHandler("Login Failed", http.StatusUnprocessableEntity, "failed", errorMessage)
+		errResponse := helper.ResponseHandler("Login Failed", http.StatusBadRequest, "failed", errorMessage)
 		c.JSON(http.StatusBadRequest, errResponse)
 		return
 	}
@@ -77,7 +77,7 @@ func (h *userHandler) IsEmailAvaiable(c *gin.Context) {
 	isEmailAvaiable, err := h.service.IsEmailAvaiable(request)
 	if err != nil {
 		errorMessage := gin.H{"errors": err.Error()}
-		errResponse := helper.ResponseHandler("IsEmailAvaiable Failed", http.StatusUnprocessableEntity, "failed", errorMessage)
+		errResponse := helper.ResponseHandler("IsEmailAvaiable Failed", http.StatusBadRequest, "failed", errorMessage)
 		c.JSON(http.StatusBadRequest, errResponse)
 		return
 	}
@@ -89,5 +89,36 @@ func (h *userHandler) IsEmailAvaiable(c *gin.Context) {
 		responseMessage = "Email is avaiable"
 	}
 	res := helper.ResponseHandler(responseMessage, http.StatusOK, "success", data)
+	c.JSON(http.StatusOK, res)
+}
+
+func (h *userHandler) UploadAvatar(c *gin.Context) {
+	//Get File from Storage
+	file, err := c.FormFile("avatar")
+	if err != nil {
+		errorMessage := gin.H{"is_uploaded": false}
+		errResponse := helper.ResponseHandler("UploadAvatar Failed", http.StatusBadRequest, "failed", errorMessage)
+		c.JSON(http.StatusBadRequest, errResponse)
+		return
+	}
+	//Store File to Storage
+	path := "storage/avatars" + file.Filename
+	err = c.SaveUploadedFile(file, path)
+	if err != nil {
+		errorMessage := gin.H{"is_uploaded": false}
+		errResponse := helper.ResponseHandler("UploadAvatar Failed", http.StatusBadRequest, "failed", errorMessage)
+		c.JSON(http.StatusBadRequest, errResponse)
+		return
+	}
+	//Save Filename to DB
+	_, err = h.service.UploadAvatar(1, path)
+	if err != nil {
+		errorMessage := gin.H{"is_uploaded": false}
+		errResponse := helper.ResponseHandler("UploadAvatar Failed", http.StatusBadRequest, "failed", errorMessage)
+		c.JSON(http.StatusBadRequest, errResponse)
+		return
+	}
+	data := gin.H{"is_uploaded": true}
+	res := helper.ResponseHandler("UploadAvatar Success", http.StatusOK, "success", data)
 	c.JSON(http.StatusOK, res)
 }
