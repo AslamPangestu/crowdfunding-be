@@ -10,7 +10,7 @@ import (
 // UserRepository Contract
 type UserRepository interface {
 	Create(user entity.User) (entity.User, error)
-	FindBy(key string, value string) (entity.User, error)
+	FindOneBy(key string, value string) (entity.User, error)
 	FindByID(id int) (entity.User, error)
 	// FindAll() ([]entity.Role, error)
 	// View(role entity.Role) (entity.Role, error)
@@ -35,7 +35,7 @@ func (r *userRepository) Create(user entity.User) (entity.User, error) {
 	return user, nil
 }
 
-func (r *userRepository) FindBy(key string, value string) (entity.User, error) {
+func (r *userRepository) FindOneBy(key string, value string) (entity.User, error) {
 	var model entity.User
 	query := fmt.Sprintf("%s = ?", key)
 	err := r.db.Where(query, value).Find(&model).Error

@@ -53,7 +53,7 @@ func (s *userService) Login(form entity.LoginRequest) (entity.User, error) {
 	password := form.Password
 
 	//Find
-	model, err := s.repository.FindBy("email", email)
+	model, err := s.repository.FindOneBy("email", email)
 	if err != nil {
 		return model, err
 	}
@@ -74,7 +74,7 @@ func (s *userService) IsEmailAvaiable(form entity.EmailValidationRequest) (bool,
 	email := form.Email
 
 	//Find
-	model, err := s.repository.FindBy("email", email)
+	model, err := s.repository.FindOneBy("email", email)
 	if err != nil {
 		return false, err
 	}
