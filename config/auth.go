@@ -7,43 +7,45 @@ import (
 	"github.com/dgrijalva/jwt-go"
 )
 
-// JwtService : JWT Service Contract
-type JwtService interface {
+// AuthService : JWT Service Contract
+type AuthService interface {
 	GenerateToken(userID int) (string, error)
 	ValidateToken(token string) (*jwt.Token, error)
 }
 
-type jwtService struct {
+type authService struct {
 }
 
-// JwtServiceInit Initiation
-func JwtServiceInit() *jwtService {
-	return &jwtService{}
+// AuthServiceInit Initiation
+func AuthServiceInit() *authService {
+	return &authService{}
 }
 
-var secretKey = os.Getenv("SECRET_JWT")
+var SECRET_KEY = []byte(os.Getenv("SECRET_JWT"))
 
 // GenerateToken : Service Generate JWT Token
-func (s *jwtService) GenerateToken(userID int) (string, error) {
-	claim := jwt.MapClaims{}
-	claim["user_id"] = userID
+func (s *authService) GenerateToken(userID int) (string, error) {
+	token := jwt.New(jwt.SigningMethodHS256)
+	claims := token.Claims.(jwt.MapClaims)
+	claims["user_id"] = userID
 
-	token := jwt.NewWithClaims(jwt.SigningMethodES256, claim)
-	signedToken, err := token.SignedString(secretKey)
+	signedToken, err := token.SignedString(SECRET_KEY)
+
 	if err != nil {
 		return signedToken, err
 	}
+
 	return signedToken, nil
 }
 
 // ValidateToken : Service Validate JWT Token
-func (s *jwtService) ValidateToken(encodedToken string) (*jwt.Token, error) {
+func (s *authService) ValidateToken(encodedToken string) (*jwt.Token, error) {
 	token, err := jwt.Parse(encodedToken, func(t *jwt.Token) (interface{}, error) {
 		_, ok := t.Method.(*jwt.SigningMethodHMAC)
 		if !ok {
 			return nil, errors.New("Invalid token")
 		}
-		return secretKey, nil
+		return SECRET_KEY, nil
 	})
 	if err != nil {
 		return token, err
