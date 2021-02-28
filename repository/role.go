@@ -2,7 +2,6 @@ package repository
 
 import (
 	"crowdfunding/entity"
-	"fmt"
 
 	"gorm.io/gorm"
 )
@@ -10,8 +9,9 @@ import (
 // RoleRepository Contract
 type RoleRepository interface {
 	Create(role entity.Role) (entity.Role, error)
-	FindOneBy(key string, value string) (entity.Role, error)
 	FindAll() ([]entity.Role, error)
+	FindOneByName(name string) (entity.Role, error)
+	FindOneByID(id int) (entity.Role, error)
 	// Update(role entity.Role) (entity.Role, error)
 	// Delete(role entity.Role) (entity.Role, error)
 }
@@ -33,19 +33,27 @@ func (r *roleRepository) Create(role entity.Role) (entity.Role, error) {
 	return role, nil
 }
 
-func (r *roleRepository) FindOneBy(key string, value string) (entity.Role, error) {
-	var model entity.Role
-	query := fmt.Sprintf("%s = ?", key)
-	err := r.db.Where(query, value).Find(&model).Error
+func (r *roleRepository) FindAll() ([]entity.Role, error) {
+	var model []entity.Role
+	err := r.db.Find(&model).Error
 	if err != nil {
 		return model, err
 	}
 	return model, nil
 }
 
-func (r *roleRepository) FindAll() ([]entity.Role, error) {
-	var model []entity.Role
-	err := r.db.Find(&model).Error
+func (r *roleRepository) FindOneByName(name string) (entity.Role, error) {
+	var model entity.Role
+	err := r.db.Where("name = ?", name).Find(&model).Error
+	if err != nil {
+		return model, err
+	}
+	return model, nil
+}
+
+func (r *roleRepository) FindOneByID(id int) (entity.Role, error) {
+	var model entity.Role
+	err := r.db.Where("id = ?", id).Find(&model).Error
 	if err != nil {
 		return model, err
 	}

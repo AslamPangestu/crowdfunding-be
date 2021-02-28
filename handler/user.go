@@ -21,6 +21,10 @@ func UserHandlerInit(service services.UserService, authService config.AuthServic
 	return &userHandler{service, authService}
 }
 
+/**
+ROUTE: api/v1/register
+METHOD: POST
+*/
 func (h *userHandler) Register(c *gin.Context) {
 	var request entity.RegisterRequest
 	err := c.ShouldBindJSON(&request)
@@ -32,13 +36,15 @@ func (h *userHandler) Register(c *gin.Context) {
 	}
 	user, err := h.service.Register(request)
 	if err != nil {
-		errResponse := helper.ResponseHandler("Register Failed", http.StatusBadRequest, "failed", err.Error())
+		errorMessage := gin.H{"errors": err.Error()}
+		errResponse := helper.ResponseHandler("Register Failed", http.StatusBadRequest, "failed", errorMessage)
 		c.JSON(http.StatusBadRequest, errResponse)
 		return
 	}
 	token, err := h.authService.GenerateToken(user.ID)
 	if err != nil {
-		errResponse := helper.ResponseHandler("Register Failed", http.StatusBadRequest, "failed", err.Error())
+		errorMessage := gin.H{"errors": err.Error()}
+		errResponse := helper.ResponseHandler("Register Failed", http.StatusBadRequest, "failed", errorMessage)
 		c.JSON(http.StatusBadRequest, errResponse)
 		return
 	}
@@ -47,6 +53,10 @@ func (h *userHandler) Register(c *gin.Context) {
 	c.JSON(http.StatusOK, res)
 }
 
+/**
+ROUTE: api/v1/login
+METHOD: POST
+*/
 func (h *userHandler) Login(c *gin.Context) {
 	var request entity.LoginRequest
 
@@ -61,14 +71,14 @@ func (h *userHandler) Login(c *gin.Context) {
 	userLogged, err := h.service.Login(request)
 	if err != nil {
 		errorMessage := gin.H{"errors": err.Error()}
-		errResponse := helper.ResponseHandler("Login Failed1", http.StatusBadRequest, "failed", errorMessage)
+		errResponse := helper.ResponseHandler("Login Failed", http.StatusBadRequest, "failed", errorMessage)
 		c.JSON(http.StatusBadRequest, errResponse)
 		return
 	}
-	fmt.Println(userLogged.ID)
 	token, err := h.authService.GenerateToken(1)
 	if err != nil {
-		errResponse := helper.ResponseHandler("Login Failed2", http.StatusBadRequest, "failed", err.Error())
+		errorMessage := gin.H{"errors": err.Error()}
+		errResponse := helper.ResponseHandler("GenerateToken Failed", http.StatusBadRequest, "failed", errorMessage)
 		c.JSON(http.StatusBadRequest, errResponse)
 		return
 	}
@@ -77,6 +87,10 @@ func (h *userHandler) Login(c *gin.Context) {
 	c.JSON(http.StatusOK, res)
 }
 
+/**
+ROUTE: api/v1/email-avaiable
+METHOD: POST
+*/
 func (h *userHandler) IsEmailAvaiable(c *gin.Context) {
 	var request entity.EmailValidationRequest
 
@@ -106,14 +120,18 @@ func (h *userHandler) IsEmailAvaiable(c *gin.Context) {
 	c.JSON(http.StatusOK, res)
 }
 
+/**
+ROUTE: api/v1/upload-avatar
+METHOD: POST
+*/
 func (h *userHandler) UploadAvatar(c *gin.Context) {
 	//Get User Logged
 	currentUser := c.MustGet("currentUser").(entity.User)
 	//Get File from Storage
 	file, err := c.FormFile("avatar")
 	if err != nil {
-		errorMessage := gin.H{"is_uploaded": false}
-		errResponse := helper.ResponseHandler("UploadAvatar Failed", http.StatusBadRequest, "failed", errorMessage)
+		errorMessage := gin.H{"is_uploaded": false, "errors": err.Error()}
+		errResponse := helper.ResponseHandler("Get File Avatar Failed", http.StatusBadRequest, "failed", errorMessage)
 		c.JSON(http.StatusBadRequest, errResponse)
 		return
 	}
@@ -122,15 +140,15 @@ func (h *userHandler) UploadAvatar(c *gin.Context) {
 	path := "storage/avatars/" + filename
 	err = c.SaveUploadedFile(file, path)
 	if err != nil {
-		errorMessage := gin.H{"is_uploaded": false}
-		errResponse := helper.ResponseHandler("UploadAvatar Failed", http.StatusBadRequest, "failed", errorMessage)
+		errorMessage := gin.H{"is_uploaded": false, "errors": err.Error()}
+		errResponse := helper.ResponseHandler("Store File Avatar Failed", http.StatusBadRequest, "failed", errorMessage)
 		c.JSON(http.StatusBadRequest, errResponse)
 		return
 	}
 	//Save Filename to DB
 	_, err = h.service.UploadAvatar(currentUser.ID, path)
 	if err != nil {
-		errorMessage := gin.H{"is_uploaded": false}
+		errorMessage := gin.H{"is_uploaded": false, "errors": err.Error()}
 		errResponse := helper.ResponseHandler("UploadAvatar Failed", http.StatusBadRequest, "failed", errorMessage)
 		c.JSON(http.StatusBadRequest, errResponse)
 		return

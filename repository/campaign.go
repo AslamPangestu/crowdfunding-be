@@ -2,7 +2,6 @@ package repository
 
 import (
 	"crowdfunding/entity"
-	"fmt"
 
 	"gorm.io/gorm"
 )
@@ -10,7 +9,7 @@ import (
 // CampaignRepository Contract
 type CampaignRepository interface {
 	FindAll() ([]entity.Campaign, error)
-	FindManyBy(key string, value string) ([]entity.Campaign, error)
+	FindManyByCampaignerID(userID int) ([]entity.Campaign, error)
 	FindByID(id int) (entity.Campaign, error)
 }
 
@@ -41,10 +40,9 @@ func (r *campaignRepository) FindByID(id int) (entity.Campaign, error) {
 	return model, nil
 }
 
-func (r *campaignRepository) FindManyBy(key string, value string) ([]entity.Campaign, error) {
+func (r *campaignRepository) FindManyByCampaignerID(userID int) ([]entity.Campaign, error) {
 	var model []entity.Campaign
-	query := fmt.Sprintf("%s = ?", key)
-	err := r.db.Where(query, value).Preload(TBL_CAMPAIGN_IMAGES, QUERY_CAMPAIGN_IMAGES).Find(&model).Error
+	err := r.db.Where("campaigner_id = ?", userID).Preload(TBL_CAMPAIGN_IMAGES, QUERY_CAMPAIGN_IMAGES).Find(&model).Error
 	if err != nil {
 		return model, err
 	}

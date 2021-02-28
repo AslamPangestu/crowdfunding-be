@@ -18,6 +18,10 @@ func RoleHandlerInit(service services.RoleService) *roleHandler {
 	return &roleHandler{service}
 }
 
+/**
+ROUTE: api/v1/roles
+METHOD: POST
+*/
 func (h *roleHandler) Create(c *gin.Context) {
 	var request entity.RoleRequest
 	err := c.ShouldBindJSON(&request)
