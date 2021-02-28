@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"crowdfunding/config"
 	"crowdfunding/entity"
 	"crowdfunding/helper"
 	"crowdfunding/services"
@@ -10,12 +11,13 @@ import (
 )
 
 type userHandler struct {
-	service services.UserService
+	service     services.UserService
+	authService config.JwtService
 }
 
 // UserHandlerInit Initiation
-func UserHandlerInit(service services.UserService) *userHandler {
-	return &userHandler{service}
+func UserHandlerInit(service services.UserService, authService config.JwtService) *userHandler {
+	return &userHandler{service, authService}
 }
 
 func (h *userHandler) Register(c *gin.Context) {
@@ -29,11 +31,16 @@ func (h *userHandler) Register(c *gin.Context) {
 	}
 	user, err := h.service.Register(request)
 	if err != nil {
-		errResponse := helper.ResponseHandler("Register Failed", http.StatusUnprocessableEntity, "failed", err.Error())
+		errResponse := helper.ResponseHandler("Register Failed", http.StatusBadRequest, "failed", err.Error())
 		c.JSON(http.StatusBadRequest, errResponse)
 		return
 	}
-	token := "TEST"
+	token, err := h.authService.GenerateJwtToken(user.ID)
+	if err != nil {
+		errResponse := helper.ResponseHandler("Register Failed", http.StatusBadRequest, "failed", err.Error())
+		c.JSON(http.StatusBadRequest, errResponse)
+		return
+	}
 	data := entity.RegsiterAdapter(user, token)
 	res := helper.ResponseHandler("User Successful Register", http.StatusOK, "success", data)
 	c.JSON(http.StatusOK, res)
@@ -50,15 +57,20 @@ func (h *userHandler) Login(c *gin.Context) {
 		return
 	}
 
-	logged, err := h.service.Login(request)
+	userLogged, err := h.service.Login(request)
 	if err != nil {
 		errorMessage := gin.H{"errors": err.Error()}
 		errResponse := helper.ResponseHandler("Login Failed", http.StatusBadRequest, "failed", errorMessage)
 		c.JSON(http.StatusBadRequest, errResponse)
 		return
 	}
-	token := "TEST"
-	data := entity.LoginAdapter(logged, token)
+	token, err := h.authService.GenerateJwtToken(userLogged.ID)
+	if err != nil {
+		errResponse := helper.ResponseHandler("Login Failed", http.StatusBadRequest, "failed", err.Error())
+		c.JSON(http.StatusBadRequest, errResponse)
+		return
+	}
+	data := entity.LoginAdapter(userLogged, token)
 	res := helper.ResponseHandler("Login Successful", http.StatusOK, "success", data)
 	c.JSON(http.StatusOK, res)
 }

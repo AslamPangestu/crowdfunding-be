@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"crowdfunding/config"
 	"crowdfunding/handler"
 	"crowdfunding/repository"
 	"crowdfunding/services"
@@ -13,7 +14,8 @@ import (
 func UserRoute(api *gin.RouterGroup, db *gorm.DB) {
 	repository := repository.UserRepositoryInit(db)
 	service := services.UserServiceInit(repository)
-	handler := handler.UserHandlerInit(service)
+	authService := config.JwtServiceInit()
+	handler := handler.UserHandlerInit(service, authService)
 	api.POST("/register", handler.Register)
 	api.POST("/login", handler.Login)
 	api.POST("/email-avaiable", handler.IsEmailAvaiable)
