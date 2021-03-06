@@ -1,7 +1,6 @@
 package entity
 
 import (
-	"strings"
 	"time"
 )
 
@@ -45,35 +44,6 @@ type CampaignResponse struct {
 	ImageURL         string `json:"image_url"`
 }
 
-//CampaignAdapter : Adapter Campaign
-func CampaignAdapter(campaign Campaign) CampaignResponse {
-	imageURL := ""
-	if len(campaign.CampaignImages) > 0 {
-		imageURL = campaign.CampaignImages[0].ImagePath
-	}
-	res := CampaignResponse{
-		ID:               campaign.ID,
-		Title:            campaign.Title,
-		CampaignerID:     campaign.CampaignerID,
-		ShortDescription: campaign.ShortDescription,
-		TargetAmount:     campaign.TargetAmount,
-		CurrentAmount:    campaign.CurrentAmount,
-		Slug:             campaign.Slug,
-		ImageURL:         imageURL,
-	}
-	return res
-}
-
-//CampaignsAdapter : Adapter Campaigns
-func CampaignsAdapter(campaigns []Campaign) []CampaignResponse {
-	campaignsAdapter := []CampaignResponse{}
-	for _, campaign := range campaigns {
-		campaignAdapter := CampaignAdapter(campaign)
-		campaignsAdapter = append(campaignsAdapter, campaignAdapter)
-	}
-	return campaignsAdapter
-}
-
 //CampaignDetailRequest : Request Detail Campaign
 type CampaignDetailRequest struct {
 	ID int `uri:"id" binding:"required"`
@@ -104,49 +74,4 @@ type UserCampaignDetail struct {
 type ImageCampaignDetail struct {
 	ImageURL  string `json:"image_url"`
 	IsPrimary bool   `json:"is_primary"`
-}
-
-//CampaignDetailAdapter : Adapter Campaign Detail
-func CampaignDetailAdapter(campaign Campaign) CampaignDetailResponse {
-	imageURL := ""
-	var perks []string
-	images := []ImageCampaignDetail{}
-	//SET User
-	user := UserCampaignDetail{
-		Name:     campaign.User.Name,
-		ImageURL: campaign.User.AvatarPath,
-	}
-	//SET Image URL
-	if len(campaign.CampaignImages) > 0 {
-		imageURL = campaign.CampaignImages[0].ImagePath
-	}
-	//SET Perks
-	for _, perk := range strings.Split(campaign.Perks, ",") {
-		perks = append(perks, strings.TrimSpace(perk))
-	}
-	//SET Images
-	for _, image := range campaign.CampaignImages {
-		isPrimary := false
-		if image.IsPrimary == 1 {
-			isPrimary = true
-		}
-		images = append(images, ImageCampaignDetail{
-			ImageURL:  image.ImagePath,
-			IsPrimary: isPrimary,
-		})
-
-	}
-	campaignResponse := CampaignDetailResponse{
-		ID:               campaign.ID,
-		Title:            campaign.Title,
-		ShortDescription: campaign.ShortDescription,
-		Description:      campaign.Description,
-		TargetAmount:     campaign.TargetAmount,
-		CurrentAmount:    campaign.CurrentAmount,
-		Slug:             campaign.Slug,
-		ImageURL:         imageURL,
-		Perks:            perks,
-		User:             user,
-	}
-	return campaignResponse
 }

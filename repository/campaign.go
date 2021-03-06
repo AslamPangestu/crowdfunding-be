@@ -6,19 +6,19 @@ import (
 	"gorm.io/gorm"
 )
 
-// CampaignRepository Contract
-type CampaignRepository interface {
+// CampaignInteractor Contract
+type CampaignInteractor interface {
 	FindAll() ([]entity.Campaign, error)
-	FindManyByCampaignerID(userID int) ([]entity.Campaign, error)
 	FindByID(id int) (entity.Campaign, error)
+	FindManyByCampaignerID(userID int) ([]entity.Campaign, error)
 }
 
 type campaignRepository struct {
 	db *gorm.DB
 }
 
-// CampaignRepositoryInit Initiation
-func CampaignRepositoryInit(db *gorm.DB) *campaignRepository {
+// NewCampaignRepository Initiation
+func NewCampaignRepository(db *gorm.DB) *campaignRepository {
 	return &campaignRepository{db}
 }
 

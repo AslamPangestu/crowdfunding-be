@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"crowdfunding/adapter"
 	"crowdfunding/entity"
 	"crowdfunding/helper"
 	"crowdfunding/services"
@@ -11,11 +12,11 @@ import (
 )
 
 type campaignHandler struct {
-	service services.CampaignService
+	service services.CampaignInteractor
 }
 
 // CampaignHandlerInit Initiation
-func CampaignHandlerInit(service services.CampaignService) *campaignHandler {
+func CampaignHandlerInit(service services.CampaignInteractor) *campaignHandler {
 	return &campaignHandler{service}
 }
 
@@ -33,7 +34,7 @@ func (h *campaignHandler) GetCampaigns(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, errResponse)
 		return
 	}
-	data := entity.CampaignsAdapter(campaigns)
+	data := adapter.CampaignsAdapter(campaigns)
 	res := helper.ResponseHandler("GetCampaigns Successful", http.StatusOK, "success", data)
 	c.JSON(http.StatusOK, res)
 }
@@ -61,7 +62,7 @@ func (h *campaignHandler) GetCampaign(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, errResponse)
 		return
 	}
-	data := entity.CampaignDetailAdapter(campaign)
+	data := adapter.CampaignDetailAdapter(campaign)
 	res := helper.ResponseHandler("GetCampaign Successful", http.StatusOK, "success", data)
 	c.JSON(http.StatusOK, res)
 }

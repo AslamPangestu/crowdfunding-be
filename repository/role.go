@@ -6,12 +6,12 @@ import (
 	"gorm.io/gorm"
 )
 
-// RoleRepository Contract
-type RoleRepository interface {
+// RoleInteractor Contract
+type RoleInteractor interface {
 	Create(role entity.Role) (entity.Role, error)
 	FindAll() ([]entity.Role, error)
-	FindOneByName(name string) (entity.Role, error)
 	FindOneByID(id int) (entity.Role, error)
+	FindOneByName(name string) (entity.Role, error)
 	Update(role entity.Role) (entity.Role, error)
 	// Delete(id int) (entity.Role, error)
 }
@@ -20,8 +20,8 @@ type roleRepository struct {
 	db *gorm.DB
 }
 
-// RoleRepositoryInit Initiation
-func RoleRepositoryInit(db *gorm.DB) *roleRepository {
+// NewRoleRepository Initiation
+func NewRoleRepository(db *gorm.DB) *roleRepository {
 	return &roleRepository{db}
 }
 
@@ -42,18 +42,18 @@ func (r *roleRepository) FindAll() ([]entity.Role, error) {
 	return model, nil
 }
 
-func (r *roleRepository) FindOneByName(name string) (entity.Role, error) {
+func (r *roleRepository) FindOneByID(id int) (entity.Role, error) {
 	var model entity.Role
-	err := r.db.Where("name = ?", name).Find(&model).Error
+	err := r.db.Where("id = ?", id).Find(&model).Error
 	if err != nil {
 		return model, err
 	}
 	return model, nil
 }
 
-func (r *roleRepository) FindOneByID(id int) (entity.Role, error) {
+func (r *roleRepository) FindOneByName(name string) (entity.Role, error) {
 	var model entity.Role
-	err := r.db.Where("id = ?", id).Find(&model).Error
+	err := r.db.Where("name = ?", name).Find(&model).Error
 	if err != nil {
 		return model, err
 	}

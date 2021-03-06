@@ -13,10 +13,11 @@ import (
 
 // UserRoute : User Routing
 func UserRoute(api *gin.RouterGroup, db *gorm.DB) {
-	repository := repository.UserRepositoryInit(db)
+	repository := repository.NewUserRepository(db)
 	userService := services.UserServiceInit(repository)
 	authService := config.AuthServiceInit()
 	handler := handler.UserHandlerInit(userService, authService)
+
 	api.POST("/register", handler.Register)
 	api.POST("/login", handler.Login)
 	api.POST("/email-avaiable", handler.IsEmailAvaiable)

@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"crowdfunding/adapter"
 	"crowdfunding/config"
 	"crowdfunding/entity"
 	"crowdfunding/helper"
@@ -12,12 +13,12 @@ import (
 )
 
 type userHandler struct {
-	service     services.UserService
+	service     services.UserInteractor
 	authService config.AuthService
 }
 
 // UserHandlerInit Initiation
-func UserHandlerInit(service services.UserService, authService config.AuthService) *userHandler {
+func UserHandlerInit(service services.UserInteractor, authService config.AuthService) *userHandler {
 	return &userHandler{service, authService}
 }
 
@@ -48,7 +49,7 @@ func (h *userHandler) Register(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, errResponse)
 		return
 	}
-	data := entity.RegsiterAdapter(user, token)
+	data := adapter.RegsiterAdapter(user, token)
 	res := helper.ResponseHandler("User Successful Register", http.StatusOK, "success", data)
 	c.JSON(http.StatusOK, res)
 }
@@ -82,7 +83,7 @@ func (h *userHandler) Login(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, errResponse)
 		return
 	}
-	data := entity.LoginAdapter(userLogged, token)
+	data := adapter.LoginAdapter(userLogged, token)
 	res := helper.ResponseHandler("Login Successful", http.StatusOK, "success", data)
 	c.JSON(http.StatusOK, res)
 }

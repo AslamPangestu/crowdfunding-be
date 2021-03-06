@@ -7,13 +7,12 @@ import (
 	"gorm.io/gorm"
 )
 
-// UserRepository Contract
-type UserRepository interface {
+// UserInteractor Contract
+type UserInteractor interface {
 	Create(user entity.User) (entity.User, error)
-	FindOneBy(key string, value string) (entity.User, error)
+	FindAll() ([]entity.User, error)
 	FindByID(id int) (entity.User, error)
-	// FindAll() ([]entity.Role, error)
-	// View(role entity.Role) (entity.Role, error)
+	FindOneBy(key string, value string) (entity.User, error)
 	Update(user entity.User) (entity.User, error)
 	// Delete(user entity.User) (entity.User, error)
 }
@@ -22,8 +21,8 @@ type userRepository struct {
 	db *gorm.DB
 }
 
-// UserRepositoryInit Initiation
-func UserRepositoryInit(db *gorm.DB) *userRepository {
+// NewUserRepository Initiation
+func NewUserRepository(db *gorm.DB) *userRepository {
 	return &userRepository{db}
 }
 
@@ -35,10 +34,9 @@ func (r *userRepository) Create(user entity.User) (entity.User, error) {
 	return user, nil
 }
 
-func (r *userRepository) FindOneBy(key string, value string) (entity.User, error) {
-	var model entity.User
-	query := fmt.Sprintf("%s = ?", key)
-	err := r.db.Where(query, value).Find(&model).Error
+func (r *userRepository) FindAll() ([]entity.User, error) {
+	var model []entity.User
+	err := r.db.Find(&model).Where("role_id != 1").Error
 	if err != nil {
 		return model, err
 	}
@@ -48,6 +46,16 @@ func (r *userRepository) FindOneBy(key string, value string) (entity.User, error
 func (r *userRepository) FindByID(id int) (entity.User, error) {
 	var model entity.User
 	err := r.db.Where("id = ?", id).Find(&model).Error
+	if err != nil {
+		return model, err
+	}
+	return model, nil
+}
+
+func (r *userRepository) FindOneBy(key string, value string) (entity.User, error) {
+	var model entity.User
+	query := fmt.Sprintf("%s = ?", key)
+	err := r.db.Where(query, value).Find(&model).Error
 	if err != nil {
 		return model, err
 	}

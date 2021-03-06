@@ -11,11 +11,11 @@ import (
 )
 
 type roleHandler struct {
-	service services.RoleService
+	service services.RoleInteractor
 }
 
 // RoleHandlerInit Initiation
-func RoleHandlerInit(service services.RoleService) *roleHandler {
+func RoleHandlerInit(service services.RoleInteractor) *roleHandler {
 	return &roleHandler{service}
 }
 
@@ -24,7 +24,7 @@ ROUTE: api/v1/roles
 METHOD: POST
 */
 func (h *roleHandler) AddRole(c *gin.Context) {
-	var request entity.RoleRequest
+	var request entity.RolesRequest
 	err := c.ShouldBindJSON(&request)
 	if err != nil {
 		errorMessage := gin.H{"errors": helper.ErrResponseValidationHandler(err)}
@@ -65,7 +65,7 @@ METHOD: PATCH
 */
 func (h *roleHandler) EditRole(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
-	var request entity.RoleRequest
+	var request entity.RolesRequest
 	err := c.ShouldBindJSON(&request)
 	if err != nil {
 		errorMessage := gin.H{"errors": helper.ErrResponseValidationHandler(err)}

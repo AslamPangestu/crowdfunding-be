@@ -5,21 +5,21 @@ import (
 	"crowdfunding/repository"
 )
 
-// CampaignService Contract
-type CampaignService interface {
+// CampaignInteractor Contract
+type CampaignInteractor interface {
 	GetCampaigns(userID int) ([]entity.Campaign, error)
 	GetCampaignByID(request entity.CampaignDetailRequest) (entity.Campaign, error)
-	// Create(form entity.RoleRequest) (entity.Role, error)
-	// Search(form entity.RoleRequest) (entity.Role, error)
-	// Remove(form entity.RoleRequest) (entity.Role, error)
+	// Create(form entity.RolesRequest) (entity.Role, error)
+	// Search(form entity.RolesRequest) (entity.Role, error)
+	// Remove(form entity.RolesRequest) (entity.Role, error)
 }
 
 type campaignService struct {
-	repository repository.CampaignRepository
+	repository repository.CampaignInteractor
 }
 
 // CampaignServiceInit Initiation
-func CampaignServiceInit(repository repository.CampaignRepository) *campaignService {
+func CampaignServiceInit(repository repository.CampaignInteractor) *campaignService {
 	return &campaignService{repository}
 }
 

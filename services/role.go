@@ -5,25 +5,25 @@ import (
 	"crowdfunding/repository"
 )
 
-// RoleService Contract
-type RoleService interface {
-	AddRole(form entity.RoleRequest) (entity.Role, error)
-	EditRole(id int, form entity.RoleRequest) (entity.Role, error)
+// RoleInteractor Contract
+type RoleInteractor interface {
+	AddRole(form entity.RolesRequest) (entity.Role, error)
+	EditRole(id int, form entity.RolesRequest) (entity.Role, error)
 	GetRoles() ([]entity.Role, error)
-	// Search(form entity.RoleRequest) (entity.Role, error)
-	// Remove(form entity.RoleRequest) (entity.Role, error)
+	// Search(form entity.RolesRequest) (entity.Role, error)
+	// Remove(form entity.RolesRequest) (entity.Role, error)
 }
 
 type roleService struct {
-	repository repository.RoleRepository
+	repository repository.RoleInteractor
 }
 
 // RoleServiceInit Initiation
-func RoleServiceInit(repository repository.RoleRepository) *roleService {
+func RoleServiceInit(repository repository.RoleInteractor) *roleService {
 	return &roleService{repository}
 }
 
-func (s *roleService) AddRole(form entity.RoleRequest) (entity.Role, error) {
+func (s *roleService) AddRole(form entity.RolesRequest) (entity.Role, error) {
 	role := entity.Role{}
 	role.Name = form.Name
 
@@ -42,7 +42,7 @@ func (s *roleService) GetRoles() ([]entity.Role, error) {
 	return roles, nil
 }
 
-func (s *roleService) EditRole(id int, form entity.RoleRequest) (entity.Role, error) {
+func (s *roleService) EditRole(id int, form entity.RolesRequest) (entity.Role, error) {
 	model, err := s.repository.FindOneByID(id)
 	if err != nil {
 		return model, err

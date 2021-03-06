@@ -11,9 +11,10 @@ import (
 
 // CampaignRoute : Campaign Routing
 func CampaignRoute(api *gin.RouterGroup, db *gorm.DB) {
-	repository := repository.CampaignRepositoryInit(db)
+	repository := repository.NewCampaignRepository(db)
 	service := services.CampaignServiceInit(repository)
 	handler := handler.CampaignHandlerInit(service)
+
 	api.GET("/campaigns", handler.GetCampaigns)
 	api.GET("/campaigns/:id", handler.GetCampaign)
 }

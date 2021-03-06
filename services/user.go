@@ -8,8 +8,8 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-// UserService Contract
-type UserService interface {
+// UserInteractor Contract
+type UserInteractor interface {
 	Register(form entity.RegisterRequest) (entity.User, error)
 	Login(form entity.LoginRequest) (entity.User, error)
 	IsEmailAvaiable(form entity.EmailValidationRequest) (bool, error)
@@ -18,11 +18,11 @@ type UserService interface {
 }
 
 type userService struct {
-	repository repository.UserRepository
+	repository repository.UserInteractor
 }
 
 // UserServiceInit Initiation
-func UserServiceInit(repository repository.UserRepository) *userService {
+func UserServiceInit(repository repository.UserInteractor) *userService {
 	return &userService{repository}
 }
 

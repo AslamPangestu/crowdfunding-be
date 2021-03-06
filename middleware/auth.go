@@ -12,7 +12,7 @@ import (
 )
 
 // AuthMiddleware : Middleware for auth
-func AuthMiddleware(authService config.AuthService, userService services.UserService) gin.HandlerFunc {
+func AuthMiddleware(authService config.AuthService, userService services.UserInteractor) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		//Get Authorization header
 		authHeader := c.GetHeader("Authorization")
