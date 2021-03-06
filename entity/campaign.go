@@ -19,7 +19,7 @@ type Campaign struct {
 	CreatedAt        time.Time
 	UpdatedAt        time.Time
 	CampaignImages   []CampaignImage
-	User             User
+	User             User `gorm:"foreignKey:CampaignerID"`
 }
 
 //CampaignImage : Mapping CampaignImage DB
@@ -44,6 +44,7 @@ type CampaignResponse struct {
 	ImageURL         string `json:"image_url"`
 }
 
+//DETAIL CAMPAIGN ENTIY
 //CampaignDetailRequest : Request Detail Campaign
 type CampaignDetailRequest struct {
 	ID int `uri:"id" binding:"required"`
@@ -74,4 +75,15 @@ type UserCampaignDetail struct {
 type ImageCampaignDetail struct {
 	ImageURL  string `json:"image_url"`
 	IsPrimary bool   `json:"is_primary"`
+}
+
+//CREATE CAMPAIGN ENTITY
+//CreateCampaignRequest
+type CreateCampaignRequest struct {
+	Title            string `json:"title" binding:"required"`
+	ShortDescription string `json:"short_description" binding:"required"`
+	Description      string `json:"description" binding:"required"`
+	Perks            string `json:"perks" binding:"required"`
+	TargetAmount     int    `json:"target_amount" binding:"required"`
+	CampaignerID     int
 }

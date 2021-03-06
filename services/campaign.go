@@ -3,13 +3,16 @@ package services
 import (
 	"crowdfunding/entity"
 	"crowdfunding/repository"
+	"fmt"
+
+	"github.com/gosimple/slug"
 )
 
 // CampaignInteractor Contract
 type CampaignInteractor interface {
+	CreateCampaign(form entity.CreateCampaignRequest) (entity.Campaign, error)
 	GetCampaigns(userID int) ([]entity.Campaign, error)
 	GetCampaignByID(request entity.CampaignDetailRequest) (entity.Campaign, error)
-	// Create(form entity.RolesRequest) (entity.Role, error)
 	// Search(form entity.RolesRequest) (entity.Role, error)
 	// Remove(form entity.RolesRequest) (entity.Role, error)
 }
@@ -21,6 +24,25 @@ type campaignService struct {
 // CampaignServiceInit Initiation
 func CampaignServiceInit(repository repository.CampaignInteractor) *campaignService {
 	return &campaignService{repository}
+}
+
+func (s *campaignService) CreateCampaign(form entity.CreateCampaignRequest) (entity.Campaign, error) {
+	slugString := fmt.Sprintf("%d %s", form.CampaignerID, form.Title)
+	campaign := entity.Campaign{
+		Title:            form.Title,
+		ShortDescription: form.ShortDescription,
+		Description:      form.Description,
+		TargetAmount:     form.TargetAmount,
+		Perks:            form.Perks,
+		Slug:             slug.Make(slugString),
+		CampaignerID:     form.CampaignerID,
+	}
+	newCampaign, err := s.repository.Create(campaign)
+	if err != nil {
+		return newCampaign, err
+	}
+	return newCampaign, nil
+
 }
 
 func (s *campaignService) GetCampaigns(userID int) ([]entity.Campaign, error) {

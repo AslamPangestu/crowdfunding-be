@@ -2,12 +2,14 @@ package repository
 
 import (
 	"crowdfunding/entity"
+	"fmt"
 
 	"gorm.io/gorm"
 )
 
 // CampaignInteractor Contract
 type CampaignInteractor interface {
+	Create(campaign entity.Campaign) (entity.Campaign, error)
 	FindAll() ([]entity.Campaign, error)
 	FindByID(id int) (entity.Campaign, error)
 	FindManyByCampaignerID(userID int) ([]entity.Campaign, error)
@@ -26,6 +28,15 @@ const (
 	TBL_CAMPAIGN_IMAGES   = "CampaignImages"
 	QUERY_CAMPAIGN_IMAGES = "campaign_images.is_primary = 1"
 )
+
+func (r *campaignRepository) Create(campaign entity.Campaign) (entity.Campaign, error) {
+	fmt.Println(campaign)
+	err := r.db.Create(&campaign).Error
+	if err != nil {
+		return campaign, err
+	}
+	return campaign, nil
+}
 
 func (r *campaignRepository) FindAll() ([]entity.Campaign, error) {
 	var model []entity.Campaign

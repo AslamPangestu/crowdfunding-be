@@ -9,14 +9,14 @@ import (
 func CampaignsAdapter(campaigns []entity.Campaign) []entity.CampaignResponse {
 	campaignsAdapter := []entity.CampaignResponse{}
 	for _, campaign := range campaigns {
-		campaignAdapter := campaignAdapter(campaign)
+		campaignAdapter := CampaignAdapter(campaign)
 		campaignsAdapter = append(campaignsAdapter, campaignAdapter)
 	}
 	return campaignsAdapter
 }
 
 //campaignAdapter : Adapter Campaign for Campaigns Adapter
-func campaignAdapter(campaign entity.Campaign) entity.CampaignResponse {
+func CampaignAdapter(campaign entity.Campaign) entity.CampaignResponse {
 	imageURL := ""
 	if len(campaign.CampaignImages) > 0 {
 		imageURL = campaign.CampaignImages[0].ImagePath

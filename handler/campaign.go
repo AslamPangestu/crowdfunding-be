@@ -5,6 +5,7 @@ import (
 	"crowdfunding/entity"
 	"crowdfunding/helper"
 	"crowdfunding/services"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -18,6 +19,35 @@ type campaignHandler struct {
 // CampaignHandlerInit Initiation
 func CampaignHandlerInit(service services.CampaignInteractor) *campaignHandler {
 	return &campaignHandler{service}
+}
+
+/**
+ROUTE: api/v1/roles
+METHOD: POST
+*/
+func (h *campaignHandler) CreateCampaign(c *gin.Context) {
+	//Get User Logged
+	currentUser := c.MustGet("currentUser").(entity.User)
+	fmt.Println(currentUser)
+	var request entity.CreateCampaignRequest
+	err := c.ShouldBindJSON(&request)
+	if err != nil {
+		errorMessage := gin.H{"errors": helper.ErrResponseValidationHandler(err)}
+		errResponse := helper.ResponseHandler("CreateCampaign Validation Failed", http.StatusUnprocessableEntity, "failed", errorMessage)
+		c.JSON(http.StatusUnprocessableEntity, errResponse)
+		return
+	}
+	request.CampaignerID = currentUser.ID
+	newCampaign, err := h.service.CreateCampaign(request)
+	if err != nil {
+		errorMessage := gin.H{"errors": err.Error()}
+		errResponse := helper.ResponseHandler("CreateCampaign Failed Created", http.StatusBadRequest, "failed", errorMessage)
+		c.JSON(http.StatusBadRequest, errResponse)
+		return
+	}
+	data := adapter.CampaignAdapter(newCampaign)
+	res := helper.ResponseHandler("CreateCampaign Successful Created", http.StatusOK, "success", data)
+	c.JSON(http.StatusOK, res)
 }
 
 /**
