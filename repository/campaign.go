@@ -38,7 +38,7 @@ func (r *campaignRepository) FindAll() ([]entity.Campaign, error) {
 
 func (r *campaignRepository) FindByID(id int) (entity.Campaign, error) {
 	var model entity.Campaign
-	err := r.db.Where("id = ?", id).Find(&model).Error
+	err := r.db.Preload("User").Preload(TBL_CAMPAIGN_IMAGES).Where("id = ?", id).Find(&model).Error
 	if err != nil {
 		return model, err
 	}

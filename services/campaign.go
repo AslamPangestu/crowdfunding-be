@@ -8,6 +8,7 @@ import (
 // CampaignService Contract
 type CampaignService interface {
 	GetCampaigns(userID int) ([]entity.Campaign, error)
+	GetCampaignByID(request entity.CampaignDetailRequest) (entity.Campaign, error)
 	// Create(form entity.RoleRequest) (entity.Role, error)
 	// Search(form entity.RoleRequest) (entity.Role, error)
 	// Remove(form entity.RoleRequest) (entity.Role, error)
@@ -35,4 +36,12 @@ func (s *campaignService) GetCampaigns(userID int) ([]entity.Campaign, error) {
 		return campaigns, err
 	}
 	return campaigns, nil
+}
+
+func (s *campaignService) GetCampaignByID(request entity.CampaignDetailRequest) (entity.Campaign, error) {
+	campaign, err := s.repository.FindByID(request.ID)
+	if err != nil {
+		return campaign, err
+	}
+	return campaign, nil
 }
