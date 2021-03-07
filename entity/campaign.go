@@ -4,6 +4,8 @@ import (
 	"time"
 )
 
+//CAMPAIGN
+
 //Campaign : Mapping Campaign DB
 type Campaign struct {
 	ID               int
@@ -22,16 +24,6 @@ type Campaign struct {
 	User             User `gorm:"foreignKey:CampaignerID"`
 }
 
-//CampaignImage : Mapping CampaignImage DB
-type CampaignImage struct {
-	ID         int
-	CampaignID int
-	ImagePath  string
-	IsPrimary  int
-	CreatedAt  time.Time
-	UpdatedAt  time.Time
-}
-
 //CampaignResponse : Mapping Campaign Response
 type CampaignResponse struct {
 	ID               int    `json:"id"`
@@ -44,10 +36,8 @@ type CampaignResponse struct {
 	ImageURL         string `json:"image_url"`
 }
 
-//DETAIL CAMPAIGN ENTIY
-
-//CampaignDetailRequest : Request Detail Campaign
-type CampaignDetailRequest struct {
+//CampaignIDRequest : Request Detail Campaign by ID uri
+type CampaignIDRequest struct {
 	ID int `uri:"id" binding:"required"`
 }
 
@@ -72,15 +62,8 @@ type UserCampaignDetail struct {
 	ImageURL string `json:"image_url"`
 }
 
-//ImageCampaignDetail : Response Detail Campaign for Image
-type ImageCampaignDetail struct {
-	ImageURL  string `json:"image_url"`
-	IsPrimary bool   `json:"is_primary"`
-}
-
-//CREATE CAMPAIGN ENTITY
-//CreateCampaignRequest : Request to create new campaign
-type CreateCampaignRequest struct {
+//FormCampaignRequest : Request to create new campaign
+type FormCampaignRequest struct {
 	Title            string `json:"title" binding:"required"`
 	ShortDescription string `json:"short_description" binding:"required"`
 	Description      string `json:"description" binding:"required"`
@@ -89,7 +72,24 @@ type CreateCampaignRequest struct {
 	CampaignerID     int
 }
 
-//UPLOAD IMAGES CAMPAIGN ENTITY
+//CAMPAIGN IMAGE
+
+//CampaignImage : Mapping CampaignImage DB
+type CampaignImage struct {
+	ID         int
+	CampaignID int
+	ImagePath  string
+	IsPrimary  int
+	CreatedAt  time.Time
+	UpdatedAt  time.Time
+}
+
+//ImageCampaignDetail : Response Detail Campaign for Image
+type ImageCampaignDetail struct {
+	ImageURL  string `json:"image_url"`
+	IsPrimary bool   `json:"is_primary"`
+}
+
 //UploadCampaignImageRequest : Request to upload images campaign
 type UploadCampaignImageRequest struct {
 	CampaignID int  `form:"campaign_id" binding:"required"`

@@ -20,8 +20,8 @@ type RoleNameRequest struct {
 	Name string `form:"name" binding:"required"`
 }
 
-//RoleRequest : Mapping Role Request
-type RoleRequest struct {
+//FormRoleRequest : Mapping Role Request
+type FormRoleRequest struct {
 	Name string `json:"name" binding:"required"`
 }
 

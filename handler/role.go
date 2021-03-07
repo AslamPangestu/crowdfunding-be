@@ -24,7 +24,7 @@ METHOD: POST
 */
 func (h *roleHandler) AddRole(c *gin.Context) {
 	//GET REQUEST ROLE
-	var request entity.RoleRequest
+	var request entity.FormRoleRequest
 	err := c.ShouldBindJSON(&request)
 	if err != nil {
 		errorMessage := gin.H{"errors": helper.ErrResponseValidationHandler(err)}
@@ -91,7 +91,8 @@ func (h *roleHandler) GetRoleByID(c *gin.Context) {
 }
 
 /**
-ROUTE: api/v1/roles?name=
+ROUTE: api/v1/roles
+QUERY: name
 METHOD: GET
 */
 func (h *roleHandler) GetRolesByName(c *gin.Context) {
@@ -123,7 +124,7 @@ METHOD: PATCH
 */
 func (h *roleHandler) EditRole(c *gin.Context) {
 	var uri entity.RoleIDRequest
-	var request entity.RoleRequest
+	var request entity.FormRoleRequest
 	//GET ID ROLE
 	err := c.ShouldBindUri(&uri)
 	if err != nil {

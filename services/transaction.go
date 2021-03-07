@@ -22,7 +22,7 @@ func NewTransactionService(repository repository.TransactionInteractor, campaign
 }
 
 func (s *transactionService) GetTransactionsByCampaignID(request entity.GetCampaignTransactionsRequest) ([]entity.Transaction, error) {
-	campaign, err := s.campaignRepository.FindByID(request.ID)
+	campaign, err := s.campaignRepository.FindOneByID(request.ID)
 	if err != nil {
 		return []entity.Transaction{}, err
 	}

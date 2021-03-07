@@ -135,7 +135,7 @@ func (h *userHandler) UploadAvatar(c *gin.Context) {
 	//Get User Logged
 	currentUser := c.MustGet("currentUser").(entity.User)
 	//Get File from Storage
-	file, err := c.FormFile("avatar")
+	file, err := c.FormFile("file")
 	if err != nil {
 		errorMessage := gin.H{"is_uploaded": false, "errors": err.Error()}
 		errResponse := helper.ResponseHandler("Get File Avatar Failed", http.StatusBadRequest, "failed", errorMessage)

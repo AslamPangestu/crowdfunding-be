@@ -8,12 +8,13 @@ import (
 
 // CampaignInteractor Contract
 type CampaignInteractor interface {
-	Create(campaign entity.Campaign) (entity.Campaign, error)
+	Create(model entity.Campaign) (entity.Campaign, error)
 	FindAll() ([]entity.Campaign, error)
-	FindByID(id int) (entity.Campaign, error)
+	FindOneByID(id int) (entity.Campaign, error)
 	FindManyByCampaignerID(userID int) ([]entity.Campaign, error)
-	Update(campaign entity.Campaign) (entity.Campaign, error)
-	CreateImage(campaignImage entity.CampaignImage) (entity.CampaignImage, error)
+	Update(model entity.Campaign) (entity.Campaign, error)
+	//IMAGE
+	CreateImage(model entity.CampaignImage) (entity.CampaignImage, error)
 	MarkAllImagesAsNonPrimary(campaignID int) (bool, error)
 }
 
@@ -31,24 +32,24 @@ const (
 	QUERY_CAMPAIGN_IMAGES = "campaign_images.is_primary = 1"
 )
 
-func (r *campaignRepository) Create(campaign entity.Campaign) (entity.Campaign, error) {
-	err := r.db.Create(&campaign).Error
-	if err != nil {
-		return campaign, err
-	}
-	return campaign, nil
-}
-
-func (r *campaignRepository) FindAll() ([]entity.Campaign, error) {
-	var model []entity.Campaign
-	err := r.db.Preload(TBL_CAMPAIGN_IMAGES, QUERY_CAMPAIGN_IMAGES).Find(&model).Error
+func (r *campaignRepository) Create(model entity.Campaign) (entity.Campaign, error) {
+	err := r.db.Create(&model).Error
 	if err != nil {
 		return model, err
 	}
 	return model, nil
 }
 
-func (r *campaignRepository) FindByID(id int) (entity.Campaign, error) {
+func (r *campaignRepository) FindAll() ([]entity.Campaign, error) {
+	var models []entity.Campaign
+	err := r.db.Preload(TBL_CAMPAIGN_IMAGES, QUERY_CAMPAIGN_IMAGES).Find(&models).Error
+	if err != nil {
+		return models, err
+	}
+	return models, nil
+}
+
+func (r *campaignRepository) FindOneByID(id int) (entity.Campaign, error) {
 	var model entity.Campaign
 	err := r.db.Preload("User").Preload(TBL_CAMPAIGN_IMAGES).Where("id = ?", id).Find(&model).Error
 	if err != nil {
@@ -58,28 +59,28 @@ func (r *campaignRepository) FindByID(id int) (entity.Campaign, error) {
 }
 
 func (r *campaignRepository) FindManyByCampaignerID(userID int) ([]entity.Campaign, error) {
-	var model []entity.Campaign
-	err := r.db.Where("campaigner_id = ?", userID).Preload(TBL_CAMPAIGN_IMAGES, QUERY_CAMPAIGN_IMAGES).Find(&model).Error
+	var models []entity.Campaign
+	err := r.db.Where("campaigner_id = ?", userID).Preload(TBL_CAMPAIGN_IMAGES, QUERY_CAMPAIGN_IMAGES).Find(&models).Error
+	if err != nil {
+		return models, err
+	}
+	return models, nil
+}
+
+func (r *campaignRepository) Update(model entity.Campaign) (entity.Campaign, error) {
+	err := r.db.Save(&model).Error
 	if err != nil {
 		return model, err
 	}
 	return model, nil
 }
 
-func (r *campaignRepository) Update(campaign entity.Campaign) (entity.Campaign, error) {
-	err := r.db.Save(&campaign).Error
+func (r *campaignRepository) CreateImage(model entity.CampaignImage) (entity.CampaignImage, error) {
+	err := r.db.Create(&model).Error
 	if err != nil {
-		return campaign, err
+		return model, err
 	}
-	return campaign, nil
-}
-
-func (r *campaignRepository) CreateImage(campaignImage entity.CampaignImage) (entity.CampaignImage, error) {
-	err := r.db.Create(&campaignImage).Error
-	if err != nil {
-		return campaignImage, err
-	}
-	return campaignImage, nil
+	return model, nil
 }
 
 func (r *campaignRepository) MarkAllImagesAsNonPrimary(campaignID int) (bool, error) {

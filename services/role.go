@@ -7,12 +7,12 @@ import (
 
 // RoleInteractor Contract
 type RoleInteractor interface {
-	AddRole(form entity.RoleRequest) (entity.Role, error)
+	AddRole(form entity.FormRoleRequest) (entity.Role, error)
 	GetRoles() ([]entity.Role, error)
 	GetRoleByID(uri entity.RoleIDRequest) (entity.Role, error)
 	GetRolesByName(form entity.RoleNameRequest) ([]entity.Role, error)
-	EditRole(uri entity.RoleIDRequest, form entity.RoleRequest) (entity.Role, error)
-	// RemoveRoles(form entity.RoleRequest) (entity.Role, error)
+	EditRole(uri entity.RoleIDRequest, form entity.FormRoleRequest) (entity.Role, error)
+	// RemoveRoles(form entity.FormRoleRequest) (entity.Role, error)
 }
 
 type roleService struct {
@@ -24,7 +24,7 @@ func NewRoleService(repository repository.RoleInteractor) *roleService {
 	return &roleService{repository}
 }
 
-func (s *roleService) AddRole(form entity.RoleRequest) (entity.Role, error) {
+func (s *roleService) AddRole(form entity.FormRoleRequest) (entity.Role, error) {
 	model := entity.Role{
 		Name: form.Name,
 	}
@@ -60,7 +60,7 @@ func (s *roleService) GetRolesByName(form entity.RoleNameRequest) ([]entity.Role
 	return models, nil
 }
 
-func (s *roleService) EditRole(uri entity.RoleIDRequest, form entity.RoleRequest) (entity.Role, error) {
+func (s *roleService) EditRole(uri entity.RoleIDRequest, form entity.FormRoleRequest) (entity.Role, error) {
 	model, err := s.repository.FindOneByID(uri.ID)
 	if err != nil {
 		return model, err

@@ -11,13 +11,13 @@ import (
 
 // CampaignInteractor Contract
 type CampaignInteractor interface {
-	CreateCampaign(form entity.CreateCampaignRequest) (entity.Campaign, error)
+	CreateCampaign(form entity.FormCampaignRequest) (entity.Campaign, error)
 	GetCampaigns(userID int) ([]entity.Campaign, error)
-	GetCampaignByID(request entity.CampaignDetailRequest) (entity.Campaign, error)
-	EditCampaign(request entity.CampaignDetailRequest, form entity.CreateCampaignRequest) (entity.Campaign, error)
+	GetCampaignByID(uri entity.CampaignIDRequest) (entity.Campaign, error)
+	EditCampaign(uri entity.CampaignIDRequest, form entity.FormCampaignRequest) (entity.Campaign, error)
 	UploadCampaignImages(form entity.UploadCampaignImageRequest, fileLocation string) (entity.CampaignImage, error)
-	// Search(form entity.RoleRequest) (entity.Role, error)
-	// Remove(form entity.RoleRequest) (entity.Role, error)
+	// Search(form entity.FormRoleRequest) (entity.Role, error)
+	// Remove(form entity.FormRoleRequest) (entity.Role, error)
 }
 
 type campaignService struct {
@@ -29,9 +29,9 @@ func NewCampaignService(repository repository.CampaignInteractor) *campaignServi
 	return &campaignService{repository}
 }
 
-func (s *campaignService) CreateCampaign(form entity.CreateCampaignRequest) (entity.Campaign, error) {
+func (s *campaignService) CreateCampaign(form entity.FormCampaignRequest) (entity.Campaign, error) {
 	slugString := fmt.Sprintf("%d %s", form.CampaignerID, form.Title)
-	campaign := entity.Campaign{
+	model := entity.Campaign{
 		Title:            form.Title,
 		ShortDescription: form.ShortDescription,
 		Description:      form.Description,
@@ -40,53 +40,52 @@ func (s *campaignService) CreateCampaign(form entity.CreateCampaignRequest) (ent
 		Slug:             slug.Make(slugString),
 		CampaignerID:     form.CampaignerID,
 	}
-	newCampaign, err := s.repository.Create(campaign)
+	newCampaign, err := s.repository.Create(model)
 	if err != nil {
 		return newCampaign, err
 	}
 	return newCampaign, nil
-
 }
 
 func (s *campaignService) GetCampaigns(userID int) ([]entity.Campaign, error) {
 	if userID != 0 {
-		campaigns, err := s.repository.FindManyByCampaignerID(userID)
+		models, err := s.repository.FindManyByCampaignerID(userID)
 		if err != nil {
-			return campaigns, err
+			return models, err
 		}
-		return campaigns, nil
+		return models, nil
 	}
-	campaigns, err := s.repository.FindAll()
+	models, err := s.repository.FindAll()
 	if err != nil {
-		return campaigns, err
+		return models, err
 	}
-	return campaigns, nil
+	return models, nil
 }
 
-func (s *campaignService) GetCampaignByID(request entity.CampaignDetailRequest) (entity.Campaign, error) {
-	campaign, err := s.repository.FindByID(request.ID)
+func (s *campaignService) GetCampaignByID(uri entity.CampaignIDRequest) (entity.Campaign, error) {
+	model, err := s.repository.FindOneByID(uri.ID)
 	if err != nil {
-		return campaign, err
+		return model, err
 	}
-	return campaign, nil
+	return model, nil
 }
 
-func (s *campaignService) EditCampaign(request entity.CampaignDetailRequest, form entity.CreateCampaignRequest) (entity.Campaign, error) {
-	campaign, err := s.repository.FindByID(request.ID)
+func (s *campaignService) EditCampaign(uri entity.CampaignIDRequest, form entity.FormCampaignRequest) (entity.Campaign, error) {
+	model, err := s.repository.FindOneByID(uri.ID)
 	if err != nil {
-		return campaign, err
+		return model, err
 	}
 
-	if campaign.CampaignerID != form.CampaignerID {
-		return campaign, errors.New("Not an owner of campaign")
+	if model.CampaignerID != form.CampaignerID {
+		return model, errors.New("User not Authorize for this action")
 	}
-	campaign.Title = form.Title
-	campaign.ShortDescription = form.ShortDescription
-	campaign.Description = form.Description
-	campaign.Perks = form.Perks
-	campaign.TargetAmount = form.TargetAmount
+	model.Title = form.Title
+	model.ShortDescription = form.ShortDescription
+	model.Description = form.Description
+	model.Perks = form.Perks
+	model.TargetAmount = form.TargetAmount
 
-	updateCampaign, err := s.repository.Update(campaign)
+	updateCampaign, err := s.repository.Update(model)
 	if err != nil {
 		return updateCampaign, err
 	}
@@ -94,12 +93,12 @@ func (s *campaignService) EditCampaign(request entity.CampaignDetailRequest, for
 }
 
 func (s *campaignService) UploadCampaignImages(form entity.UploadCampaignImageRequest, fileLocation string) (entity.CampaignImage, error) {
-	campaign, err := s.repository.FindByID(form.CampaignID)
+	campaign, err := s.repository.FindOneByID(form.CampaignID)
 	if err != nil {
 		return entity.CampaignImage{}, err
 	}
 	if campaign.ID != form.UserID {
-		return entity.CampaignImage{}, errors.New("Not an owner of campaign")
+		return entity.CampaignImage{}, errors.New("User not Authorize for this action")
 	}
 	isPrimary := 0
 
@@ -111,13 +110,13 @@ func (s *campaignService) UploadCampaignImages(form entity.UploadCampaignImageRe
 		}
 	}
 
-	campaignImage := entity.CampaignImage{
+	model := entity.CampaignImage{
 		CampaignID: form.CampaignID,
 		IsPrimary:  isPrimary,
 		ImagePath:  fileLocation,
 	}
 
-	newCampaignImage, err := s.repository.CreateImage(campaignImage)
+	newCampaignImage, err := s.repository.CreateImage(model)
 	if err != nil {
 		return newCampaignImage, err
 	}
