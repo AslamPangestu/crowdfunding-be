@@ -18,10 +18,10 @@ func UserRoute(api *gin.RouterGroup, db *gorm.DB) {
 	UserService := services.NewUserService(UserRepo)
 	AuthService := config.NewAuthService()
 
-	UserHandler := handler.UserHandlerInit(UserService, AuthService)
+	Handler := handler.UserHandlerInit(UserService, AuthService)
 
-	api.POST("/register", UserHandler.Register)
-	api.POST("/login", UserHandler.Login)
-	api.POST("/email-avaiable", UserHandler.IsEmailAvaiable)
-	api.POST("/upload-avatar", middleware.AuthMiddleware(AuthService, UserService), UserHandler.UploadAvatar)
+	api.POST("/register", Handler.Register)
+	api.POST("/login", Handler.Login)
+	api.POST("/email-validate", Handler.IsEmailAvaiable)
+	api.POST("/upload-avatar", middleware.AuthMiddleware(AuthService, UserService), Handler.UploadAvatar)
 }

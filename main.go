@@ -29,5 +29,6 @@ func main() {
 	routes.RoleRoute(apiV1, db)
 	routes.UserRoute(apiV1, db)
 	routes.CampaignRoute(apiV1, db)
+	routes.TransactionRoute(apiV1, db)
 	router.Run()
 }

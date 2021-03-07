@@ -68,7 +68,7 @@ ROUTE: api/v1/roles/:ID
 METHOD: GET
 */
 func (h *roleHandler) GetRoleByID(c *gin.Context) {
-	var uri entity.RoleIdRequest
+	var uri entity.RoleIDRequest
 	//GET ID ROLE
 	err := c.ShouldBindUri(&uri)
 	if err != nil {
@@ -122,7 +122,7 @@ ROUTE: api/v1/roles
 METHOD: PATCH
 */
 func (h *roleHandler) EditRole(c *gin.Context) {
-	var uri entity.RoleIdRequest
+	var uri entity.RoleIDRequest
 	var request entity.RoleRequest
 	//GET ID ROLE
 	err := c.ShouldBindUri(&uri)

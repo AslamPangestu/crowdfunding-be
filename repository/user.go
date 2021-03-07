@@ -2,7 +2,6 @@ package repository
 
 import (
 	"crowdfunding/entity"
-	"fmt"
 
 	"gorm.io/gorm"
 )
@@ -11,8 +10,9 @@ import (
 type UserInteractor interface {
 	Create(user entity.User) (entity.User, error)
 	FindAll() ([]entity.User, error)
-	FindByID(id int) (entity.User, error)
-	FindOneBy(key string, value string) (entity.User, error)
+	FindOneByID(id int) (entity.User, error)
+	FindOneByEmail(email string) (entity.User, error)
+	// FindManyByQuery(user entity.User) (entity.User, error)
 	Update(user entity.User) (entity.User, error)
 	// Delete(user entity.User) (entity.User, error)
 }
@@ -26,24 +26,24 @@ func NewUserRepository(db *gorm.DB) *userRepository {
 	return &userRepository{db}
 }
 
-func (r *userRepository) Create(user entity.User) (entity.User, error) {
-	err := r.db.Create(&user).Error
-	if err != nil {
-		return user, err
-	}
-	return user, nil
-}
-
-func (r *userRepository) FindAll() ([]entity.User, error) {
-	var model []entity.User
-	err := r.db.Find(&model).Where("role_id != 1").Error
+func (r *userRepository) Create(model entity.User) (entity.User, error) {
+	err := r.db.Create(&model).Error
 	if err != nil {
 		return model, err
 	}
 	return model, nil
 }
 
-func (r *userRepository) FindByID(id int) (entity.User, error) {
+func (r *userRepository) FindAll() ([]entity.User, error) {
+	var models []entity.User
+	err := r.db.Find(&models).Where("role_id != 1").Error
+	if err != nil {
+		return models, err
+	}
+	return models, nil
+}
+
+func (r *userRepository) FindOneByID(id int) (entity.User, error) {
 	var model entity.User
 	err := r.db.Where("id = ?", id).Find(&model).Error
 	if err != nil {
@@ -52,20 +52,19 @@ func (r *userRepository) FindByID(id int) (entity.User, error) {
 	return model, nil
 }
 
-func (r *userRepository) FindOneBy(key string, value string) (entity.User, error) {
+func (r *userRepository) FindOneByEmail(email string) (entity.User, error) {
 	var model entity.User
-	query := fmt.Sprintf("%s = ?", key)
-	err := r.db.Where(query, value).Find(&model).Error
+	err := r.db.Where("email = ?", email).Find(&model).Error
 	if err != nil {
 		return model, err
 	}
 	return model, nil
 }
 
-func (r *userRepository) Update(user entity.User) (entity.User, error) {
-	err := r.db.Save(&user).Error
+func (r *userRepository) Update(model entity.User) (entity.User, error) {
+	err := r.db.Save(&model).Error
 	if err != nil {
-		return user, err
+		return model, err
 	}
-	return user, nil
+	return model, nil
 }

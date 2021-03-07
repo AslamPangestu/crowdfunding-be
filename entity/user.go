@@ -17,7 +17,6 @@ type User struct {
 	UpdatedAt    time.Time
 }
 
-//REGISTER ENTITY
 //RegisterRequest : Mapping Register Request
 type RegisterRequest struct {
 	Name       string `json:"name" binding:"required"`
@@ -37,7 +36,6 @@ type RegisterResponse struct {
 	Token      string `json:"token"`
 }
 
-//LOGIN ENTITY
 //LoginRequest : Mapping Login Request
 type LoginRequest struct {
 	Email    string `json:"email" binding:"required,email"`
@@ -52,8 +50,7 @@ type LoginResponse struct {
 	Token    string `json:"token"`
 }
 
-//EMAIL VALIDATION ENTITY
-//EmailValidationRequest : Mapping Login Request
+//EmailValidationRequest : Mapping Email Validation Request
 type EmailValidationRequest struct {
 	Email string `json:"email" binding:"required,email"`
 }

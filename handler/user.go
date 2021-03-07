@@ -27,6 +27,7 @@ ROUTE: api/v1/register
 METHOD: POST
 */
 func (h *userHandler) Register(c *gin.Context) {
+	//GET REQUEST REGISTER
 	var request entity.RegisterRequest
 	err := c.ShouldBindJSON(&request)
 	if err != nil {
@@ -35,6 +36,7 @@ func (h *userHandler) Register(c *gin.Context) {
 		c.JSON(http.StatusUnprocessableEntity, errResponse)
 		return
 	}
+	//SAVE USER DB
 	user, err := h.service.Register(request)
 	if err != nil {
 		errorMessage := gin.H{"errors": err.Error()}
@@ -42,15 +44,17 @@ func (h *userHandler) Register(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, errResponse)
 		return
 	}
+	//GENERATE TOKEN
 	token, err := h.authService.GenerateToken(user.ID)
 	if err != nil {
 		errorMessage := gin.H{"errors": err.Error()}
-		errResponse := helper.ResponseHandler("Register Failed", http.StatusBadRequest, "failed", errorMessage)
+		errResponse := helper.ResponseHandler("GenerateToken Failed", http.StatusBadRequest, "failed", errorMessage)
 		c.JSON(http.StatusBadRequest, errResponse)
 		return
 	}
+	//RESPONSE
 	data := adapter.RegsiterAdapter(user, token)
-	res := helper.ResponseHandler("User Successful Register", http.StatusOK, "success", data)
+	res := helper.ResponseHandler("Register Successful", http.StatusOK, "success", data)
 	c.JSON(http.StatusOK, res)
 }
 
@@ -59,8 +63,8 @@ ROUTE: api/v1/login
 METHOD: POST
 */
 func (h *userHandler) Login(c *gin.Context) {
+	//GET REQUEST LOGIN
 	var request entity.LoginRequest
-
 	err := c.ShouldBindJSON(&request)
 	if err != nil {
 		errorMessage := gin.H{"errors": helper.ErrResponseValidationHandler(err)}
@@ -68,7 +72,7 @@ func (h *userHandler) Login(c *gin.Context) {
 		c.JSON(http.StatusUnprocessableEntity, errResponse)
 		return
 	}
-
+	//GET USER LOGGED
 	userLogged, err := h.service.Login(request)
 	if err != nil {
 		errorMessage := gin.H{"errors": err.Error()}
@@ -76,33 +80,36 @@ func (h *userHandler) Login(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, errResponse)
 		return
 	}
-	token, err := h.authService.GenerateToken(1)
+	//GENERATE TOKEN
+	token, err := h.authService.GenerateToken(userLogged.ID)
 	if err != nil {
 		errorMessage := gin.H{"errors": err.Error()}
 		errResponse := helper.ResponseHandler("GenerateToken Failed", http.StatusBadRequest, "failed", errorMessage)
 		c.JSON(http.StatusBadRequest, errResponse)
 		return
 	}
+	//RESPONSE
 	data := adapter.LoginAdapter(userLogged, token)
 	res := helper.ResponseHandler("Login Successful", http.StatusOK, "success", data)
 	c.JSON(http.StatusOK, res)
 }
 
 /**
-ROUTE: api/v1/email-avaiable
+ROUTE: api/v1/email-validate
 METHOD: POST
 */
 func (h *userHandler) IsEmailAvaiable(c *gin.Context) {
+	//GET REQUEST EMAIL VALIDATE
 	var request entity.EmailValidationRequest
-
 	err := c.ShouldBindJSON(&request)
 	if err != nil {
 		errorMessage := gin.H{"errors": helper.ErrResponseValidationHandler(err)}
-		errResponse := helper.ResponseHandler("IsEmailAvaiable Validation Failed", http.StatusUnprocessableEntity, "failed", errorMessage)
+		errResponse := helper.ResponseHandler("EmailValidate Validation Failed", http.StatusUnprocessableEntity, "failed", errorMessage)
 		c.JSON(http.StatusUnprocessableEntity, errResponse)
 		return
 	}
 
+	//GET EMAIL STATUS VALIDATE
 	isEmailAvaiable, err := h.service.IsEmailAvaiable(request)
 	if err != nil {
 		errorMessage := gin.H{"errors": err.Error()}
@@ -110,9 +117,8 @@ func (h *userHandler) IsEmailAvaiable(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, errResponse)
 		return
 	}
-	data := gin.H{
-		"is_avaiable": isEmailAvaiable,
-	}
+	//RESPONSE
+	data := gin.H{"is_avaiable": isEmailAvaiable}
 	responseMessage := "Email already register"
 	if isEmailAvaiable {
 		responseMessage = "Email is avaiable"
@@ -154,6 +160,7 @@ func (h *userHandler) UploadAvatar(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, errResponse)
 		return
 	}
+	//RESPONSE
 	data := gin.H{"is_uploaded": true}
 	res := helper.ResponseHandler("UploadAvatar Success", http.StatusOK, "success", data)
 	c.JSON(http.StatusOK, res)

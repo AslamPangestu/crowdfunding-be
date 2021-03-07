@@ -12,9 +12,9 @@ import (
 type UserInteractor interface {
 	Register(form entity.RegisterRequest) (entity.User, error)
 	Login(form entity.LoginRequest) (entity.User, error)
+	GetUserByID(id int) (entity.User, error)
 	IsEmailAvaiable(form entity.EmailValidationRequest) (bool, error)
 	UploadAvatar(id int, fileLocation string) (entity.User, error)
-	GetUserByID(id int) (entity.User, error)
 }
 
 type userService struct {
@@ -27,20 +27,21 @@ func NewUserService(repository repository.UserInteractor) *userService {
 }
 
 func (s *userService) Register(form entity.RegisterRequest) (entity.User, error) {
-	user := entity.User{}
-	user.Name = form.Name
-	user.Username = form.Username
-	user.Email = form.Email
-	user.Occupation = form.Occupation
-	user.RoleID = 2
+	var model entity.User
 	passwordHash, err := bcrypt.GenerateFromPassword([]byte(form.Password), bcrypt.MinCost)
 	if err != nil {
-		return user, err
+		return model, err
 	}
-	user.PasswordHash = string(passwordHash)
-	user.RoleID = 1
+	model = entity.User{
+		Name:         form.Name,
+		Username:     form.Username,
+		Email:        form.Email,
+		Occupation:   form.Occupation,
+		RoleID:       2,
+		PasswordHash: string(passwordHash),
+	}
 
-	newUser, err := s.repository.Create(user)
+	newUser, err := s.repository.Create(model)
 	if err != nil {
 		return newUser, err
 	}
@@ -48,66 +49,61 @@ func (s *userService) Register(form entity.RegisterRequest) (entity.User, error)
 }
 
 func (s *userService) Login(form entity.LoginRequest) (entity.User, error) {
-	//Mapping Request
-	email := form.Email
-	password := form.Password
-
-	//Find
-	model, err := s.repository.FindOneBy("email", email)
+	//Find User
+	model, err := s.repository.FindOneByEmail(form.Email)
 	if err != nil {
 		return model, err
 	}
 	//Is Found?
 	if model.ID == 0 {
-		return model, errors.New("No user found")
+		return model, errors.New("User not found")
 	}
 	//Decrypt Password Hash
-	err = bcrypt.CompareHashAndPassword([]byte(model.PasswordHash), []byte(password))
+	err = bcrypt.CompareHashAndPassword([]byte(model.PasswordHash), []byte(form.Password))
 	if err != nil {
 		return model, errors.New("Password incorrect")
 	}
 	return model, nil
 }
 
-func (s *userService) IsEmailAvaiable(form entity.EmailValidationRequest) (bool, error) {
-	//Mapping Request
-	email := form.Email
-
-	//Find
-	model, err := s.repository.FindOneBy("email", email)
-	if err != nil {
-		return false, err
-	}
-	//Is Available
-	if model.ID == 0 {
-		return true, nil
-	}
-	return false, nil
-}
-
-func (s *userService) UploadAvatar(id int, fileLocation string) (entity.User, error) {
-	//Find
-	model, err := s.repository.FindByID(id)
-	if err != nil {
-		return model, err
-	}
-	model.AvatarPath = fileLocation
-	updatedData, err := s.repository.Update(model)
-
-	if err != nil {
-		return updatedData, err
-	}
-	return updatedData, nil
-}
-
 func (s *userService) GetUserByID(id int) (entity.User, error) {
 	//Find
-	model, err := s.repository.FindByID(id)
+	model, err := s.repository.FindOneByID(id)
 	if err != nil {
 		return model, err
 	}
+	//Is Found?
 	if model.ID == 0 {
 		return model, errors.New("User not found")
 	}
 	return model, nil
+}
+
+func (s *userService) IsEmailAvaiable(form entity.EmailValidationRequest) (bool, error) {
+	//Find
+	model, err := s.repository.FindOneByEmail(form.Email)
+	if err != nil {
+		return false, err
+	}
+	//Is Available
+	if model.ID != 0 {
+		return false, nil
+	}
+	return true, nil
+}
+
+func (s *userService) UploadAvatar(id int, fileLocation string) (entity.User, error) {
+	//Find
+	model, err := s.repository.FindOneByID(id)
+	if err != nil {
+		return model, err
+	}
+	//Update Path
+	model.AvatarPath = fileLocation
+	//Update DB
+	updatedData, err := s.repository.Update(model)
+	if err != nil {
+		return updatedData, err
+	}
+	return updatedData, nil
 }
