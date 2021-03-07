@@ -6,16 +6,17 @@ import (
 
 //Transaction : Mapping Transaction DB
 type Transaction struct {
-	ID         int
-	CampaignID int
-	BackerID   int
-	Amount     int
-	Status     string
-	Code       string
-	CreatedAt  time.Time
-	UpdatedAt  time.Time
-	User       User     `gorm:"foreignKey:BackerID"`
-	Campaign   Campaign `gorm:"foreignKey:CampaignID"`
+	ID          int
+	CampaignID  int
+	BackerID    int
+	Amount      int
+	Status      string
+	TRXCode     string
+	PaymentCode string
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
+	User        User     `gorm:"foreignKey:BackerID"`
+	Campaign    Campaign `gorm:"foreignKey:CampaignID"`
 }
 
 //CampaignTransactionsRequest : Request Get Transactions
@@ -24,7 +25,7 @@ type CampaignTransactionsRequest struct {
 	CampaignerID int
 }
 
-//CampaignTransactionsResponse : Response Get Transactions for Campaign
+//CampaignTransactionsResponse : Response Get Transactions for CampaignTransactionsRequest
 type CampaignTransactionsResponse struct {
 	ID        int       `json:"id"`
 	Name      string    `json:"name"`
@@ -37,13 +38,20 @@ type UserTransactionsResponse struct {
 	ID        int       `json:"id"`
 	Amount    int       `json:"amount"`
 	Status    string    `json:"status"`
-	Code      string    `json:"code"`
+	TRXCode   string    `json:"trx_code"`
 	CreatedAt time.Time `json:"created_at"`
 	Campaign  CampaignTransaction
 }
 
-//CampaignTransaction : Detail Campaign Transaction
+//CampaignTransaction : Detail Campaign Transaction for UserTransactionsResponse
 type CampaignTransaction struct {
 	Title    string `json:"title"`
 	ImageURL string `json:"image_url"`
+}
+
+//TransactionRequest : Transaction Request
+type TransactionRequest struct {
+	Amount     int `json:"amount" binding:"required"`
+	CampaignID int `json:"campaign_id" binding:"required"`
+	BackerID   int
 }

@@ -43,13 +43,13 @@ func (h *campaignHandler) CreateCampaign(c *gin.Context) {
 	newCampaign, err := h.service.CreateCampaign(request)
 	if err != nil {
 		errorMessage := gin.H{"errors": err.Error()}
-		errResponse := helper.ResponseHandler("CreateCampaign Failed Created", http.StatusBadRequest, "failed", errorMessage)
+		errResponse := helper.ResponseHandler("CreateCampaign Failed", http.StatusBadRequest, "failed", errorMessage)
 		c.JSON(http.StatusBadRequest, errResponse)
 		return
 	}
 	//RESPONSE
 	data := adapter.CampaignAdapter(newCampaign)
-	res := helper.ResponseHandler("CreateCampaign Successful Created", http.StatusOK, "success", data)
+	res := helper.ResponseHandler("CreateCampaign Successful", http.StatusOK, "success", data)
 	c.JSON(http.StatusOK, res)
 }
 

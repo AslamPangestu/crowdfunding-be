@@ -40,7 +40,7 @@ func UserTransactionAdapter(transaction entity.Transaction) entity.UserTransacti
 		ID:        transaction.ID,
 		Amount:    transaction.Amount,
 		Status:    transaction.Status,
-		Code:      transaction.Code,
+		TRXCode:   transaction.TRXCode,
 		CreatedAt: transaction.CreatedAt,
 		Campaign:  campaign,
 	}

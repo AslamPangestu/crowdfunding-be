@@ -8,6 +8,7 @@ import (
 
 // TransactionInteractor Contract
 type TransactionInteractor interface {
+	Create(model entity.Transaction) (entity.Transaction, error)
 	FindManyByCampaignID(campaignID int) ([]entity.Transaction, error)
 	FindManyByUserID(userID int) ([]entity.Transaction, error)
 }
@@ -22,6 +23,14 @@ func NewTransactionRepository(db *gorm.DB) *trasactionRepository {
 }
 
 const ORDER_BY_ID_DESC = "id desc"
+
+func (r *trasactionRepository) Create(model entity.Transaction) (entity.Transaction, error) {
+	err := r.db.Save(&model).Error
+	if err != nil {
+		return model, err
+	}
+	return model, nil
+}
 
 func (r *trasactionRepository) FindManyByCampaignID(campaignID int) ([]entity.Transaction, error) {
 	var models []entity.Transaction

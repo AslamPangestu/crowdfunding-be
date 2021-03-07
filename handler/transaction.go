@@ -20,14 +20,45 @@ func TransactionHandlerInit(service services.TransactionInteractor) *transaction
 }
 
 /**
+ROUTE: api/users/transactions
+METHOD: POST
+*/
+func (h *transactionHandler) MakeTransaction(c *gin.Context) {
+	//Get User Logged
+	currentUser := c.MustGet("currentUser").(entity.User)
+	//GET REQUEST TRANSACTION
+	var request entity.TransactionRequest
+	err := c.ShouldBindJSON(&request)
+	if err != nil {
+		errorMessage := gin.H{"errors": helper.ErrResponseValidationHandler(err)}
+		errResponse := helper.ResponseHandler("MakeTransaction Validation Failed", http.StatusUnprocessableEntity, "failed", errorMessage)
+		c.JSON(http.StatusUnprocessableEntity, errResponse)
+		return
+	}
+	//SET BACKER TRANSACTION
+	request.BackerID = currentUser.ID
+	//SAVE TRANSACTION DB
+	newTransaction, err := h.service.MakeTransaction(request)
+	if err != nil {
+		errorMessage := gin.H{"errors": err.Error()}
+		errResponse := helper.ResponseHandler("MakeTransaction Failed", http.StatusBadRequest, "failed", errorMessage)
+		c.JSON(http.StatusBadRequest, errResponse)
+		return
+	}
+	//RESPONSE
+	res := helper.ResponseHandler("MakeTransaction Successful", http.StatusOK, "success", newTransaction)
+	c.JSON(http.StatusOK, res)
+}
+
+/**
 ROUTE: api/v1/campaigns/:id/transactions
 METHOD: GET
 */
 func (h *transactionHandler) GetCamapaignTransactions(c *gin.Context) {
 	//Get User Logged
 	currentUser := c.MustGet("currentUser").(entity.User)
-	var request entity.CampaignTransactionsRequest
 	//GET ID CAMPAIGN
+	var request entity.CampaignTransactionsRequest
 	err := c.ShouldBindUri(&request)
 	if err != nil {
 		errorMessage := gin.H{"errors": err.Error()}
