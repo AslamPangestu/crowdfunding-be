@@ -56,7 +56,7 @@ type CampaignDetailResponse struct {
 	Images           []ImageCampaignDetail `json:"images"`
 }
 
-//UserCampaignDetail : Response Detail Campaign for User
+//UserCampaignDetail : User Detail Campaign
 type UserCampaignDetail struct {
 	Name     string `json:"name"`
 	ImageURL string `json:"image_url"`

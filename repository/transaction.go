@@ -9,6 +9,7 @@ import (
 // TransactionInteractor Contract
 type TransactionInteractor interface {
 	FindManyByCampaignID(campaignID int) ([]entity.Transaction, error)
+	FindManyByUserID(userID int) ([]entity.Transaction, error)
 }
 
 type trasactionRepository struct {
@@ -20,11 +21,22 @@ func NewTransactionRepository(db *gorm.DB) *trasactionRepository {
 	return &trasactionRepository{db}
 }
 
+const ORDER_BY_ID_DESC = "id desc"
+
 func (r *trasactionRepository) FindManyByCampaignID(campaignID int) ([]entity.Transaction, error) {
-	var model []entity.Transaction
-	err := r.db.Preload("User").Find(&model).Where("campaign_id = ?", campaignID).Order("id desc").Error
+	var models []entity.Transaction
+	err := r.db.Preload("User").Find(&models).Where("campaign_id = ?", campaignID).Order(ORDER_BY_ID_DESC).Error
 	if err != nil {
-		return model, err
+		return models, err
 	}
-	return model, nil
+	return models, nil
+}
+
+func (r *trasactionRepository) FindManyByUserID(userID int) ([]entity.Transaction, error) {
+	var models []entity.Transaction
+	err := r.db.Preload("Campaign.CampaignImages", "campaign_images.is_primary = 1").Find(&models).Where("user_id = ?", userID).Order(ORDER_BY_ID_DESC).Error
+	if err != nil {
+		return models, err
+	}
+	return models, nil
 }

@@ -8,7 +8,8 @@ import (
 
 // TransactionInteractor Contract
 type TransactionInteractor interface {
-	GetTransactionsByCampaignID(request entity.GetCampaignTransactionsRequest) ([]entity.Transaction, error)
+	GetTransactionsByCampaignID(request entity.CampaignTransactionsRequest) ([]entity.Transaction, error)
+	GetTransactionsByUserID(userID int) ([]entity.Transaction, error)
 }
 
 type transactionService struct {
@@ -21,17 +22,25 @@ func NewTransactionService(repository repository.TransactionInteractor, campaign
 	return &transactionService{repository, campaignRepository}
 }
 
-func (s *transactionService) GetTransactionsByCampaignID(request entity.GetCampaignTransactionsRequest) ([]entity.Transaction, error) {
+func (s *transactionService) GetTransactionsByCampaignID(request entity.CampaignTransactionsRequest) ([]entity.Transaction, error) {
 	campaign, err := s.campaignRepository.FindOneByID(request.ID)
 	if err != nil {
 		return []entity.Transaction{}, err
 	}
-	if campaign.CampaignerID == request.User.ID {
+	if campaign.CampaignerID == request.CampaignerID {
 		return []entity.Transaction{}, errors.New("Not an owner of campaign")
 	}
-	transactions, err := s.repository.FindManyByCampaignID(request.ID)
+	models, err := s.repository.FindManyByCampaignID(request.ID)
 	if err != nil {
-		return transactions, err
+		return models, err
 	}
-	return transactions, nil
+	return models, nil
+}
+
+func (s *transactionService) GetTransactionsByUserID(userID int) ([]entity.Transaction, error) {
+	models, err := s.repository.FindManyByUserID(userID)
+	if err != nil {
+		return models, err
+	}
+	return models, nil
 }

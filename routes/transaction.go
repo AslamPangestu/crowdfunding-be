@@ -24,4 +24,5 @@ func TransactionRoute(api *gin.RouterGroup, db *gorm.DB) {
 	TransactionHandler := handler.TransactionHandlerInit(TransactionService)
 
 	api.GET("/campaigns/:id/transactions", middleware.AuthMiddleware(AuthService, UserService), TransactionHandler.GetCamapaignTransactions)
+	api.GET("/users/transactions", middleware.AuthMiddleware(AuthService, UserService), TransactionHandler.GetUserTransactions)
 }
