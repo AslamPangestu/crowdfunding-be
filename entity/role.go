@@ -10,13 +10,23 @@ type Role struct {
 	UpdatedAt time.Time
 }
 
-//RolesRequest : Mapping Role Request
-type RolesRequest struct {
+//RoleIdRequest : Mapping Role Request by ID uri
+type RoleIdRequest struct {
+	ID int `uri:"id" binding:"required"`
+}
+
+//RoleRequest : Mapping Role Request by name
+type RoleRequest struct {
 	Name string `json:"name" binding:"required"`
 }
 
-//RolesResponse : Mapping Role Response
-type RolesResponse struct {
+//RoleNameRequest : Mapping Role Request by name
+type RoleNameRequest struct {
+	Name string `form:"name" binding:"required"`
+}
+
+//RoleResponse : Mapping Role Response
+type RoleResponse struct {
 	ID   int    `json:"id"`
 	Name string `json:"name"`
 }

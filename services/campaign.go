@@ -16,8 +16,8 @@ type CampaignInteractor interface {
 	GetCampaignByID(request entity.CampaignDetailRequest) (entity.Campaign, error)
 	EditCampaign(request entity.CampaignDetailRequest, form entity.CreateCampaignRequest) (entity.Campaign, error)
 	UploadCampaignImages(form entity.UploadCampaignImageRequest, fileLocation string) (entity.CampaignImage, error)
-	// Search(form entity.RolesRequest) (entity.Role, error)
-	// Remove(form entity.RolesRequest) (entity.Role, error)
+	// Search(form entity.RoleRequest) (entity.Role, error)
+	// Remove(form entity.RoleRequest) (entity.Role, error)
 }
 
 type campaignService struct {

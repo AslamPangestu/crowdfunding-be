@@ -9,8 +9,8 @@ import (
 	"gorm.io/gorm"
 )
 
-//InitDB : Initialize DB
-func InitDB() *gorm.DB {
+//NewDB : Initialize DB
+func NewDB() *gorm.DB {
 	//GET CONFIG
 	var USERNAME = os.Getenv("DB_USERNAME")
 	var PASSWORD = os.Getenv("DB_PASSWORD")

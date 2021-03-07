@@ -45,6 +45,7 @@ type CampaignResponse struct {
 }
 
 //DETAIL CAMPAIGN ENTIY
+
 //CampaignDetailRequest : Request Detail Campaign
 type CampaignDetailRequest struct {
 	ID int `uri:"id" binding:"required"`

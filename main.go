@@ -17,7 +17,7 @@ func main() {
 	}
 
 	//Initialize DB
-	db := config.InitDB()
+	db := config.NewDB()
 
 	//ROUTING
 	router := gin.Default()

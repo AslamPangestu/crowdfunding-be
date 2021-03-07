@@ -13,15 +13,15 @@ import (
 
 // TransactionRoute : Transaction Routing
 func TransactionRoute(api *gin.RouterGroup, db *gorm.DB) {
-	transactionRepository := repository.NewTransactionRepository(db)
-	userRepository := repository.NewUserRepository(db)
-	campaignRepository := repository.NewCampaignRepository(db)
+	TransactionRepo := repository.NewTransactionRepository(db)
+	UserRepo := repository.NewUserRepository(db)
+	CampaignRepo := repository.NewCampaignRepository(db)
 
-	service := services.NewTransactionService(transactionRepository, campaignRepository)
-	userService := services.NewUserService(userRepository)
-	authService := config.AuthServiceInit()
+	TransactionService := services.NewTransactionService(TransactionRepo, CampaignRepo)
+	UserService := services.NewUserService(UserRepo)
+	AuthService := config.NewAuthService()
 
-	handler := handler.TransactionHandlerInit(service)
+	TransactionHandler := handler.TransactionHandlerInit(TransactionService)
 
-	api.GET("/campaigns/:id/transactions", middleware.AuthMiddleware(authService, userService), handler.GetCamapaignTransactions)
+	api.GET("/campaigns/:id/transactions", middleware.AuthMiddleware(AuthService, UserService), TransactionHandler.GetCamapaignTransactions)
 }

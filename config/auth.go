@@ -16,8 +16,8 @@ type AuthService interface {
 type authService struct {
 }
 
-// AuthServiceInit Initiation
-func AuthServiceInit() *authService {
+// NewAuthService Initiation
+func NewAuthService() *authService {
 	return &authService{}
 }
 

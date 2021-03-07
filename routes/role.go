@@ -11,11 +11,12 @@ import (
 
 // RoleRoute : Role Routing
 func RoleRoute(api *gin.RouterGroup, db *gorm.DB) {
-	repository := repository.NewRoleRepository(db)
-	service := services.NewRoleService(repository)
-	handler := handler.RoleHandlerInit(service)
+	RoleRepo := repository.NewRoleRepository(db)
+	RoleService := services.NewRoleService(RoleRepo)
+	Handler := handler.NewRoleHandler(RoleService)
 
-	api.GET("/roles", handler.GetRoles)
-	api.POST("/roles", handler.AddRole)
-	api.PATCH("/roles/:id", handler.EditRole)
+	api.GET("/roles", Handler.GetRoles)
+	api.GET("/roles/:id", Handler.GetRoleByID)
+	api.POST("/roles", Handler.AddRole)
+	api.PATCH("/roles/:id", Handler.EditRole)
 }

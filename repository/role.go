@@ -8,62 +8,62 @@ import (
 
 // RoleInteractor Contract
 type RoleInteractor interface {
-	Create(role entity.Role) (entity.Role, error)
+	Create(model entity.Role) (entity.Role, error)
 	FindAll() ([]entity.Role, error)
 	FindOneByID(id int) (entity.Role, error)
-	FindOneByName(name string) (entity.Role, error)
-	Update(role entity.Role) (entity.Role, error)
+	FindManyByName(name string) ([]entity.Role, error)
+	Update(model entity.Role) (entity.Role, error)
 	// Delete(id int) (entity.Role, error)
 }
 
-type roleRepository struct {
+type roleRepo struct {
 	db *gorm.DB
 }
 
 // NewRoleRepository Initiation
-func NewRoleRepository(db *gorm.DB) *roleRepository {
-	return &roleRepository{db}
+func NewRoleRepository(db *gorm.DB) *roleRepo {
+	return &roleRepo{db}
 }
 
-func (r *roleRepository) Create(role entity.Role) (entity.Role, error) {
-	err := r.db.Create(&role).Error
-	if err != nil {
-		return role, err
-	}
-	return role, nil
-}
-
-func (r *roleRepository) FindAll() ([]entity.Role, error) {
-	var model []entity.Role
-	err := r.db.Find(&model).Error
+func (r *roleRepo) Create(model entity.Role) (entity.Role, error) {
+	err := r.db.Create(&model).Error
 	if err != nil {
 		return model, err
 	}
 	return model, nil
 }
 
-func (r *roleRepository) FindOneByID(id int) (entity.Role, error) {
+func (r *roleRepo) FindAll() ([]entity.Role, error) {
+	var models []entity.Role
+	err := r.db.Find(&models).Error
+	if err != nil {
+		return models, err
+	}
+	return models, nil
+}
+
+func (r *roleRepo) FindOneByID(id int) (entity.Role, error) {
 	var model entity.Role
-	err := r.db.Where("id = ?", id).Find(&model).Error
+	err := r.db.Find(&model).Where("id = ?", id).Error
 	if err != nil {
 		return model, err
 	}
 	return model, nil
 }
 
-func (r *roleRepository) FindOneByName(name string) (entity.Role, error) {
-	var model entity.Role
-	err := r.db.Where("name = ?", name).Find(&model).Error
+func (r *roleRepo) FindManyByName(name string) ([]entity.Role, error) {
+	var models []entity.Role
+	err := r.db.Find(&models).Where("name LIKE %?%", name).Error
+	if err != nil {
+		return models, err
+	}
+	return models, nil
+}
+
+func (r *roleRepo) Update(model entity.Role) (entity.Role, error) {
+	err := r.db.Save(&model).Error
 	if err != nil {
 		return model, err
 	}
 	return model, nil
-}
-
-func (r *roleRepository) Update(role entity.Role) (entity.Role, error) {
-	err := r.db.Save(&role).Error
-	if err != nil {
-		return role, err
-	}
-	return role, nil
 }

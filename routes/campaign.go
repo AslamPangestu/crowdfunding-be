@@ -13,18 +13,18 @@ import (
 
 // CampaignRoute : Campaign Routing
 func CampaignRoute(api *gin.RouterGroup, db *gorm.DB) {
-	userRepository := repository.NewUserRepository(db)
-	repository := repository.NewCampaignRepository(db)
+	UserRepository := repository.NewUserRepository(db)
+	CampaignRepo := repository.NewCampaignRepository(db)
 
-	service := services.NewCampaignService(repository)
-	userService := services.NewUserService(userRepository)
-	authService := config.AuthServiceInit()
+	CampaignService := services.NewCampaignService(CampaignRepo)
+	UserService := services.NewUserService(UserRepository)
+	AuthService := config.NewAuthService()
 
-	handler := handler.CampaignHandlerInit(service)
+	CampaignHandler := handler.CampaignHandlerInit(CampaignService)
 
-	api.GET("/campaigns", handler.GetCampaigns)
-	api.GET("/campaigns/:id", handler.GetCampaign)
-	api.POST("/campaigns", middleware.AuthMiddleware(authService, userService), handler.CreateCampaign)
-	api.PATCH("/campaigns/:id", middleware.AuthMiddleware(authService, userService), handler.EditCampaign)
-	api.PATCH("/campaign-images", middleware.AuthMiddleware(authService, userService), handler.UploadImage)
+	api.GET("/campaigns", CampaignHandler.GetCampaigns)
+	api.GET("/campaigns/:id", CampaignHandler.GetCampaign)
+	api.POST("/campaigns", middleware.AuthMiddleware(AuthService, UserService), CampaignHandler.CreateCampaign)
+	api.PATCH("/campaigns/:id", middleware.AuthMiddleware(AuthService, UserService), CampaignHandler.EditCampaign)
+	api.PATCH("/campaign-images", middleware.AuthMiddleware(AuthService, UserService), CampaignHandler.UploadImage)
 }

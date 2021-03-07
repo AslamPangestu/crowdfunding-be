@@ -31,6 +31,7 @@ func ResponseHandler(message string, code int, status string, data interface{}) 
 	return res
 }
 
+// ErrResponseValidationHandler : Handler Error validation response
 func ErrResponseValidationHandler(err error) []string {
 	var errors []string
 	for _, e := range err.(validator.ValidationErrors) {
