@@ -5,7 +5,6 @@ import (
 	"crowdfunding/entity"
 	"crowdfunding/helper"
 	"crowdfunding/services"
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -22,13 +21,12 @@ func CampaignHandlerInit(service services.CampaignInteractor) *campaignHandler {
 }
 
 /**
-ROUTE: api/v1/roles
+ROUTE: api/v1/campaigns
 METHOD: POST
 */
 func (h *campaignHandler) CreateCampaign(c *gin.Context) {
 	//Get User Logged
 	currentUser := c.MustGet("currentUser").(entity.User)
-	fmt.Println(currentUser)
 	var request entity.CreateCampaignRequest
 	err := c.ShouldBindJSON(&request)
 	if err != nil {
@@ -94,5 +92,44 @@ func (h *campaignHandler) GetCampaign(c *gin.Context) {
 	}
 	data := adapter.CampaignDetailAdapter(campaign)
 	res := helper.ResponseHandler("GetCampaign Successful", http.StatusOK, "success", data)
+	c.JSON(http.StatusOK, res)
+}
+
+/**
+ROUTE: api/v1/campaigns
+METHOD: PATCH
+*/
+func (h *campaignHandler) EditCampaign(c *gin.Context) {
+	//Get User Logged
+	currentUser := c.MustGet("currentUser").(entity.User)
+	var requestID entity.CampaignDetailRequest
+
+	//GET ID CAMPAIGN
+	err := c.ShouldBindUri(&requestID)
+	if err != nil {
+		errorMessage := gin.H{"errors": err.Error()}
+		errResponse := helper.ResponseHandler("EditCampaign Failed", http.StatusBadRequest, "failed", errorMessage)
+		c.JSON(http.StatusBadRequest, errResponse)
+		return
+	}
+	var request entity.CreateCampaignRequest
+	err = c.ShouldBindJSON(&request)
+	if err != nil {
+		errorMessage := gin.H{"errors": helper.ErrResponseValidationHandler(err)}
+		errResponse := helper.ResponseHandler("EditCampaign Validation Failed", http.StatusUnprocessableEntity, "failed", errorMessage)
+		c.JSON(http.StatusUnprocessableEntity, errResponse)
+		return
+	}
+	request.CampaignerID = currentUser.ID
+	updateCampaign, err := h.service.EditCampaign(requestID, request)
+	if err != nil {
+		errorMessage := gin.H{"errors": err.Error()}
+		errResponse := helper.ResponseHandler("EditCampaign Failed Created", http.StatusBadRequest, "failed", errorMessage)
+		c.JSON(http.StatusBadRequest, errResponse)
+		return
+	}
+
+	data := adapter.CampaignAdapter(updateCampaign)
+	res := helper.ResponseHandler("EditCampaign Successful Created", http.StatusOK, "success", data)
 	c.JSON(http.StatusOK, res)
 }

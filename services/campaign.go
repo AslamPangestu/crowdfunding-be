@@ -3,6 +3,7 @@ package services
 import (
 	"crowdfunding/entity"
 	"crowdfunding/repository"
+	"errors"
 	"fmt"
 
 	"github.com/gosimple/slug"
@@ -13,6 +14,7 @@ type CampaignInteractor interface {
 	CreateCampaign(form entity.CreateCampaignRequest) (entity.Campaign, error)
 	GetCampaigns(userID int) ([]entity.Campaign, error)
 	GetCampaignByID(request entity.CampaignDetailRequest) (entity.Campaign, error)
+	EditCampaign(request entity.CampaignDetailRequest, form entity.CreateCampaignRequest) (entity.Campaign, error)
 	// Search(form entity.RolesRequest) (entity.Role, error)
 	// Remove(form entity.RolesRequest) (entity.Role, error)
 }
@@ -66,4 +68,26 @@ func (s *campaignService) GetCampaignByID(request entity.CampaignDetailRequest) 
 		return campaign, err
 	}
 	return campaign, nil
+}
+
+func (s *campaignService) EditCampaign(request entity.CampaignDetailRequest, form entity.CreateCampaignRequest) (entity.Campaign, error) {
+	campaign, err := s.repository.FindByID(request.ID)
+	if err != nil {
+		return campaign, err
+	}
+
+	if campaign.CampaignerID != form.CampaignerID {
+		return campaign, errors.New("Not an owner of campaign")
+	}
+	campaign.Title = form.Title
+	campaign.ShortDescription = form.ShortDescription
+	campaign.Description = form.Description
+	campaign.Perks = form.Perks
+	campaign.TargetAmount = form.TargetAmount
+
+	updateCampaign, err := s.repository.Update(campaign)
+	if err != nil {
+		return updateCampaign, err
+	}
+	return updateCampaign, nil
 }

@@ -25,4 +25,5 @@ func CampaignRoute(api *gin.RouterGroup, db *gorm.DB) {
 	api.GET("/campaigns", handler.GetCampaigns)
 	api.GET("/campaigns/:id", handler.GetCampaign)
 	api.POST("/campaigns", middleware.AuthMiddleware(authService, userService), handler.CreateCampaign)
+	api.PATCH("/campaigns/:id", middleware.AuthMiddleware(authService, userService), handler.EditCampaign)
 }

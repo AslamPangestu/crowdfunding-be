@@ -2,7 +2,6 @@ package repository
 
 import (
 	"crowdfunding/entity"
-	"fmt"
 
 	"gorm.io/gorm"
 )
@@ -13,6 +12,7 @@ type CampaignInteractor interface {
 	FindAll() ([]entity.Campaign, error)
 	FindByID(id int) (entity.Campaign, error)
 	FindManyByCampaignerID(userID int) ([]entity.Campaign, error)
+	Update(campaign entity.Campaign) (entity.Campaign, error)
 }
 
 type campaignRepository struct {
@@ -30,7 +30,6 @@ const (
 )
 
 func (r *campaignRepository) Create(campaign entity.Campaign) (entity.Campaign, error) {
-	fmt.Println(campaign)
 	err := r.db.Create(&campaign).Error
 	if err != nil {
 		return campaign, err
@@ -63,4 +62,13 @@ func (r *campaignRepository) FindManyByCampaignerID(userID int) ([]entity.Campai
 		return model, err
 	}
 	return model, nil
+}
+
+func (r *campaignRepository) Update(campaign entity.Campaign) (entity.Campaign, error) {
+	err := r.db.Save(&campaign).Error
+	if err != nil {
+		return campaign, err
+	}
+	return campaign, nil
+
 }
