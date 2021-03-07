@@ -13,6 +13,8 @@ type CampaignInteractor interface {
 	FindByID(id int) (entity.Campaign, error)
 	FindManyByCampaignerID(userID int) ([]entity.Campaign, error)
 	Update(campaign entity.Campaign) (entity.Campaign, error)
+	CreateImage(campaignImage entity.CampaignImage) (entity.CampaignImage, error)
+	MarkAllImagesAsNonPrimary(campaignID int) (bool, error)
 }
 
 type campaignRepository struct {
@@ -70,5 +72,20 @@ func (r *campaignRepository) Update(campaign entity.Campaign) (entity.Campaign, 
 		return campaign, err
 	}
 	return campaign, nil
+}
 
+func (r *campaignRepository) CreateImage(campaignImage entity.CampaignImage) (entity.CampaignImage, error) {
+	err := r.db.Create(&campaignImage).Error
+	if err != nil {
+		return campaignImage, err
+	}
+	return campaignImage, nil
+}
+
+func (r *campaignRepository) MarkAllImagesAsNonPrimary(campaignID int) (bool, error) {
+	err := r.db.Model(&entity.CampaignImage{}).Where("campaign_id = ?", campaignID).Update("is_primary", false).Error
+	if err != nil {
+		return false, err
+	}
+	return true, nil
 }

@@ -15,6 +15,7 @@ type CampaignInteractor interface {
 	GetCampaigns(userID int) ([]entity.Campaign, error)
 	GetCampaignByID(request entity.CampaignDetailRequest) (entity.Campaign, error)
 	EditCampaign(request entity.CampaignDetailRequest, form entity.CreateCampaignRequest) (entity.Campaign, error)
+	UploadCampaignImages(form entity.UploadCampaignImageRequest, fileLocation string) (entity.CampaignImage, error)
 	// Search(form entity.RolesRequest) (entity.Role, error)
 	// Remove(form entity.RolesRequest) (entity.Role, error)
 }
@@ -90,4 +91,36 @@ func (s *campaignService) EditCampaign(request entity.CampaignDetailRequest, for
 		return updateCampaign, err
 	}
 	return updateCampaign, nil
+}
+
+func (s *campaignService) UploadCampaignImages(form entity.UploadCampaignImageRequest, fileLocation string) (entity.CampaignImage, error) {
+	campaign, err := s.repository.FindByID(form.CampaignID)
+	if err != nil {
+		return entity.CampaignImage{}, err
+	}
+	if campaign.ID != form.UserID {
+		return entity.CampaignImage{}, errors.New("Not an owner of campaign")
+	}
+	isPrimary := 0
+
+	if form.IsPrimary {
+		isPrimary = 1
+		_, err := s.repository.MarkAllImagesAsNonPrimary(form.CampaignID)
+		if err != nil {
+			return entity.CampaignImage{}, err
+		}
+	}
+
+	campaignImage := entity.CampaignImage{
+		CampaignID: form.CampaignID,
+		IsPrimary:  isPrimary,
+		ImagePath:  fileLocation,
+	}
+
+	newCampaignImage, err := s.repository.CreateImage(campaignImage)
+	if err != nil {
+		return newCampaignImage, err
+	}
+	return newCampaignImage, nil
+
 }

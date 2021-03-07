@@ -78,7 +78,7 @@ type ImageCampaignDetail struct {
 }
 
 //CREATE CAMPAIGN ENTITY
-//CreateCampaignRequest
+//CreateCampaignRequest : Request to create new campaign
 type CreateCampaignRequest struct {
 	Title            string `json:"title" binding:"required"`
 	ShortDescription string `json:"short_description" binding:"required"`
@@ -86,4 +86,12 @@ type CreateCampaignRequest struct {
 	Perks            string `json:"perks" binding:"required"`
 	TargetAmount     int    `json:"target_amount" binding:"required"`
 	CampaignerID     int
+}
+
+//UPLOAD IMAGES CAMPAIGN ENTITY
+//UploadCampaignImageRequest : Request to upload images campaign
+type UploadCampaignImageRequest struct {
+	CampaignID int  `form:"campaign_id" binding:"required"`
+	IsPrimary  bool `form:"is_primary"`
+	UserID     int
 }

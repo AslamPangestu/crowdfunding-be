@@ -26,4 +26,5 @@ func CampaignRoute(api *gin.RouterGroup, db *gorm.DB) {
 	api.GET("/campaigns/:id", handler.GetCampaign)
 	api.POST("/campaigns", middleware.AuthMiddleware(authService, userService), handler.CreateCampaign)
 	api.PATCH("/campaigns/:id", middleware.AuthMiddleware(authService, userService), handler.EditCampaign)
+	api.PATCH("/campaign-images", middleware.AuthMiddleware(authService, userService), handler.UploadImage)
 }

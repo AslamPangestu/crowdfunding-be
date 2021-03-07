@@ -5,6 +5,7 @@ import (
 	"crowdfunding/entity"
 	"crowdfunding/helper"
 	"crowdfunding/services"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -131,5 +132,55 @@ func (h *campaignHandler) EditCampaign(c *gin.Context) {
 
 	data := adapter.CampaignAdapter(updateCampaign)
 	res := helper.ResponseHandler("EditCampaign Successful Created", http.StatusOK, "success", data)
+	c.JSON(http.StatusOK, res)
+}
+
+/**
+ROUTE: api/v1/campaigns
+METHOD: POST
+*/
+func (h *campaignHandler) UploadImage(c *gin.Context) {
+	var request entity.UploadCampaignImageRequest
+	//Get User Logged
+	currentUser := c.MustGet("currentUser").(entity.User)
+
+	err := c.ShouldBind(&request)
+	if err != nil {
+		errorMessage := gin.H{"errors": helper.ErrResponseValidationHandler(err)}
+		errResponse := helper.ResponseHandler("Get UploadImage Failed", http.StatusBadRequest, "failed", errorMessage)
+		c.JSON(http.StatusBadRequest, errResponse)
+		return
+	}
+	//Get File from Storage
+	file, err := c.FormFile("file")
+	if err != nil {
+		errorMessage := gin.H{"is_uploaded": false, "errors": err.Error()}
+		errResponse := helper.ResponseHandler("UploadImage Failed", http.StatusBadRequest, "failed", errorMessage)
+		c.JSON(http.StatusBadRequest, errResponse)
+		return
+	}
+
+	//Store File to Storage
+	filename := fmt.Sprintf("%d-%s.jpg", currentUser.ID, file.Filename)
+	path := "storage/campaigns/" + filename
+	err = c.SaveUploadedFile(file, path)
+	if err != nil {
+		errorMessage := gin.H{"is_uploaded": false, "errors": err.Error()}
+		errResponse := helper.ResponseHandler("Store UploadImage Failed", http.StatusBadRequest, "failed", errorMessage)
+		c.JSON(http.StatusBadRequest, errResponse)
+		return
+	}
+
+	request.UserID = currentUser.ID
+	//Save Filename to DB
+	_, err = h.service.UploadCampaignImages(request, path)
+	if err != nil {
+		errorMessage := gin.H{"is_uploaded": false, "errors": err.Error()}
+		errResponse := helper.ResponseHandler("UploadImage Failed", http.StatusBadRequest, "failed", errorMessage)
+		c.JSON(http.StatusBadRequest, errResponse)
+		return
+	}
+	data := gin.H{"is_uploaded": true}
+	res := helper.ResponseHandler("UploadImage Success", http.StatusOK, "success", data)
 	c.JSON(http.StatusOK, res)
 }
