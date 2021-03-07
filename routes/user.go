@@ -15,7 +15,7 @@ import (
 func UserRoute(api *gin.RouterGroup, db *gorm.DB) {
 	repository := repository.NewUserRepository(db)
 
-	userService := services.UserServiceInit(repository)
+	userService := services.NewUserService(repository)
 	authService := config.AuthServiceInit()
 
 	handler := handler.UserHandlerInit(userService, authService)

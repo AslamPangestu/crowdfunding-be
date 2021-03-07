@@ -24,8 +24,8 @@ type campaignService struct {
 	repository repository.CampaignInteractor
 }
 
-// CampaignServiceInit Initiation
-func CampaignServiceInit(repository repository.CampaignInteractor) *campaignService {
+// NewCampaignService Initiation
+func NewCampaignService(repository repository.CampaignInteractor) *campaignService {
 	return &campaignService{repository}
 }
 

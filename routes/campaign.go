@@ -16,8 +16,8 @@ func CampaignRoute(api *gin.RouterGroup, db *gorm.DB) {
 	userRepository := repository.NewUserRepository(db)
 	repository := repository.NewCampaignRepository(db)
 
-	service := services.CampaignServiceInit(repository)
-	userService := services.UserServiceInit(userRepository)
+	service := services.NewCampaignService(repository)
+	userService := services.NewUserService(userRepository)
 	authService := config.AuthServiceInit()
 
 	handler := handler.CampaignHandlerInit(service)

@@ -18,8 +18,8 @@ type roleService struct {
 	repository repository.RoleInteractor
 }
 
-// RoleServiceInit Initiation
-func RoleServiceInit(repository repository.RoleInteractor) *roleService {
+// NewRoleService Initiation
+func NewRoleService(repository repository.RoleInteractor) *roleService {
 	return &roleService{repository}
 }
 

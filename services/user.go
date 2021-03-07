@@ -21,8 +21,8 @@ type userService struct {
 	repository repository.UserInteractor
 }
 
-// UserServiceInit Initiation
-func UserServiceInit(repository repository.UserInteractor) *userService {
+// NewUserService Initiation
+func NewUserService(repository repository.UserInteractor) *userService {
 	return &userService{repository}
 }
 

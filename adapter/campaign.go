@@ -15,7 +15,7 @@ func CampaignsAdapter(campaigns []entity.Campaign) []entity.CampaignResponse {
 	return campaignsAdapter
 }
 
-//campaignAdapter : Adapter Campaign for Campaigns Adapter
+//CampaignAdapter : Adapter Campaign for Campaigns Adapter
 func CampaignAdapter(campaign entity.Campaign) entity.CampaignResponse {
 	imageURL := ""
 	if len(campaign.CampaignImages) > 0 {
