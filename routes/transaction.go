@@ -13,13 +13,14 @@ import (
 
 // TransactionRoute : Transaction Routing
 func TransactionRoute(api *gin.RouterGroup, db *gorm.DB) {
-	TransactionRepo := repository.NewTransactionRepository(db)
 	UserRepo := repository.NewUserRepository(db)
 	CampaignRepo := repository.NewCampaignRepository(db)
+	TransactionRepo := repository.NewTransactionRepository(db)
 
-	TransactionService := services.NewTransactionService(TransactionRepo, CampaignRepo)
+	PaymentService := services.NewPaymentService()
 	UserService := services.NewUserService(UserRepo)
 	AuthService := config.NewAuthService()
+	TransactionService := services.NewTransactionService(TransactionRepo, CampaignRepo, PaymentService)
 
 	TransactionHandler := handler.TransactionHandlerInit(TransactionService)
 

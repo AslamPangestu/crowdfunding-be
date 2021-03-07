@@ -6,17 +6,17 @@ import (
 
 //Transaction : Mapping Transaction DB
 type Transaction struct {
-	ID          int
-	CampaignID  int
-	BackerID    int
-	Amount      int
-	Status      string
-	TRXCode     string
-	PaymentCode string
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
-	User        User     `gorm:"foreignKey:BackerID"`
-	Campaign    Campaign `gorm:"foreignKey:CampaignID"`
+	ID         int
+	CampaignID int
+	BackerID   int
+	Amount     int
+	Status     string
+	TRXCode    string
+	PaymentURL string
+	CreatedAt  time.Time
+	UpdatedAt  time.Time
+	User       User     `gorm:"foreignKey:BackerID"`
+	Campaign   Campaign `gorm:"foreignKey:CampaignID"`
 }
 
 //CampaignTransactionsRequest : Request Get Transactions
@@ -53,5 +53,16 @@ type CampaignTransaction struct {
 type TransactionRequest struct {
 	Amount     int `json:"amount" binding:"required"`
 	CampaignID int `json:"campaign_id" binding:"required"`
-	BackerID   int
+	Backer     User
+}
+
+//TransactionResponse : Transaction Response
+type TransactionResponse struct {
+	ID         int    `json:"id"`
+	CampaignID int    `json:"campaign_id"`
+	BackerID   int    `json:"backer_id"`
+	Amount     int    `json:"amount"`
+	Status     string `json:"status"`
+	TRXCode    string `json:"trx_code"`
+	PaymentURL string `json:"payment_url"`
 }

@@ -59,3 +59,17 @@ func UserTransactionsAdapter(transactions []entity.Transaction) []entity.UserTra
 	}
 	return transactionsResponse
 }
+
+//TransactionAdapter : Adapter Transaction
+func TransactionAdapter(transaction entity.Transaction) entity.TransactionResponse {
+	return entity.TransactionResponse{
+		ID:         transaction.ID,
+		CampaignID: transaction.CampaignID,
+		BackerID:   transaction.BackerID,
+		Amount:     transaction.Amount,
+		Status:     transaction.Status,
+		TRXCode:    transaction.TRXCode,
+		PaymentURL: transaction.PaymentURL,
+	}
+
+}

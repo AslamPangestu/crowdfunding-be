@@ -4,6 +4,9 @@ import (
 	"crowdfunding/entity"
 	"crowdfunding/repository"
 	"errors"
+	"fmt"
+	"strings"
+	"time"
 )
 
 // TransactionInteractor Contract
@@ -16,22 +19,33 @@ type TransactionInteractor interface {
 type transactionService struct {
 	repository         repository.TransactionInteractor
 	campaignRepository repository.CampaignInteractor
+	paymentService     PaymentInteractor
 }
 
 // NewTransactionService Initiation
-func NewTransactionService(repository repository.TransactionInteractor, campaignRepository repository.CampaignInteractor) *transactionService {
-	return &transactionService{repository, campaignRepository}
+func NewTransactionService(repository repository.TransactionInteractor, campaignRepository repository.CampaignInteractor, paymentService PaymentInteractor) *transactionService {
+	return &transactionService{repository, campaignRepository, paymentService}
 }
 
 func (s *transactionService) MakeTransaction(form entity.TransactionRequest) (entity.Transaction, error) {
 	model := entity.Transaction{
 		CampaignID: form.CampaignID,
-		BackerID:   form.BackerID,
+		BackerID:   form.Backer.ID,
 		Amount:     form.Amount,
 		Status:     "pending",
 	}
 
 	newTransaction, err := s.repository.Create(model)
+	if err != nil {
+		return newTransaction, err
+	}
+	newTransaction.TRXCode = generateTRXCode(model.BackerID, newTransaction.ID, form.CampaignID)
+	paymentURL, err := s.paymentService.GeneratePaymentURL(newTransaction, form.Backer)
+	if err != nil {
+		return newTransaction, err
+	}
+	newTransaction.PaymentURL = paymentURL
+	newTransaction, err = s.repository.Update(newTransaction)
 	if err != nil {
 		return newTransaction, err
 	}
@@ -59,4 +73,10 @@ func (s *transactionService) GetTransactionsByUserID(userID int) ([]entity.Trans
 		return models, err
 	}
 	return models, nil
+}
+
+func generateTRXCode(userID int, transactionID int, campaignID int) string {
+	currentDateTime := time.Now()
+	formatedDateTime := strings.ReplaceAll(currentDateTime.Format("2006-01-02"), "-", "")
+	return fmt.Sprintf("%d%d%d%s", transactionID, campaignID, userID, formatedDateTime)
 }

@@ -36,7 +36,7 @@ func (h *transactionHandler) MakeTransaction(c *gin.Context) {
 		return
 	}
 	//SET BACKER TRANSACTION
-	request.BackerID = currentUser.ID
+	request.Backer = currentUser
 	//SAVE TRANSACTION DB
 	newTransaction, err := h.service.MakeTransaction(request)
 	if err != nil {
@@ -46,7 +46,8 @@ func (h *transactionHandler) MakeTransaction(c *gin.Context) {
 		return
 	}
 	//RESPONSE
-	res := helper.ResponseHandler("MakeTransaction Successful", http.StatusOK, "success", newTransaction)
+	data := adapter.TransactionAdapter(newTransaction)
+	res := helper.ResponseHandler("MakeTransaction Successful", http.StatusOK, "success", data)
 	c.JSON(http.StatusOK, res)
 }
 
