@@ -44,10 +44,12 @@ type LoginRequest struct {
 
 //LoginResponse : Mapping Register Response
 type LoginResponse struct {
-	Name     string `json:"name"`
-	Username string `json:"username"`
-	Email    string `json:"email"`
-	Token    string `json:"token"`
+	Name       string `json:"name"`
+	Username   string `json:"username"`
+	Email      string `json:"email"`
+	ImageURL   string `json:"image_url"`
+	Occupation string `json:"occupation"`
+	Token      string `json:"token"`
 }
 
 //EmailValidationRequest : Mapping Email Validation Request

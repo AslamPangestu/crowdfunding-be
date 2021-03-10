@@ -165,3 +165,16 @@ func (h *userHandler) UploadAvatar(c *gin.Context) {
 	res := helper.ResponseHandler("UploadAvatar Success", http.StatusOK, "success", data)
 	c.JSON(http.StatusOK, res)
 }
+
+/**
+ROUTE: api/v1/login
+METHOD: POST
+*/
+func (h *userHandler) FetchUser(c *gin.Context) {
+	//Get User Logged
+	currentUser := c.MustGet("currentUser").(entity.User)
+	//RESPONSE
+	data := adapter.LoginAdapter(currentUser, "")
+	res := helper.ResponseHandler("FetchUser Successful", http.StatusOK, "success", data)
+	c.JSON(http.StatusOK, res)
+}

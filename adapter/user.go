@@ -14,12 +14,14 @@ func RegsiterAdapter(user entity.User, token string) entity.RegisterResponse {
 	}
 }
 
-//LoginAdapter : Adapter Register
+//LoginAdapter : Adapter Login
 func LoginAdapter(user entity.User, token string) entity.LoginResponse {
 	return entity.LoginResponse{
-		Name:     user.Name,
-		Username: user.Username,
-		Email:    user.Email,
-		Token:    token,
+		Name:       user.Name,
+		Username:   user.Username,
+		Email:      user.Email,
+		Token:      token,
+		ImageURL:   user.AvatarPath,
+		Occupation: user.Occupation,
 	}
 }

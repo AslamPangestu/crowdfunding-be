@@ -22,6 +22,7 @@ func UserRoute(api *gin.RouterGroup, db *gorm.DB) {
 
 	api.POST("/register", Handler.Register)
 	api.POST("/login", Handler.Login)
+	api.GET("/profile", middleware.AuthMiddleware(AuthService, UserService), Handler.FetchUser)
 	api.POST("/email-validate", Handler.IsEmailAvaiable)
 	api.POST("/upload-avatar", middleware.AuthMiddleware(AuthService, UserService), Handler.UploadAvatar)
 }
