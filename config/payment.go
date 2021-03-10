@@ -7,10 +7,12 @@ import (
 )
 
 //NewPayment : Initialize Midtrans
-func NewPayment() midtrans.Client {
+func NewPayment() midtrans.SnapGateway {
 	midclient := midtrans.NewClient()
 	midclient.ServerKey = os.Getenv("PAYMENT_SERVER_KEY")
 	midclient.ClientKey = os.Getenv("PAYMENT_CLIENT_KEY")
 	midclient.APIEnvType = midtrans.Sandbox
-	return midclient
+	return midtrans.SnapGateway{
+		Client: midclient,
+	}
 }

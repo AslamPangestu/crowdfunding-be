@@ -5,6 +5,7 @@ import (
 	"crowdfunding/routes"
 	"log"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 )
@@ -21,6 +22,7 @@ func main() {
 
 	//ROUTING
 	router := gin.Default()
+	router.Use(cors.Default())
 	//Static Routing
 	router.Static("/statics/avatars", "./storage/avatars")
 	router.Static("/statics/campaigns", "./storage/campaigns")

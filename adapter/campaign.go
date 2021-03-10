@@ -71,6 +71,7 @@ func CampaignDetailAdapter(campaign entity.Campaign) entity.CampaignDetailRespon
 		TargetAmount:     campaign.TargetAmount,
 		CurrentAmount:    campaign.CurrentAmount,
 		Slug:             campaign.Slug,
+		BackerCount:      campaign.BackerCount,
 		ImageURL:         imageURL,
 		Perks:            perks,
 		User:             user,

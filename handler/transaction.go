@@ -11,12 +11,13 @@ import (
 )
 
 type transactionHandler struct {
-	service services.TransactionInteractor
+	service        services.TransactionInteractor
+	paymentService services.PaymentInteractor
 }
 
 // TransactionHandlerInit Initiation
-func TransactionHandlerInit(service services.TransactionInteractor) *transactionHandler {
-	return &transactionHandler{service}
+func TransactionHandlerInit(service services.TransactionInteractor, paymentService services.PaymentInteractor) *transactionHandler {
+	return &transactionHandler{service, paymentService}
 }
 
 /**
@@ -102,4 +103,30 @@ func (h *transactionHandler) GetUserTransactions(c *gin.Context) {
 	data := adapter.CampaignTransactionsAdapter(transactions)
 	res := helper.ResponseHandler("GetUserTransactions Successful", http.StatusOK, "success", data)
 	c.JSON(http.StatusOK, res)
+}
+
+/**
+ROUTE: api/v1/users/transactions
+METHOD: GET
+*/
+func (h *transactionHandler) GetNotification(c *gin.Context) {
+	//GET REQUEST
+	var request entity.TransactionNotificationRequest
+	err := c.ShouldBindJSON(&request)
+	if err != nil {
+		errorMessage := gin.H{"errors": helper.ErrResponseValidationHandler(err)}
+		errResponse := helper.ResponseHandler("GetNotification Validation Failed", http.StatusUnprocessableEntity, "failed", errorMessage)
+		c.JSON(http.StatusUnprocessableEntity, errResponse)
+		return
+	}
+	//PROCESS
+	err = h.paymentService.ProcessPayment(request)
+	if err != nil {
+		errorMessage := gin.H{"errors": helper.ErrResponseValidationHandler(err)}
+		errResponse := helper.ResponseHandler("GetNotification Failed", http.StatusBadRequest, "failed", errorMessage)
+		c.JSON(http.StatusBadRequest, errResponse)
+		return
+	}
+	//RESPONSE
+	c.JSON(http.StatusOK, request)
 }
