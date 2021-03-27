@@ -7,6 +7,7 @@ import (
 	"crowdfunding/services"
 	"fmt"
 	"net/http"
+	"os"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -172,8 +173,10 @@ func (h *campaignHandler) UploadImage(c *gin.Context) {
 	}
 
 	//Store File to Storage
-	filename := fmt.Sprintf("%d-%s.jpg", currentUser.ID, file.Filename)
-	path := "storage/campaigns/" + filename
+	cleanFilename := helper.RemoveFileExt(file.Filename)
+	filename := fmt.Sprintf("%d-%d-%s.jpg", currentUser.ID, request.CampaignID, cleanFilename)
+	base_path := os.Getenv("STORAGE_PATH")
+	path := base_path + "/campaigns/" + filename
 	err = c.SaveUploadedFile(file, path)
 	if err != nil {
 		errorMessage := gin.H{"is_uploaded": false, "errors": err.Error()}
@@ -184,6 +187,8 @@ func (h *campaignHandler) UploadImage(c *gin.Context) {
 
 	//SET CAMPAIGNER
 	request.UserID = currentUser.ID
+	base_url := os.Getenv("STORAGE_URL")
+	path = base_url + "/campaigns/" + filename
 	//Save Filename to DB
 	_, err = h.service.UploadCampaignImages(request, path)
 	if err != nil {

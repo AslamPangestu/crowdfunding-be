@@ -97,7 +97,7 @@ func (s *campaignService) UploadCampaignImages(form entity.UploadCampaignImageRe
 	if err != nil {
 		return entity.CampaignImage{}, err
 	}
-	if campaign.ID != form.UserID {
+	if campaign.CampaignerID != form.UserID {
 		return entity.CampaignImage{}, errors.New("User not Authorize for this action")
 	}
 	isPrimary := 0

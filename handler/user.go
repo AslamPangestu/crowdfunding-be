@@ -8,6 +8,7 @@ import (
 	"crowdfunding/services"
 	"fmt"
 	"net/http"
+	"os"
 
 	"github.com/gin-gonic/gin"
 )
@@ -144,7 +145,8 @@ func (h *userHandler) UploadAvatar(c *gin.Context) {
 	}
 	//Store File to Storage
 	filename := fmt.Sprintf("%d-%s.jpg", currentUser.ID, currentUser.Username)
-	path := "storage/avatars/" + filename
+	base_path := os.Getenv("STORAGE_PATH")
+	path := base_path + "/avatars/" + filename
 	err = c.SaveUploadedFile(file, path)
 	if err != nil {
 		errorMessage := gin.H{"is_uploaded": false, "errors": err.Error()}
@@ -153,6 +155,8 @@ func (h *userHandler) UploadAvatar(c *gin.Context) {
 		return
 	}
 	//Save Filename to DB
+	base_url := os.Getenv("STORAGE_URL")
+	path = base_url + "/avatars/" + filename
 	_, err = h.service.UploadAvatar(currentUser.ID, path)
 	if err != nil {
 		errorMessage := gin.H{"is_uploaded": false, "errors": err.Error()}
@@ -161,7 +165,7 @@ func (h *userHandler) UploadAvatar(c *gin.Context) {
 		return
 	}
 	//RESPONSE
-	data := gin.H{"is_uploaded": true}
+	data := gin.H{"is_uploaded": true, "file": path}
 	res := helper.ResponseHandler("UploadAvatar Success", http.StatusOK, "success", data)
 	c.JSON(http.StatusOK, res)
 }
