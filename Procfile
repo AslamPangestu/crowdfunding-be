@@ -1,1 +1,1 @@
-web: crowdfunding
+web: bin/crowdfunding

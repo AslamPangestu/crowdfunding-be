@@ -36,5 +36,6 @@ func main() {
 	router.GET("/ping", func(c *gin.Context) {
 		c.JSON(http.StatusOK, "Pong")
 	})
+
 	router.Run()
 }
