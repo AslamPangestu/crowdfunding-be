@@ -14,7 +14,7 @@ import (
 func main() {
 	//Load ENV
 	var APP_ENV = os.Getenv("APP_ENV")
-	if APP_ENV == "development" {
+	if APP_ENV != "production" {
 		err := godotenv.Load()
 		if err != nil {
 			log.Fatalf("ENV Failure, %v\n", err.Error())
