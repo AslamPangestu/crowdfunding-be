@@ -4,7 +4,6 @@ import (
 	"crowdfunding/config"
 	"crowdfunding/routes"
 	"log"
-	"os"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -12,12 +11,9 @@ import (
 
 func main() {
 	//Load ENV
-	var APP_ENV = os.Getenv("APP_ENV")
-	if APP_ENV != "production" {
-		err := godotenv.Load()
-		if err != nil {
-			log.Fatalf("ENV Failure, %v\n", err.Error())
-		}
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatalf("ENV Failure, %v\n", err.Error())
 	}
 
 	//Initialize DB
