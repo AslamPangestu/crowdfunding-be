@@ -22,7 +22,7 @@ func NewDB() *gorm.DB {
 	fmt.Println(dsn)
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
-		log.Fatal(err.Error())
+		log.Fatalf("DB Connection Failure, %v\n", err.Error())
 	}
 	fmt.Println("DB Connected")
 	return db

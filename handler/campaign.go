@@ -1,7 +1,9 @@
 package handler
 
 import (
+	"context"
 	"crowdfunding/adapter"
+	"crowdfunding/config"
 	"crowdfunding/entity"
 	"crowdfunding/helper"
 	"crowdfunding/services"
@@ -151,6 +153,7 @@ ROUTE: api/v1/campaigns
 METHOD: POST
 */
 func (h *campaignHandler) UploadImage(c *gin.Context) {
+	var path string
 	//Get User Logged
 	currentUser := c.MustGet("currentUser").(entity.User)
 
@@ -172,24 +175,36 @@ func (h *campaignHandler) UploadImage(c *gin.Context) {
 		return
 	}
 
-	//Store File to Storage
-	cleanFilename := helper.RemoveFileExt(file.Filename)
-	filename := fmt.Sprintf("%d-%d-%s.jpg", currentUser.ID, request.CampaignID, cleanFilename)
-	base_path := os.Getenv("STORAGE_PATH")
-	path := base_path + "/campaigns/" + filename
-	err = c.SaveUploadedFile(file, path)
-	if err != nil {
-		errorMessage := gin.H{"is_uploaded": false, "errors": err.Error()}
-		errResponse := helper.ResponseHandler("Store UploadImage Failed", http.StatusBadRequest, "failed", errorMessage)
-		c.JSON(http.StatusBadRequest, errResponse)
-		return
+	storageType := os.Getenv("STORAGE_TYPE")
+	if storageType == "local" {
+		//Store File to Storage
+		cleanFilename := helper.RemoveFileExt(file.Filename)
+		filename := fmt.Sprintf("%d-%d-%s.jpg", currentUser.ID, request.CampaignID, cleanFilename)
+		path = helper.GeneratePath("campaigns", filename)
+		err = c.SaveUploadedFile(file, path)
+		if err != nil {
+			errorMessage := gin.H{"is_uploaded": false, "errors": err.Error()}
+			errResponse := helper.ResponseHandler("[Local]Store UploadImage Failed", http.StatusBadRequest, "failed", errorMessage)
+			c.JSON(http.StatusBadRequest, errResponse)
+			return
+		}
+		path = helper.GenerateURL("campaigns", filename)
 	}
-
-	//SET CAMPAIGNER
-	request.UserID = currentUser.ID
-	base_url := os.Getenv("STORAGE_URL")
-	path = base_url + "/campaigns/" + filename
+	if storageType == "cloud" {
+		var ctx = context.Background()
+		cloudinary := config.NewCloudStorage()
+		uploadResponse, err := cloudinary.Upload.Upload(ctx, file, config.ConfigCloudStorage("campaigns"))
+		if err != nil {
+			errorMessage := gin.H{"is_uploaded": false, "errors": err.Error()}
+			errResponse := helper.ResponseHandler("[Cloud]Store UploadImage Failed", http.StatusBadRequest, "failed", errorMessage)
+			c.JSON(http.StatusBadRequest, errResponse)
+			return
+		}
+		//Generate URL
+		path = uploadResponse.SecureURL
+	}
 	//Save Filename to DB
+	request.UserID = currentUser.ID
 	_, err = h.service.UploadCampaignImages(request, path)
 	if err != nil {
 		errorMessage := gin.H{"is_uploaded": false, "errors": err.Error()}
@@ -198,7 +213,7 @@ func (h *campaignHandler) UploadImage(c *gin.Context) {
 		return
 	}
 	//RESPONSE
-	data := gin.H{"is_uploaded": true}
+	data := gin.H{"is_uploaded": true, "file": path}
 	res := helper.ResponseHandler("UploadImage Success", http.StatusOK, "success", data)
 	c.JSON(http.StatusOK, res)
 }

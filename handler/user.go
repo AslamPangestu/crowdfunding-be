@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"context"
 	"crowdfunding/adapter"
 	"crowdfunding/config"
 	"crowdfunding/entity"
@@ -133,6 +134,7 @@ ROUTE: api/v1/upload-avatar
 METHOD: POST
 */
 func (h *userHandler) UploadAvatar(c *gin.Context) {
+	var path string
 	//Get User Logged
 	currentUser := c.MustGet("currentUser").(entity.User)
 	//Get File from Storage
@@ -143,20 +145,36 @@ func (h *userHandler) UploadAvatar(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, errResponse)
 		return
 	}
-	//Store File to Storage
-	filename := fmt.Sprintf("%d-%s.jpg", currentUser.ID, currentUser.Username)
-	base_path := os.Getenv("STORAGE_PATH")
-	path := base_path + "/avatars/" + filename
-	err = c.SaveUploadedFile(file, path)
-	if err != nil {
-		errorMessage := gin.H{"is_uploaded": false, "errors": err.Error()}
-		errResponse := helper.ResponseHandler("Store File Avatar Failed", http.StatusBadRequest, "failed", errorMessage)
-		c.JSON(http.StatusBadRequest, errResponse)
-		return
+
+	storageType := os.Getenv("STORAGE_TYPE")
+	if storageType == "local" {
+		//Store File to Storage
+		filename := fmt.Sprintf("%d-%s.jpg", currentUser.ID, currentUser.Username)
+		path = helper.GeneratePath("avatars", filename)
+		err = c.SaveUploadedFile(file, path)
+		if err != nil {
+			errorMessage := gin.H{"is_uploaded": false, "errors": err.Error()}
+			errResponse := helper.ResponseHandler("[Local]Store File Avatar Failed", http.StatusBadRequest, "failed", errorMessage)
+			c.JSON(http.StatusBadRequest, errResponse)
+			return
+		}
+		//Generate URL
+		path = helper.GenerateURL("avatars", filename)
 	}
-	//Save Filename to DB
-	base_url := os.Getenv("STORAGE_URL")
-	path = base_url + "/avatars/" + filename
+	if storageType == "cloud" {
+		var ctx = context.Background()
+		cloudinary := config.NewCloudStorage()
+		uploadResponse, err := cloudinary.Upload.Upload(ctx, file, config.ConfigCloudStorage("avatars"))
+		if err != nil {
+			errorMessage := gin.H{"is_uploaded": false, "errors": err.Error()}
+			errResponse := helper.ResponseHandler("[Cloud]Get File Avatar Failed", http.StatusBadRequest, "failed", errorMessage)
+			c.JSON(http.StatusBadRequest, errResponse)
+			return
+		}
+		//Generate URL
+		path = uploadResponse.SecureURL
+	}
+	//Save URL To DB
 	_, err = h.service.UploadAvatar(currentUser.ID, path)
 	if err != nil {
 		errorMessage := gin.H{"is_uploaded": false, "errors": err.Error()}
@@ -164,6 +182,7 @@ func (h *userHandler) UploadAvatar(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, errResponse)
 		return
 	}
+
 	//RESPONSE
 	data := gin.H{"is_uploaded": true, "file": path}
 	res := helper.ResponseHandler("UploadAvatar Success", http.StatusOK, "success", data)
