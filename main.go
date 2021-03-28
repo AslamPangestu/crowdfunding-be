@@ -4,6 +4,7 @@ import (
 	"crowdfunding/config"
 	"crowdfunding/routes"
 	"log"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -31,5 +32,9 @@ func main() {
 	routes.UserRoute(apiV1, db)
 	routes.CampaignRoute(apiV1, db)
 	routes.TransactionRoute(apiV1, db)
+
+	router.GET("/ping", func(c *gin.Context) {
+		c.JSON(http.StatusOK, "Pong")
+	})
 	router.Run()
 }
