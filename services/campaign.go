@@ -12,7 +12,7 @@ import (
 // CampaignInteractor Contract
 type CampaignInteractor interface {
 	CreateCampaign(form entity.FormCampaignRequest) (entity.Campaign, error)
-	GetCampaigns(userID int) ([]entity.Campaign, error)
+	GetCampaigns(userID int, page int, pageSize int) ([]entity.Campaign, error)
 	GetCampaignByID(uri entity.CampaignIDRequest) (entity.Campaign, error)
 	EditCampaign(uri entity.CampaignIDRequest, form entity.FormCampaignRequest) (entity.Campaign, error)
 	UploadCampaignImages(form entity.UploadCampaignImageRequest, fileLocation string) (entity.CampaignImage, error)
@@ -47,7 +47,7 @@ func (s *campaignService) CreateCampaign(form entity.FormCampaignRequest) (entit
 	return newCampaign, nil
 }
 
-func (s *campaignService) GetCampaigns(userID int) ([]entity.Campaign, error) {
+func (s *campaignService) GetCampaigns(userID int, page int, pageSize int) ([]entity.Campaign, error) {
 	if userID != 0 {
 		models, err := s.repository.FindManyByCampaignerID(userID)
 		if err != nil {
@@ -55,7 +55,11 @@ func (s *campaignService) GetCampaigns(userID int) ([]entity.Campaign, error) {
 		}
 		return models, nil
 	}
-	models, err := s.repository.FindAll()
+	query := entity.Paginate{
+		Page:     page,
+		PageSize: pageSize,
+	}
+	models, err := s.repository.FindAll(query)
 	if err != nil {
 		return models, err
 	}

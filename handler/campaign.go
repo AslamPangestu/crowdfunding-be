@@ -63,9 +63,11 @@ METHOD: GET
 */
 func (h *campaignHandler) GetCampaigns(c *gin.Context) {
 	userID, _ := strconv.Atoi(c.Query("user_id"))
+	page, _ := strconv.Atoi(c.Query("page"))
+	pageSize, _ := strconv.Atoi(c.Query("page_size"))
 
 	//GET CAMPAIGNS
-	campaigns, err := h.service.GetCampaigns(userID)
+	campaigns, err := h.service.GetCampaigns(userID, page, pageSize)
 	if err != nil {
 		errorMessage := gin.H{"errors": err.Error()}
 		errResponse := helper.ResponseHandler("GetCampaigns Failed", http.StatusBadRequest, "failed", errorMessage)
