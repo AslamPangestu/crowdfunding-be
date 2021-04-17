@@ -8,9 +8,9 @@ import (
 )
 
 func NewCORS() gin.HandlerFunc {
-	var BASE_URL = os.Getenv("BASE_URL")
+	var FRONTEND_URL = os.Getenv("FRONTEND_URL")
 	return cors.New(cors.Config{
-		AllowOrigins: []string{BASE_URL},
+		AllowOrigins: []string{FRONTEND_URL},
 		AllowHeaders: []string{"Authorization", "Content-Type"},
 	})
 }

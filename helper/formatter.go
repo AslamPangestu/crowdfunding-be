@@ -11,7 +11,7 @@ func RemoveFileExt(fileName string) string {
 }
 
 func GenerateURL(location string, filename string) string {
-	baseURL := os.Getenv("BASE_URL")
+	baseURL := os.Getenv("BACKEND_URL")
 	baseDir := os.Getenv("STORAGE_URL")
 	return baseURL + "/" + baseDir + "/" + location + "/" + filename
 }
