@@ -27,6 +27,9 @@ func main() {
 	//ROUTING
 	router := gin.Default()
 	router.Use(config.NewCORS())
+	router.GET("/", func(c *gin.Context) {
+		c.JSON(http.StatusOK, "Crowdfunding API")
+	})
 	//Static Routing
 	router.Static("/statics/avatars", "./storage/avatars")
 	router.Static("/statics/campaigns", "./storage/campaigns")

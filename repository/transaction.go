@@ -2,6 +2,7 @@ package repository
 
 import (
 	"crowdfunding/entity"
+	"crowdfunding/helper"
 
 	"gorm.io/gorm"
 )
@@ -10,7 +11,7 @@ import (
 type TransactionInteractor interface {
 	Create(model entity.Transaction) (entity.Transaction, error)
 	FindManyByCampaignID(campaignID int) ([]entity.Transaction, error)
-	FindManyByUserID(userID int) ([]entity.Transaction, error)
+	FindManyByUserID(userID int, query entity.Paginate) ([]entity.Transaction, error)
 	FindOneByTransactionID(transactionID int) (entity.Transaction, error)
 	Update(model entity.Transaction) (entity.Transaction, error)
 }
@@ -43,9 +44,9 @@ func (r *trasactionRepository) FindManyByCampaignID(campaignID int) ([]entity.Tr
 	return models, nil
 }
 
-func (r *trasactionRepository) FindManyByUserID(userID int) ([]entity.Transaction, error) {
+func (r *trasactionRepository) FindManyByUserID(userID int, query entity.Paginate) ([]entity.Transaction, error) {
 	var models []entity.Transaction
-	err := r.db.Preload("Campaign.CampaignImages", "campaign_images.is_primary = 1").Find(&models).Where("user_id = ?", userID).Order(ORDER_BY_ID_DESC).Error
+	err := r.db.Scopes(helper.Pagination(query.Page, query.PageSize)).Preload("Campaign.CampaignImages", "campaign_images.is_primary = 1").Find(&models).Where("user_id = ?", userID).Order(ORDER_BY_ID_DESC).Error
 	if err != nil {
 		return models, err
 	}

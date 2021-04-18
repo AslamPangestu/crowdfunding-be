@@ -6,6 +6,7 @@ import (
 	"crowdfunding/helper"
 	"crowdfunding/services"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -91,8 +92,11 @@ METHOD: GET
 func (h *transactionHandler) GetUserTransactions(c *gin.Context) {
 	//Get User Logged
 	currentUser := c.MustGet("currentUser").(entity.User)
+	//Get Query
+	page, _ := strconv.Atoi(c.Query("page"))
+	pageSize, _ := strconv.Atoi(c.Query("page_size"))
 	//GET TRANSACTIONS
-	transactions, err := h.service.GetTransactionsByUserID(currentUser.ID)
+	transactions, err := h.service.GetTransactionsByUserID(currentUser.ID, page, pageSize)
 	if err != nil {
 		errorMessage := gin.H{"errors": err.Error()}
 		errResponse := helper.ResponseHandler("GetUserTransactions Failed", http.StatusBadRequest, "failed", errorMessage)
@@ -100,7 +104,7 @@ func (h *transactionHandler) GetUserTransactions(c *gin.Context) {
 		return
 	}
 	//RESPONSE
-	data := adapter.CampaignTransactionsAdapter(transactions)
+	data := adapter.UserTransactionsAdapter(transactions)
 	res := helper.ResponseHandler("GetUserTransactions Successful", http.StatusOK, "success", data)
 	c.JSON(http.StatusOK, res)
 }

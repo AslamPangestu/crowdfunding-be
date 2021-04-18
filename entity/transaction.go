@@ -35,12 +35,12 @@ type CampaignTransactionsResponse struct {
 
 //UserTransactionsResponse : Response Get Transactions for User
 type UserTransactionsResponse struct {
-	ID        int       `json:"id"`
-	Amount    int       `json:"amount"`
-	Status    string    `json:"status"`
-	TRXCode   string    `json:"trx_code"`
-	CreatedAt time.Time `json:"created_at"`
-	Campaign  CampaignTransaction
+	ID        int                 `json:"id"`
+	Amount    int                 `json:"amount"`
+	Status    string              `json:"status"`
+	TRXCode   string              `json:"trx_code"`
+	CreatedAt time.Time           `json:"created_at"`
+	Campaign  CampaignTransaction `json:"campaign"`
 }
 
 //CampaignTransaction : Detail Campaign Transaction for UserTransactionsResponse
