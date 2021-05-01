@@ -57,7 +57,7 @@ func (s *transactionService) GetTransactionsByCampaignID(request entity.Campaign
 	if err != nil {
 		return []entity.Transaction{}, err
 	}
-	if campaign.CampaignerID == request.CampaignerID {
+	if campaign.CampaignerID != request.CampaignerID {
 		return []entity.Transaction{}, errors.New("Not an owner of campaign")
 	}
 	models, err := s.repository.FindManyByCampaignID(request.ID)
