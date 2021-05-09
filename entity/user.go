@@ -56,3 +56,23 @@ type LoginResponse struct {
 type EmailValidationRequest struct {
 	Email string `json:"email" binding:"required,email"`
 }
+
+//CreateUserForm : Mapping Form Create User
+type CreateUserForm struct {
+	Name       string `form:"name" binding:"required"`
+	Username   string `form:"username" binding:"required"`
+	Email      string `form:"email" binding:"required,email"`
+	Occupation string `form:"occupation" binding:"required"`
+	Password   string `form:"password" binding:"required"`
+	Error      error
+}
+
+//CreateUserForm : Mapping Form Create User
+type EditUserForm struct {
+	ID         int
+	Name       string `form:"name" binding:"required"`
+	Username   string `form:"username" binding:"required"`
+	Email      string `form:"email" binding:"required,email"`
+	Occupation string `form:"occupation" binding:"required"`
+	Error      error
+}

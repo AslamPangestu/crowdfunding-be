@@ -15,6 +15,8 @@ type UserInteractor interface {
 	GetUserByID(id int) (entity.User, error)
 	IsEmailAvaiable(form entity.EmailValidationRequest) (bool, error)
 	UploadAvatar(id int, fileLocation string) (entity.User, error)
+	GetAllUsers() ([]entity.User, error)
+	UpdateUser(form entity.EditUserForm) (entity.User, error)
 }
 
 type userService struct {
@@ -101,6 +103,31 @@ func (s *userService) UploadAvatar(id int, fileLocation string) (entity.User, er
 	//Update Path
 	model.AvatarPath = fileLocation
 	//Update DB
+	updatedData, err := s.repository.Update(model)
+	if err != nil {
+		return updatedData, err
+	}
+	return updatedData, nil
+}
+
+func (s *userService) GetAllUsers() ([]entity.User, error) {
+	//Find
+	model, err := s.repository.FindAll()
+	if err != nil {
+		return model, err
+	}
+	return model, nil
+}
+func (s *userService) UpdateUser(form entity.EditUserForm) (entity.User, error) {
+	model, err := s.repository.FindOneByID(form.ID)
+	if err != nil {
+		return model, err
+	}
+	model.Name = form.Name
+	model.Username = form.Username
+	model.Email = form.Email
+	model.Occupation = form.Occupation
+
 	updatedData, err := s.repository.Update(model)
 	if err != nil {
 		return updatedData, err

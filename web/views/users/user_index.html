@@ -1,0 +1,39 @@
+{{ define "content" }}
+<h2 class="mb-4">
+    Users
+</h2>
+<a href="/users/create" class="btn btn-primary mb-3"><i class="fa fa-plus"></i> New User</a>
+<div class="card mb-4">
+    <div class="card-body">
+        <table class="table mb-0">
+            <thead class="thead-light">
+                <tr>
+                    <th></th>
+                    <th>Username</th>
+                    <th>Fullname</th>
+                    <th>Email</th>
+                    <th>Occupation</th>
+                    <th class="text-center">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{ range .users }}
+                <tr>
+                    <td>
+                        <img class="img-fluid img-thumbnail" src="{{ .AvatarPath }}" width="60" />
+                    </td>
+                    <td>{{ .Username }}</td>
+                    <td>{{ .Name }}</td>
+                    <td>{{ .Email }}</td>
+                    <td>{{ .Occupation }}</td>
+                    <td class="d-flex justify-content-around">
+                        <a href="/users/edit/{{ .ID }}"><i class="fa fa-edit"></i></a>
+                        <a href="/users/avatar/{{ .ID }}"><i class="fa fa-camera"></i></a>
+                    </td>
+                </tr>
+                {{ end }}
+            </tbody>
+        </table>
+    </div>
+</div>
+{{ end }}

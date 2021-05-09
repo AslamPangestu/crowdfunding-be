@@ -3,6 +3,7 @@ package main
 import (
 	"crowdfunding/config"
 	"crowdfunding/routes"
+	webRoutes "crowdfunding/web/routes"
 	"log"
 	"net/http"
 	"os"
@@ -27,12 +28,15 @@ func main() {
 	//ROUTING
 	router := gin.Default()
 	router.Use(config.NewCORS())
-	router.GET("/", func(c *gin.Context) {
-		c.JSON(http.StatusOK, "Crowdfunding API")
-	})
 	//Static Routing
+	router.Static("/css", "./web/assets/css")
+	router.Static("/js", "./web/assets/js")
+	router.Static("/webfonts", "./web/assets/webfonts")
 	router.Static("/statics/avatars", "./storage/avatars")
 	router.Static("/statics/campaigns", "./storage/campaigns")
+	//CMS Routing
+	router.HTMLRender = config.LoadTemplates("./web/views")
+	webRoutes.UserRoute(router, db)
 	//APIV1 Routing
 	apiV1 := router.Group("/api/v1")
 	routes.RoleRoute(apiV1, db)
