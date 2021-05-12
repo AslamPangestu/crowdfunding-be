@@ -2,6 +2,8 @@ package entity
 
 import (
 	"time"
+
+	"github.com/leekchan/accounting"
 )
 
 //CAMPAIGN
@@ -96,4 +98,39 @@ type UploadCampaignImageRequest struct {
 	CampaignID int  `form:"campaign_id" binding:"required"`
 	IsPrimary  bool `form:"is_primary"`
 	UserID     int
+}
+
+//TargetAmountFormatIDR : Adapter Campaign Detail
+func (c Campaign) TargetAmountFormatIDR() string {
+	format := accounting.Accounting{Symbol: "IDR ", Precision: 2, Thousand: ".", Decimal: ","}
+	return format.FormatMoney(c.TargetAmount)
+}
+
+//TargetAmountFormatIDR : Adapter Campaign Detail
+func (c Campaign) CurrentAmountFormatIDR() string {
+	format := accounting.Accounting{Symbol: "IDR ", Precision: 2, Thousand: ".", Decimal: ","}
+	return format.FormatMoney(c.CurrentAmount)
+}
+
+//CreateUserForm : Mapping Form Create Campaign
+type CreateCampaignForm struct {
+	Title            string `form:"title" binding:"required"`
+	ShortDescription string `form:"short_description" binding:"required"`
+	Description      string `form:"description" binding:"required"`
+	TargetAmount     int    `form:"target_amount" binding:"required"`
+	Perks            string `form:"perks" binding:"required"`
+	UserID           int    `form:"user_id" binding:"required"`
+	Users            []User
+	Error            error
+}
+
+//EditCampaignForm : Mapping Form Edit Campaign
+type EditCampaignForm struct {
+	ID               int
+	Title            string `form:"title" binding:"required"`
+	ShortDescription string `form:"short_description" binding:"required"`
+	Description      string `form:"description" binding:"required"`
+	TargetAmount     int    `form:"target_amount" binding:"required"`
+	Perks            string `form:"perks" binding:"required"`
+	Error            error
 }

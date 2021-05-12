@@ -67,7 +67,7 @@ type CreateUserForm struct {
 	Error      error
 }
 
-//CreateUserForm : Mapping Form Create User
+//EditUserForm : Mapping Form Create User
 type EditUserForm struct {
 	ID         int
 	Name       string `form:"name" binding:"required"`

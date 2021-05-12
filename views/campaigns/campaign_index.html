@@ -1,0 +1,40 @@
+{{ define "content" }}
+<h2 class="mb-4">
+    Campaigns
+</h2>
+<a href="/campaigns/create" class="btn btn-primary mb-3"><i class="fa fa-plus"></i> New Campaign</a>
+<div class="card mb-4">
+    <div class="card-body">
+        <table class="table mb-0">
+            <thead class="thead-light">
+                <tr>
+                    <th></th>
+                    <th>Title</th>
+                    <th>Short Description</th>
+                    <th>Target Amount</th>
+                    <th class="text-center">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{ range .campaigns }}
+                <tr>
+                    <td>
+                        {{ if .CampaignImages }}
+                        <img class="img-fluid img-thumbnail" src="{{ (index .CampaignImages 0).ImagePath }}" width="60" />
+                        {{ end }}
+                    </td>
+                    <td>{{ .Title }}</td>
+                    <td>{{ .ShortDescription }}</td>
+                    <td>{{ .TargetAmountFormatIDR }}</td>
+                    <td class="d-flex justify-content-around">
+                        <a href="/campaigns/edit/{{ .ID }}"><i class="fa fa-edit"></i></a>
+                        <a href="/campaigns/detail/{{ .ID }}"><i class="fa fa-eye"></i></a>
+                        <a href="/campaigns/image/{{ .ID }}"><i class="fa fa-camera"></i></a>
+                    </td>
+                </tr>
+                {{ end }}
+            </tbody>
+        </table>
+    </div>
+</div>
+{{ end }}

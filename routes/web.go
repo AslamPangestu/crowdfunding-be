@@ -12,21 +12,34 @@ import (
 // WebRoute : List Web Routing
 func WebRoute(route *gin.Engine, db *gorm.DB) {
 	//REPOSITORY
-	UserRepository := repository.NewUserRepository(db)
+	userRepository := repository.NewUserRepository(db)
+	dampaignRepository := repository.NewCampaignRepository(db)
 
 	//SERVICE
-	UserService := services.NewUserService(UserRepository)
+	userService := services.NewUserService(userRepository)
+	campaignService := services.NewCampaignService(dampaignRepository)
 
 	// HANDLER
-	UserHandler := handler.UserHandlerInit(UserService)
+	userHandler := handler.UserHandlerInit(userService)
+	campaignHandler := handler.CampaignHandlerInit(campaignService, userService)
 
 	//ROUTING
 	//User
-	route.GET("/users", UserHandler.Index)
-	route.GET("/users/create", UserHandler.Create)
-	route.POST("/users", UserHandler.PostCreate)
-	route.GET("/users/edit/:id", UserHandler.Edit)
-	route.POST("/users/:id/update", UserHandler.PostEdit)
-	route.GET("/users/avatar/:id", UserHandler.UploadAvatar)
-	route.POST("/users/:id/avatar", UserHandler.PostUploadAvatar)
+	route.GET("/users", userHandler.Index)
+	route.GET("/users/create", userHandler.Create)
+	route.POST("/users", userHandler.PostCreate)
+	route.GET("/users/edit/:id", userHandler.Edit)
+	route.POST("/users/:id/update", userHandler.PostEdit)
+	route.GET("/users/avatar/:id", userHandler.UploadAvatar)
+	route.POST("/users/:id/avatar", userHandler.PostUploadAvatar)
+
+	//Campaign
+	route.GET("/campaigns", campaignHandler.Index)
+	route.GET("/campaigns/create", campaignHandler.Create)
+	route.POST("/campaigns", campaignHandler.PostCreate)
+	route.GET("/campaigns/image/:id", campaignHandler.UploadImages)
+	route.POST("/campaigns/:id/image", campaignHandler.PostUploadImages)
+	route.GET("/campaigns/edit/:id", campaignHandler.Edit)
+	route.POST("/campaigns/:id/update", campaignHandler.PostEdit)
+	route.GET("/campaigns/detail/:id", campaignHandler.Detail)
 }

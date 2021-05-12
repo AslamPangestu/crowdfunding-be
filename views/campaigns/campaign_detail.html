@@ -1,0 +1,44 @@
+{{ define "content" }}
+
+<h2 class="mb-4">Detail Campaign</h2>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <div class="form-group">
+            <label for="title">Title</label>
+            <input type="text" name="title" disabled class="form-control" value="{{ .Title }}">
+        </div>
+
+        <div class="form-group">
+            <label for="short_description">Short Description</label>
+            <input type="text" name="short_description" disabled class="form-control" value="{{ .ShortDescription }}">
+        </div>
+
+        <div class="form-group">
+            <label for="description">Description</label>
+            <textarea name="description" disabled cols="30" rows="10" class="form-control">{{ .Description }}</textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="target_amount">Target Amount</label>
+            <input type="text" name="target_amount" disabled class="form-control" value="{{ .TargetAmountFormatIDR }}">
+        </div>
+
+        <div class="form-group">
+            <label for="current_amount">Current Amount</label>
+            <input type="text" name="current_amount" disabled class="form-control" value="{{ .CurrentAmountFormatIDR }}">
+        </div>
+
+        <div class="form-group">
+            <label for="perks">Perks</label>
+            <input type="text" name="perks" disabled class="form-control" value="{{ .Perks }}">
+        </div>
+
+        <div class="form-group">
+            <label for="backer_count">Backer Count</label>
+            <input type="text" name="backer_count" disabled class="form-control" value="{{ .BackerCount }}">
+        </div>
+    </div>
+</div>
+
+{{ end }}
