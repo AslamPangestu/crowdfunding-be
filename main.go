@@ -3,7 +3,6 @@ package main
 import (
 	"crowdfunding/config"
 	"crowdfunding/routes"
-	webRoutes "crowdfunding/web/routes"
 	"log"
 	"net/http"
 	"os"
@@ -28,25 +27,27 @@ func main() {
 	//ROUTING
 	router := gin.Default()
 	router.Use(config.NewCORS())
-	//Static Routing
-	router.Static("/css", "./web/assets/css")
-	router.Static("/js", "./web/assets/js")
-	router.Static("/webfonts", "./web/assets/webfonts")
-	router.Static("/statics/avatars", "./storage/avatars")
-	router.Static("/statics/campaigns", "./storage/campaigns")
-	//CMS Routing
-	router.HTMLRender = config.LoadTemplates("./web/views")
-	webRoutes.UserRoute(router, db)
-	//APIV1 Routing
-	apiV1 := router.Group("/api/v1")
-	routes.RoleRoute(apiV1, db)
-	routes.UserRoute(apiV1, db)
-	routes.CampaignRoute(apiV1, db)
-	routes.TransactionRoute(apiV1, db)
 
+	//Testing Route
 	router.GET("/ping", func(c *gin.Context) {
 		c.JSON(http.StatusOK, "Pong")
 	})
+
+	//Static Routing
+	router.Static("/css", "./assets/css")
+	router.Static("/js", "./assets/js")
+	router.Static("/webfonts", "./assets/webfonts")
+	router.Static("/statics/avatars", "./storage/avatars")
+	router.Static("/statics/campaigns", "./storage/campaigns")
+
+	//CMS Routing
+	router.HTMLRender = config.LoadTemplates("./views")
+	routes.WebRoute(router, db)
+
+	//APIV1 Routing
+	apiV1 := router.Group("/api/v1")
+	routes.APIRoute(apiV1, db)
+	routes.RoleRoute(apiV1, db)
 
 	router.Run()
 }
