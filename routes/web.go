@@ -13,15 +13,19 @@ import (
 func WebRoute(route *gin.Engine, db *gorm.DB) {
 	//REPOSITORY
 	userRepository := repository.NewUserRepository(db)
-	dampaignRepository := repository.NewCampaignRepository(db)
+	campaignRepository := repository.NewCampaignRepository(db)
+	transactionRepository := repository.NewTransactionRepository(db)
 
 	//SERVICE
 	userService := services.NewUserService(userRepository)
-	campaignService := services.NewCampaignService(dampaignRepository)
+	campaignService := services.NewCampaignService(campaignRepository)
+	paymentService := services.NewPaymentService(transactionRepository, campaignRepository)
+	transactionService := services.NewTransactionService(transactionRepository, campaignRepository, paymentService)
 
 	// HANDLER
 	userHandler := handler.UserHandlerInit(userService)
 	campaignHandler := handler.CampaignHandlerInit(campaignService, userService)
+	transactionHandler := handler.TransactionHandlerInit(transactionService)
 
 	//ROUTING
 	//User
@@ -42,4 +46,7 @@ func WebRoute(route *gin.Engine, db *gorm.DB) {
 	route.GET("/campaigns/edit/:id", campaignHandler.Edit)
 	route.POST("/campaigns/:id/update", campaignHandler.PostEdit)
 	route.GET("/campaigns/detail/:id", campaignHandler.Detail)
+
+	//Transaction
+	route.GET("/transactions", transactionHandler.Index)
 }

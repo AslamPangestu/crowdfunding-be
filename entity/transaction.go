@@ -2,6 +2,8 @@ package entity
 
 import (
 	"time"
+
+	"github.com/leekchan/accounting"
 )
 
 //Transaction : Mapping Transaction DB
@@ -73,4 +75,10 @@ type TransactionNotificationRequest struct {
 	OrderID           string `json:"order_id"`
 	PaymentType       string `json:"payment_type"`
 	FraudStatus       string `json:"fraud_status"`
+}
+
+//TargetAmountFormatIDR : Adapter Campaign Detail
+func (t Transaction) AmountFormatIDR() string {
+	format := accounting.Accounting{Symbol: "IDR ", Precision: 2, Thousand: ".", Decimal: ","}
+	return format.FormatMoney(t.Amount)
 }

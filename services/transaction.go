@@ -14,6 +14,7 @@ type TransactionInteractor interface {
 	MakeTransaction(form entity.TransactionRequest) (entity.Transaction, error)
 	GetTransactionsByCampaignID(request entity.CampaignTransactionsRequest) ([]entity.Transaction, error)
 	GetTransactionsByUserID(userID int, page int, pageSize int) ([]entity.Transaction, error)
+	GetTransactions(page int, pageSize int) ([]entity.Transaction, error)
 }
 
 type transactionService struct {
@@ -73,6 +74,18 @@ func (s *transactionService) GetTransactionsByUserID(userID int, page int, pageS
 		PageSize: pageSize,
 	}
 	models, err := s.repository.FindManyByUserID(userID, query)
+	if err != nil {
+		return models, err
+	}
+	return models, nil
+}
+
+func (s *transactionService) GetTransactions(page int, pageSize int) ([]entity.Transaction, error) {
+	query := entity.Paginate{
+		Page:     page,
+		PageSize: pageSize,
+	}
+	models, err := s.repository.FindAll(query)
 	if err != nil {
 		return models, err
 	}

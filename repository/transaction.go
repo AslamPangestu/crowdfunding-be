@@ -11,6 +11,7 @@ import (
 type TransactionInteractor interface {
 	Create(model entity.Transaction) (entity.Transaction, error)
 	FindManyByCampaignID(campaignID int) ([]entity.Transaction, error)
+	FindAll(query entity.Paginate) ([]entity.Transaction, error)
 	FindManyByUserID(userID int, query entity.Paginate) ([]entity.Transaction, error)
 	FindOneByTransactionID(transactionID int) (entity.Transaction, error)
 	Update(model entity.Transaction) (entity.Transaction, error)
@@ -68,4 +69,13 @@ func (r *trasactionRepository) Update(model entity.Transaction) (entity.Transact
 		return model, err
 	}
 	return model, nil
+}
+
+func (r *trasactionRepository) FindAll(query entity.Paginate) ([]entity.Transaction, error) {
+	var models []entity.Transaction
+	err := r.db.Scopes(helper.Pagination(query.Page, query.PageSize)).Order("created_at desc").Preload("Campaign").Find(&models).Error
+	if err != nil {
+		return models, err
+	}
+	return models, nil
 }
