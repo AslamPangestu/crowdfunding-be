@@ -8,11 +8,12 @@ import (
 	"strings"
 
 	"github.com/dgrijalva/jwt-go"
+	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 )
 
-// AuthMiddleware : Middleware for auth
-func AuthMiddleware(authService config.AuthService, userService services.UserInteractor) gin.HandlerFunc {
+// APIAuthMiddleware : Middleware for api auth
+func APIAuthMiddleware(authService config.AuthService, userService services.UserInteractor) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		//Get Authorization header
 		authHeader := c.GetHeader("Authorization")
@@ -50,5 +51,19 @@ func AuthMiddleware(authService config.AuthService, userService services.UserInt
 			return
 		}
 		c.Set("currentUser", user)
+	}
+}
+
+// WebAuthMiddleware : Middleware for web auth
+func WebAuthMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		//Setup Session
+		session := sessions.Default(c)
+		userID := session.Get("userID")
+		//Check Not Login
+		if userID == nil {
+			c.Redirect(http.StatusFound, "/login")
+			return
+		}
 	}
 }

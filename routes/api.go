@@ -34,20 +34,20 @@ func APIRoute(api *gin.RouterGroup, db *gorm.DB) {
 	//User
 	api.POST("/register", userHandler.Register)
 	api.POST("/login", userHandler.Login)
-	api.GET("/profile", middleware.AuthMiddleware(authService, userService), userHandler.FetchUser)
+	api.GET("/profile", middleware.APIAuthMiddleware(authService, userService), userHandler.FetchUser)
 	api.POST("/email-validate", userHandler.IsEmailAvaiable)
-	api.POST("/upload-avatar", middleware.AuthMiddleware(authService, userService), userHandler.UploadAvatar)
+	api.POST("/upload-avatar", middleware.APIAuthMiddleware(authService, userService), userHandler.UploadAvatar)
 
 	//Campaign
 	api.GET("/campaigns", campaignHandler.GetCampaigns)
 	api.GET("/campaigns/:id", campaignHandler.GetCampaign)
-	api.POST("/campaigns", middleware.AuthMiddleware(authService, userService), campaignHandler.CreateCampaign)
-	api.PATCH("/campaigns/:id", middleware.AuthMiddleware(authService, userService), campaignHandler.EditCampaign)
-	api.POST("/campaign-images", middleware.AuthMiddleware(authService, userService), campaignHandler.UploadImage)
+	api.POST("/campaigns", middleware.APIAuthMiddleware(authService, userService), campaignHandler.CreateCampaign)
+	api.PATCH("/campaigns/:id", middleware.APIAuthMiddleware(authService, userService), campaignHandler.EditCampaign)
+	api.POST("/campaign-images", middleware.APIAuthMiddleware(authService, userService), campaignHandler.UploadImage)
 
 	//Transaction
-	api.GET("/campaigns/:id/transactions", middleware.AuthMiddleware(authService, userService), dransactionHandler.GetCamapaignTransactions)
-	api.GET("/users/transactions", middleware.AuthMiddleware(authService, userService), dransactionHandler.GetUserTransactions)
-	api.POST("/users/transactions", middleware.AuthMiddleware(authService, userService), dransactionHandler.MakeTransaction)
-	api.GET("/users/notification", middleware.AuthMiddleware(authService, userService), dransactionHandler.MakeTransaction)
+	api.GET("/campaigns/:id/transactions", middleware.APIAuthMiddleware(authService, userService), dransactionHandler.GetCamapaignTransactions)
+	api.GET("/users/transactions", middleware.APIAuthMiddleware(authService, userService), dransactionHandler.GetUserTransactions)
+	api.POST("/users/transactions", middleware.APIAuthMiddleware(authService, userService), dransactionHandler.MakeTransaction)
+	api.GET("/users/notification", middleware.APIAuthMiddleware(authService, userService), dransactionHandler.MakeTransaction)
 }

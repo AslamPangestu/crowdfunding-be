@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/gin-contrib/sessions"
+	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 )
@@ -27,6 +29,8 @@ func main() {
 	//ROUTING
 	router := gin.Default()
 	router.Use(config.NewCORS())
+	cookiesStore := cookie.NewStore([]byte(config.SECRET_KEY))
+	router.Use(sessions.Sessions("crowdfunding", cookiesStore))
 
 	//Testing Route
 	router.GET("/ping", func(c *gin.Context) {
