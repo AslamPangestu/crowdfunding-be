@@ -9,9 +9,9 @@ import (
 type RoleInteractor interface {
 	AddRole(form entity.FormRoleRequest) (entity.Role, error)
 	GetRoles() ([]entity.Role, error)
-	GetRoleByID(uri entity.RoleIDRequest) (entity.Role, error)
+	GetRoleByID(id int) (entity.Role, error)
 	GetRolesByName(form entity.RoleNameRequest) ([]entity.Role, error)
-	EditRole(uri entity.RoleIDRequest, form entity.FormRoleRequest) (entity.Role, error)
+	EditRole(id int, form entity.FormRoleRequest) (entity.Role, error)
 	// RemoveRoles(form entity.FormRoleRequest) (entity.Role, error)
 }
 
@@ -44,8 +44,8 @@ func (s *roleService) GetRoles() ([]entity.Role, error) {
 	return models, nil
 }
 
-func (s *roleService) GetRoleByID(uri entity.RoleIDRequest) (entity.Role, error) {
-	model, err := s.repository.FindOneByID(uri.ID)
+func (s *roleService) GetRoleByID(id int) (entity.Role, error) {
+	model, err := s.repository.FindOneByID(id)
 	if err != nil {
 		return model, err
 	}
@@ -60,8 +60,8 @@ func (s *roleService) GetRolesByName(form entity.RoleNameRequest) ([]entity.Role
 	return models, nil
 }
 
-func (s *roleService) EditRole(uri entity.RoleIDRequest, form entity.FormRoleRequest) (entity.Role, error) {
-	model, err := s.repository.FindOneByID(uri.ID)
+func (s *roleService) EditRole(id int, form entity.FormRoleRequest) (entity.Role, error) {
+	model, err := s.repository.FindOneByID(id)
 	if err != nil {
 		return model, err
 	}

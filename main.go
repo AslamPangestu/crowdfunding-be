@@ -47,7 +47,6 @@ func main() {
 	//APIV1 Routing
 	apiV1 := router.Group("/api/v1")
 	routes.APIRoute(apiV1, db)
-	routes.RoleRoute(apiV1, db)
 
 	router.Run()
 }

@@ -30,3 +30,16 @@ type RoleResponse struct {
 	ID   int    `json:"id"`
 	Name string `json:"name"`
 }
+
+//RoleNameRequest : Mapping Role Request by name
+type CreateRoleForm struct {
+	Name  string `form:"name" binding:"required"`
+	Error error
+}
+
+//RoleNameRequest : Mapping Role Request by name
+type EditRoleForm struct {
+	ID    int
+	Name  string `form:"name" binding:"required"`
+	Error error
+}
