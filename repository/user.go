@@ -36,7 +36,7 @@ func (r *userRepository) Create(model entity.User) (entity.User, error) {
 
 func (r *userRepository) FindAll() ([]entity.User, error) {
 	var models []entity.User
-	err := r.db.Find(&models).Where("role_id != 1").Error
+	err := r.db.Where("role_id != 1").Find(&models).Error
 	if err != nil {
 		return models, err
 	}

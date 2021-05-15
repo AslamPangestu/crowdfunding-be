@@ -1,6 +1,9 @@
 package adapter
 
-import "crowdfunding/entity"
+import (
+	"crowdfunding/entity"
+	"strconv"
+)
 
 //RegsiterAdapter : Adapter Register
 func RegsiterAdapter(user entity.User, token string) entity.RegisterResponse {
@@ -17,6 +20,7 @@ func RegsiterAdapter(user entity.User, token string) entity.RegisterResponse {
 //LoginAdapter : Adapter Login
 func LoginAdapter(user entity.User, token string) entity.LoginResponse {
 	return entity.LoginResponse{
+		ID:         strconv.Itoa(user.ID),
 		Name:       user.Name,
 		Username:   user.Username,
 		Email:      user.Email,

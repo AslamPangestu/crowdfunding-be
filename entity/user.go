@@ -44,12 +44,21 @@ type LoginRequest struct {
 
 //LoginResponse : Mapping Register Response
 type LoginResponse struct {
+	ID         string `json:"id"`
 	Name       string `json:"name"`
 	Username   string `json:"username"`
 	Email      string `json:"email"`
 	ImageURL   string `json:"image_url"`
 	Occupation string `json:"occupation"`
 	Token      string `json:"token"`
+}
+
+//UpdateUserRequest : Mapping Update User Request
+type UpdateUserRequest struct {
+	Name       string `json:"name" binding:"required"`
+	Username   string `json:"username" binding:"required"`
+	Email      string `json:"email" binding:"required,email"`
+	Occupation string `json:"occupation" binding:"required"`
 }
 
 //EmailValidationRequest : Mapping Email Validation Request

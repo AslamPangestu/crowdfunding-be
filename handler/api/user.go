@@ -190,8 +190,8 @@ func (h *userHandler) UploadAvatar(c *gin.Context) {
 }
 
 /**
-ROUTE: api/v1/login
-METHOD: POST
+ROUTE: api/v1/profile
+METHOD: GET
 */
 func (h *userHandler) FetchUser(c *gin.Context) {
 	//Get User Logged
@@ -199,5 +199,51 @@ func (h *userHandler) FetchUser(c *gin.Context) {
 	//RESPONSE
 	data := adapter.LoginAdapter(currentUser, "")
 	res := helper.ResponseHandler("FetchUser Successful", http.StatusOK, "success", data)
+	c.JSON(http.StatusOK, res)
+}
+
+/**
+ROUTE: api/v1/profile
+METHOD: POST
+*/
+func (h *userHandler) UpdateUser(c *gin.Context) {
+	//Get User Logged
+	currentUser := c.MustGet("currentUser").(entity.User)
+
+	//GET REQUEST REGISTER
+	var request entity.UpdateUserRequest
+	err := c.ShouldBindJSON(&request)
+	if err != nil {
+		errorMessage := gin.H{"errors": helper.ErrResponseValidationHandler(err)}
+		errResponse := helper.ResponseHandler("UpdateUser Validation Failed", http.StatusUnprocessableEntity, "failed", errorMessage)
+		c.JSON(http.StatusUnprocessableEntity, errResponse)
+		return
+	}
+	//GET CURRENT USER DATA
+	_, err = h.service.GetUserByID(currentUser.ID)
+	if err != nil {
+		errorMessage := gin.H{"errors": err.Error()}
+		errResponse := helper.ResponseHandler("UpdateUser Failed", http.StatusBadRequest, "failed", errorMessage)
+		c.JSON(http.StatusBadRequest, errResponse)
+		return
+	}
+	//UPDATE DATA
+	updatedData := entity.EditUserForm{
+		ID:         currentUser.ID,
+		Name:       request.Name,
+		Username:   request.Username,
+		Email:      request.Email,
+		Occupation: request.Occupation,
+	}
+	resUpdated, err := h.service.UpdateUser(updatedData)
+	if err != nil {
+		errorMessage := gin.H{"errors": err.Error()}
+		errResponse := helper.ResponseHandler("UpdateUser Failed", http.StatusBadRequest, "failed", errorMessage)
+		c.JSON(http.StatusBadRequest, errResponse)
+		return
+	}
+	//RESPONSE
+	data := adapter.LoginAdapter(resUpdated, "")
+	res := helper.ResponseHandler("UpdateUser Successful", http.StatusOK, "success", data)
 	c.JSON(http.StatusOK, res)
 }
