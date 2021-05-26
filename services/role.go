@@ -4,6 +4,7 @@ import (
 	"crowdfunding/entity"
 	"crowdfunding/helper"
 	"crowdfunding/repository"
+	"errors"
 )
 
 // RoleInteractor Contract
@@ -41,6 +42,9 @@ func (s *roleService) GetRoleByID(id int) (entity.Role, error) {
 	if err != nil {
 		return model, err
 	}
+	if model.ID == 0 {
+		return model, errors.New("Role not found")
+	}
 	return model, nil
 }
 
@@ -60,6 +64,9 @@ func (s *roleService) EditRole(id int, form entity.FormRoleRequest) (entity.Role
 	model, err := s.repository.FindOneByID(id)
 	if err != nil {
 		return model, err
+	}
+	if model.ID == 0 {
+		return model, errors.New("Role not found")
 	}
 	model.Name = form.Name
 	updatedData, err := s.repository.Update(model)

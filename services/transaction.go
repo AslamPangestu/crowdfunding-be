@@ -49,6 +49,9 @@ func (s *transactionService) GetTransactionsByCampaignID(request entity.Campaign
 	if err != nil {
 		return helper.ResponsePagination{}, err
 	}
+	if campaign.ID == 0 {
+		return helper.ResponsePagination{}, errors.New("Campaign not found")
+	}
 	if campaign.CampaignerID != request.CampaignerID {
 		return helper.ResponsePagination{}, errors.New("Not an owner of campaign")
 	}

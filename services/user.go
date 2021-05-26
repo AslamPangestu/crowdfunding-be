@@ -117,9 +117,11 @@ func (s *userService) UploadAvatar(id int, fileLocation string) (entity.User, er
 	if err != nil {
 		return model, err
 	}
-	//Update Path
-	model.AvatarPath = fileLocation
+	if model.ID == 0 {
+		return model, errors.New("User not found")
+	}
 	//Update DB
+	model.AvatarPath = fileLocation
 	updatedData, err := s.repository.Update(model)
 	if err != nil {
 		return updatedData, err
@@ -131,6 +133,9 @@ func (s *userService) UpdateUser(form entity.EditUserForm) (entity.User, error) 
 	model, err := s.repository.FindOneByID(form.ID)
 	if err != nil {
 		return model, err
+	}
+	if model.ID == 0 {
+		return model, errors.New("User not found")
 	}
 	model.Name = form.Name
 	model.Username = form.Username

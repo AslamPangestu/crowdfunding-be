@@ -4,6 +4,7 @@ import (
 	"crowdfunding/config"
 	"crowdfunding/entity"
 	"crowdfunding/repository"
+	"errors"
 	"strconv"
 
 	"github.com/veritrans/go-midtrans"
@@ -52,6 +53,9 @@ func (s *paymentService) ProcessPayment(form entity.TransactionNotificationReque
 	if err != nil {
 		return err
 	}
+	if transaction.ID == 0 {
+		return errors.New("Transaction not found")
+	}
 	//IF Credit Card
 	if form.PaymentType == "credit_card" && form.TransactionStatus == "capture" && form.FraudStatus == "accept" {
 		transaction.Status = "paid"
@@ -69,6 +73,9 @@ func (s *paymentService) ProcessPayment(form entity.TransactionNotificationReque
 	campaign, err := s.campaignRepository.FindOneByID(updatedTransaction.CampaignID)
 	if err != nil {
 		return err
+	}
+	if campaign.ID == 0 {
+		return errors.New("Campaign not found")
 	}
 	if updatedTransaction.Status == "paid" {
 		campaign.BackerCount = campaign.BackerCount + 1

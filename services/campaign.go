@@ -58,6 +58,9 @@ func (s *campaignService) GetCampaignByID(uri entity.CampaignIDRequest) (entity.
 	if err != nil {
 		return model, err
 	}
+	if model.ID == 0 {
+		return model, errors.New("Campaign not found")
+	}
 	return model, nil
 }
 
@@ -85,6 +88,9 @@ func (s *campaignService) EditCampaign(uri entity.CampaignIDRequest, form entity
 	if err != nil {
 		return model, err
 	}
+	if model.ID == 0 {
+		return model, errors.New("Campaign not found")
+	}
 
 	if model.CampaignerID != form.CampaignerID {
 		return model, errors.New("User not Authorize for this action")
@@ -106,6 +112,9 @@ func (s *campaignService) UploadCampaignImages(form entity.UploadCampaignImageRe
 	campaign, err := s.repository.FindOneByID(form.CampaignID)
 	if err != nil {
 		return entity.CampaignImage{}, err
+	}
+	if campaign.ID == 0 {
+		return entity.CampaignImage{}, errors.New("Campaign not found")
 	}
 	if campaign.CampaignerID != form.UserID {
 		return entity.CampaignImage{}, errors.New("User not Authorize for this action")
