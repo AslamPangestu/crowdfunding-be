@@ -17,6 +17,19 @@ type Meta struct {
 	Status  string `json:"status"`
 }
 
+// PaginationAdapterResponse : Mapping PaginationAdapterResponse Response
+type paginationAdapterResponse struct {
+	Total       int
+	PerPage     int
+	CurrentPage int
+	Pages       []int
+	LastPage    int
+	NextPage    int
+	PrevPage    int
+	HasNext     bool
+	HasPrev     bool
+}
+
 // ResponseHandler : Handler response
 func ResponseHandler(message string, code int, status string, data interface{}) Repsonse {
 	meta := Meta{
@@ -38,4 +51,23 @@ func ErrResponseValidationHandler(err error) []string {
 		errors = append(errors, e.Error())
 	}
 	return errors
+}
+
+// PaginationAdapterHandler : Handler Error validation response
+func PaginationAdapterHandler(pagination Pagination) paginationAdapterResponse {
+	var pages []int
+	for i := 1; i <= pagination.LastPage; i++ {
+		pages = append(pages, i)
+	}
+	return paginationAdapterResponse{
+		Total:       pagination.Total,
+		PerPage:     pagination.PerPage,
+		CurrentPage: pagination.CurrentPage,
+		LastPage:    pagination.LastPage,
+		NextPage:    pagination.CurrentPage + 1,
+		PrevPage:    pagination.CurrentPage - 1,
+		HasNext:     pagination.HasNext,
+		HasPrev:     pagination.HasPrev,
+		Pages:       pages,
+	}
 }

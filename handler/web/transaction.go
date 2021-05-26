@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"crowdfunding/helper"
 	"crowdfunding/services"
 	"net/http"
 	"strconv"
@@ -17,6 +18,7 @@ func TransactionHandlerInit(service services.TransactionInteractor) *transaction
 }
 
 func (h *transactionHandler) Index(c *gin.Context) {
+	user := helper.GetUserLoggedIn(c)
 	page, _ := strconv.Atoi(c.Query("page"))
 	pageSize, _ := strconv.Atoi(c.Query("page_size"))
 	models, err := h.service.GetTransactions(page, pageSize)
@@ -24,5 +26,6 @@ func (h *transactionHandler) Index(c *gin.Context) {
 		c.HTML(http.StatusInternalServerError, "error.html", nil)
 		return
 	}
-	c.HTML(http.StatusOK, "transaction_index.html", gin.H{"transactions": models.Data, "pagination": models.Pagination})
+	pagination := helper.PaginationAdapterHandler(models.Pagination)
+	c.HTML(http.StatusOK, "transaction_index.html", gin.H{"user": user, "transactions": models.Data, "pagination": pagination})
 }

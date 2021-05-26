@@ -39,6 +39,16 @@ func PaginationScope(page int, pageSize int) func(db *gorm.DB) *gorm.DB {
 }
 
 func PaginationAdapter(page, pageSize, total int, data interface{}) ResponsePagination {
+	if page == 0 {
+		page = 1
+	}
+
+	switch {
+	case pageSize > 100:
+		pageSize = 100
+	case pageSize <= 0:
+		pageSize = 10
+	}
 	//Count Last Page
 	var lastPage, remaining int
 	remaining = total % pageSize
@@ -55,7 +65,7 @@ func PaginationAdapter(page, pageSize, total int, data interface{}) ResponsePagi
 			PerPage:     pageSize,
 			CurrentPage: page,
 			LastPage:    lastPage,
-			HasPrev:     page < 1,
+			HasPrev:     page > 1,
 			HasNext:     page < lastPage && page >= 1,
 		},
 	}

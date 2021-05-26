@@ -61,6 +61,7 @@ func WebRoute(route *gin.Engine, db *gorm.DB) {
 	route.POST("/roles", middleware.WebAuthMiddleware(), roleHandler.PostCreate)
 	route.GET("/roles/edit/:id", middleware.WebAuthMiddleware(), roleHandler.Edit)
 	route.POST("/roles/:id/update", middleware.WebAuthMiddleware(), roleHandler.PostEdit)
+	route.GET("/roles/delete/:id", middleware.WebAuthMiddleware(), roleHandler.Remove)
 
 	//Auth
 	route.GET("/login", authHandler.Login)

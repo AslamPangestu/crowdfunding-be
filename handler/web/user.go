@@ -23,6 +23,7 @@ func UserHandlerInit(service services.UserInteractor) *userHandler {
 }
 
 func (h *userHandler) Index(c *gin.Context) {
+	user := helper.GetUserLoggedIn(c)
 	page, _ := strconv.Atoi(c.Query("page"))
 	pageSize, _ := strconv.Atoi(c.Query("page_size"))
 	models, err := h.service.GetAllUsers(page, pageSize)
@@ -30,7 +31,8 @@ func (h *userHandler) Index(c *gin.Context) {
 		c.HTML(http.StatusInternalServerError, "error.html", nil)
 		return
 	}
-	c.HTML(http.StatusOK, "user_index.html", gin.H{"users": models.Data, "pagination": models.Pagination})
+	pagination := helper.PaginationAdapterHandler(models.Pagination)
+	c.HTML(http.StatusOK, "user_index.html", gin.H{"user": user, "users": models.Data, "pagination": pagination})
 }
 
 func (h *userHandler) Create(c *gin.Context) {

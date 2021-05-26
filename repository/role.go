@@ -16,7 +16,7 @@ type RoleInteractor interface {
 	//Action
 	Create(model entity.Role) (entity.Role, error)
 	Update(model entity.Role) (entity.Role, error)
-	// Delete(id int) (entity.Role, error)
+	Delete(id int) error
 }
 
 type roleRepo struct {
@@ -69,4 +69,12 @@ func (r *roleRepo) Update(model entity.Role) (entity.Role, error) {
 		return model, err
 	}
 	return model, nil
+}
+
+func (r *roleRepo) Delete(id int) error {
+	err := r.db.Delete(&entity.Role{}, id).Error
+	if err != nil {
+		return err
+	}
+	return nil
 }

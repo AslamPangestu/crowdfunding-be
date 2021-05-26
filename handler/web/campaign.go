@@ -25,6 +25,7 @@ func CampaignHandlerInit(service services.CampaignInteractor, userService servic
 }
 
 func (h *campaignHandler) Index(c *gin.Context) {
+	user := helper.GetUserLoggedIn(c)
 	page, _ := strconv.Atoi(c.Query("page"))
 	pageSize, _ := strconv.Atoi(c.Query("page_size"))
 	models, err := h.service.GetCampaigns(0, page, pageSize)
@@ -32,11 +33,12 @@ func (h *campaignHandler) Index(c *gin.Context) {
 		c.HTML(http.StatusInternalServerError, "error.html", nil)
 		return
 	}
-	c.HTML(http.StatusOK, "campaign_index.html", gin.H{"campaigns": models.Data, "pagination": models.Pagination})
+	pagination := helper.PaginationAdapterHandler(models.Pagination)
+	c.HTML(http.StatusOK, "campaign_index.html", gin.H{"user": user, "campaigns": models.Data, "pagination": pagination})
 }
 
 func (h *campaignHandler) Create(c *gin.Context) {
-	users, err := h.userService.GetAllUsers(0, 0)
+	users, err := h.userService.GetAllUsers(1, 0)
 	if err != nil {
 		c.HTML(http.StatusInternalServerError, "error.html", nil)
 		return
@@ -55,7 +57,7 @@ func (h *campaignHandler) PostCreate(c *gin.Context) {
 
 	err := c.ShouldBind(&form)
 	if err != nil {
-		users, errUsers := h.userService.GetAllUsers(0, 0)
+		users, errUsers := h.userService.GetAllUsers(1, 0)
 		if errUsers != nil {
 			c.HTML(http.StatusInternalServerError, "error.html", nil)
 			return

@@ -15,7 +15,7 @@ type RoleInteractor interface {
 	//Action
 	AddRole(form entity.FormRoleRequest) (entity.Role, error)
 	EditRole(id int, form entity.FormRoleRequest) (entity.Role, error)
-	// RemoveRole(form entity.FormRoleRequest) (entity.Role, error)
+	RemoveRole(id int) error
 }
 
 type roleService struct {
@@ -67,4 +67,12 @@ func (s *roleService) EditRole(id int, form entity.FormRoleRequest) (entity.Role
 		return updatedData, err
 	}
 	return updatedData, nil
+}
+
+func (s *roleService) RemoveRole(id int) error {
+	err := s.repository.Delete(id)
+	if err != nil {
+		return err
+	}
+	return nil
 }

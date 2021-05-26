@@ -2,12 +2,11 @@ package handler
 
 import (
 	"crowdfunding/entity"
+	"crowdfunding/helper"
 	"crowdfunding/services"
-	"fmt"
 	"net/http"
 	"strconv"
 
-	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 )
 
@@ -20,9 +19,7 @@ func RoleHandlerInit(service services.RoleInteractor) *roleHandler {
 }
 
 func (h *roleHandler) Index(c *gin.Context) {
-	session := sessions.Default(c)
-	user := session.Get("user")
-	fmt.Println("USER", user)
+	user := helper.GetUserLoggedIn(c)
 	page, _ := strconv.Atoi(c.Query("page"))
 	pageSize, _ := strconv.Atoi(c.Query("page_size"))
 	models, err := h.service.GetRoles(page, pageSize)
@@ -30,7 +27,8 @@ func (h *roleHandler) Index(c *gin.Context) {
 		c.HTML(http.StatusInternalServerError, "error.html", nil)
 		return
 	}
-	c.HTML(http.StatusOK, "role_index.html", gin.H{"roles": models.Data, "pagination": models.Pagination})
+	pagination := helper.PaginationAdapterHandler(models.Pagination)
+	c.HTML(http.StatusOK, "role_index.html", gin.H{"user": user, "roles": models.Data, "pagination": pagination})
 }
 
 func (h *roleHandler) Create(c *gin.Context) {
@@ -87,6 +85,16 @@ func (h *roleHandler) PostEdit(c *gin.Context) {
 		Name: form.Name,
 	}
 	_, err = h.service.EditRole(id, req)
+	if err != nil {
+		c.HTML(http.StatusInternalServerError, "error.html", nil)
+		return
+	}
+	c.Redirect(http.StatusFound, "/roles")
+}
+
+func (h *roleHandler) Remove(c *gin.Context) {
+	id, _ := strconv.Atoi(c.Param("id"))
+	err := h.service.RemoveRole(id)
 	if err != nil {
 		c.HTML(http.StatusInternalServerError, "error.html", nil)
 		return
