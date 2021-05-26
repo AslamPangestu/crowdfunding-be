@@ -2,6 +2,7 @@ package services
 
 import (
 	"crowdfunding/entity"
+	"crowdfunding/helper"
 	"crowdfunding/repository"
 	"errors"
 	"fmt"
@@ -11,10 +12,12 @@ import (
 
 // TransactionInteractor Contract
 type TransactionInteractor interface {
+	//Get Many
+	GetTransactions(page int, pageSize int) (helper.ResponsePagination, error)
+	GetTransactionsByCampaignID(request entity.CampaignTransactionsRequest, page int, pageSize int) (helper.ResponsePagination, error)
+	GetTransactionsByUserID(userID int, page int, pageSize int) (helper.ResponsePagination, error)
+	//Action
 	MakeTransaction(form entity.TransactionRequest) (entity.Transaction, error)
-	GetTransactionsByCampaignID(request entity.CampaignTransactionsRequest) ([]entity.Transaction, error)
-	GetTransactionsByUserID(userID int, page int, pageSize int) ([]entity.Transaction, error)
-	GetTransactions(page int, pageSize int) ([]entity.Transaction, error)
 }
 
 type transactionService struct {
@@ -28,6 +31,51 @@ func NewTransactionService(repository repository.TransactionInteractor, campaign
 	return &transactionService{repository, campaignRepository, paymentService}
 }
 
+//Get Many
+func (s *transactionService) GetTransactions(page int, pageSize int) (helper.ResponsePagination, error) {
+	query := entity.Paginate{
+		Page:     page,
+		PageSize: pageSize,
+	}
+	models, err := s.repository.FindAll(query)
+	if err != nil {
+		return models, err
+	}
+	return models, nil
+}
+
+func (s *transactionService) GetTransactionsByCampaignID(request entity.CampaignTransactionsRequest, page int, pageSize int) (helper.ResponsePagination, error) {
+	campaign, err := s.campaignRepository.FindOneByID(request.ID)
+	if err != nil {
+		return helper.ResponsePagination{}, err
+	}
+	if campaign.CampaignerID != request.CampaignerID {
+		return helper.ResponsePagination{}, errors.New("Not an owner of campaign")
+	}
+	query := entity.Paginate{
+		Page:     page,
+		PageSize: pageSize,
+	}
+	models, err := s.repository.FindManyByCampaignID(request.ID, query)
+	if err != nil {
+		return models, err
+	}
+	return models, nil
+}
+
+func (s *transactionService) GetTransactionsByUserID(userID int, page int, pageSize int) (helper.ResponsePagination, error) {
+	query := entity.Paginate{
+		Page:     page,
+		PageSize: pageSize,
+	}
+	models, err := s.repository.FindManyByUserID(userID, query)
+	if err != nil {
+		return models, err
+	}
+	return models, nil
+}
+
+//Action
 func (s *transactionService) MakeTransaction(form entity.TransactionRequest) (entity.Transaction, error) {
 	model := entity.Transaction{
 		CampaignID: form.CampaignID,
@@ -51,45 +99,6 @@ func (s *transactionService) MakeTransaction(form entity.TransactionRequest) (en
 		return newTransaction, err
 	}
 	return newTransaction, nil
-}
-
-func (s *transactionService) GetTransactionsByCampaignID(request entity.CampaignTransactionsRequest) ([]entity.Transaction, error) {
-	campaign, err := s.campaignRepository.FindOneByID(request.ID)
-	if err != nil {
-		return []entity.Transaction{}, err
-	}
-	if campaign.CampaignerID != request.CampaignerID {
-		return []entity.Transaction{}, errors.New("Not an owner of campaign")
-	}
-	models, err := s.repository.FindManyByCampaignID(request.ID)
-	if err != nil {
-		return models, err
-	}
-	return models, nil
-}
-
-func (s *transactionService) GetTransactionsByUserID(userID int, page int, pageSize int) ([]entity.Transaction, error) {
-	query := entity.Paginate{
-		Page:     page,
-		PageSize: pageSize,
-	}
-	models, err := s.repository.FindManyByUserID(userID, query)
-	if err != nil {
-		return models, err
-	}
-	return models, nil
-}
-
-func (s *transactionService) GetTransactions(page int, pageSize int) ([]entity.Transaction, error) {
-	query := entity.Paginate{
-		Page:     page,
-		PageSize: pageSize,
-	}
-	models, err := s.repository.FindAll(query)
-	if err != nil {
-		return models, err
-	}
-	return models, nil
 }
 
 func generateTRXCode(userID int, transactionID int, campaignID int) string {

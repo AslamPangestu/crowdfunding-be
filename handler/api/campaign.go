@@ -13,6 +13,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/mitchellh/mapstructure"
 )
 
 type campaignHandler struct {
@@ -75,8 +76,13 @@ func (h *campaignHandler) GetCampaigns(c *gin.Context) {
 		return
 	}
 	//RESPONSE
-	data := adapter.CampaignsAdapter(campaigns)
-	res := helper.ResponseHandler("GetCampaigns Successful", http.StatusOK, "success", data)
+	models := []entity.Campaign{}
+	mapstructure.Decode(campaigns.Data, &models)
+	data := adapter.CampaignsAdapter(models)
+	res := helper.ResponseHandler("GetCampaigns Successful", http.StatusOK, "success", helper.ResponsePagination{
+		Data:       data,
+		Pagination: campaigns.Pagination,
+	})
 	c.JSON(http.StatusOK, res)
 }
 

@@ -2,16 +2,19 @@ package repository
 
 import (
 	"crowdfunding/entity"
+	"crowdfunding/helper"
 
 	"gorm.io/gorm"
 )
 
 // RoleInteractor Contract
 type RoleInteractor interface {
-	Create(model entity.Role) (entity.Role, error)
-	FindAll() ([]entity.Role, error)
+	//Get Many
+	FindAll(query entity.Paginate) (helper.ResponsePagination, error)
+	//Get One
 	FindOneByID(id int) (entity.Role, error)
-	FindManyByName(name string) ([]entity.Role, error)
+	//Action
+	Create(model entity.Role) (entity.Role, error)
 	Update(model entity.Role) (entity.Role, error)
 	// Delete(id int) (entity.Role, error)
 }
@@ -25,23 +28,23 @@ func NewRoleRepository(db *gorm.DB) *roleRepo {
 	return &roleRepo{db}
 }
 
-func (r *roleRepo) Create(model entity.Role) (entity.Role, error) {
-	err := r.db.Create(&model).Error
-	if err != nil {
-		return model, err
-	}
-	return model, nil
-}
+const TABLE_ROLES = "roles"
 
-func (r *roleRepo) FindAll() ([]entity.Role, error) {
+//Get Many
+func (r *roleRepo) FindAll(query entity.Paginate) (helper.ResponsePagination, error) {
 	var models []entity.Role
-	err := r.db.Find(&models).Error
+	var pagination helper.ResponsePagination
+	var total int64
+	err := r.db.Scopes(helper.PaginationScope(query.Page, query.PageSize)).Find(&models).Error
 	if err != nil {
-		return models, err
+		return pagination, err
 	}
-	return models, nil
+	r.db.Table(TABLE_ROLES).Count(&total)
+	pagination = helper.PaginationAdapter(query.Page, query.PageSize, int(total), models)
+	return pagination, nil
 }
 
+//Get One
 func (r *roleRepo) FindOneByID(id int) (entity.Role, error) {
 	var model entity.Role
 	err := r.db.Find(&model).Where("id = ?", id).Error
@@ -51,13 +54,13 @@ func (r *roleRepo) FindOneByID(id int) (entity.Role, error) {
 	return model, nil
 }
 
-func (r *roleRepo) FindManyByName(name string) ([]entity.Role, error) {
-	var models []entity.Role
-	err := r.db.Find(&models).Where("name LIKE %?%", name).Error
+//Action
+func (r *roleRepo) Create(model entity.Role) (entity.Role, error) {
+	err := r.db.Create(&model).Error
 	if err != nil {
-		return models, err
+		return model, err
 	}
-	return models, nil
+	return model, nil
 }
 
 func (r *roleRepo) Update(model entity.Role) (entity.Role, error) {

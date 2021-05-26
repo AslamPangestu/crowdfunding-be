@@ -2,6 +2,7 @@ package services
 
 import (
 	"crowdfunding/entity"
+	"crowdfunding/helper"
 	"crowdfunding/repository"
 	"errors"
 
@@ -10,12 +11,15 @@ import (
 
 // UserInteractor Contract
 type UserInteractor interface {
-	Register(form entity.RegisterRequest) (entity.User, error)
-	Login(form entity.LoginRequest) (entity.User, error)
+	//Get Many
+	GetAllUsers(page int, pageSize int) (helper.ResponsePagination, error)
+	//Get One
 	GetUserByID(id int) (entity.User, error)
 	IsEmailAvaiable(form entity.EmailValidationRequest) (bool, error)
+	//Action
+	Register(form entity.RegisterRequest) (entity.User, error)
+	Login(form entity.LoginRequest) (entity.User, error)
 	UploadAvatar(id int, fileLocation string) (entity.User, error)
-	GetAllUsers() ([]entity.User, error)
 	UpdateUser(form entity.EditUserForm) (entity.User, error)
 }
 
@@ -28,6 +32,45 @@ func NewUserService(repository repository.UserInteractor) *userService {
 	return &userService{repository}
 }
 
+//Get Many
+func (s *userService) GetAllUsers(page int, pageSize int) (helper.ResponsePagination, error) {
+	//Find
+	request := entity.Paginate{Page: page, PageSize: pageSize}
+	model, err := s.repository.FindAll(request)
+	if err != nil {
+		return model, err
+	}
+	return model, nil
+}
+
+//Get One
+func (s *userService) GetUserByID(id int) (entity.User, error) {
+	//Find
+	model, err := s.repository.FindOneByID(id)
+	if err != nil {
+		return model, err
+	}
+	//Is Found?
+	if model.ID == 0 {
+		return model, errors.New("User not found")
+	}
+	return model, nil
+}
+
+func (s *userService) IsEmailAvaiable(form entity.EmailValidationRequest) (bool, error) {
+	//Find
+	model, err := s.repository.FindOneByEmail(form.Email)
+	if err != nil {
+		return false, err
+	}
+	//Is Available
+	if model.ID != 0 {
+		return false, nil
+	}
+	return true, nil
+}
+
+//Action
 func (s *userService) Register(form entity.RegisterRequest) (entity.User, error) {
 	var model entity.User
 	passwordHash, err := bcrypt.GenerateFromPassword([]byte(form.Password), bcrypt.MinCost)
@@ -68,32 +111,6 @@ func (s *userService) Login(form entity.LoginRequest) (entity.User, error) {
 	return model, nil
 }
 
-func (s *userService) GetUserByID(id int) (entity.User, error) {
-	//Find
-	model, err := s.repository.FindOneByID(id)
-	if err != nil {
-		return model, err
-	}
-	//Is Found?
-	if model.ID == 0 {
-		return model, errors.New("User not found")
-	}
-	return model, nil
-}
-
-func (s *userService) IsEmailAvaiable(form entity.EmailValidationRequest) (bool, error) {
-	//Find
-	model, err := s.repository.FindOneByEmail(form.Email)
-	if err != nil {
-		return false, err
-	}
-	//Is Available
-	if model.ID != 0 {
-		return false, nil
-	}
-	return true, nil
-}
-
 func (s *userService) UploadAvatar(id int, fileLocation string) (entity.User, error) {
 	//Find
 	model, err := s.repository.FindOneByID(id)
@@ -110,14 +127,6 @@ func (s *userService) UploadAvatar(id int, fileLocation string) (entity.User, er
 	return updatedData, nil
 }
 
-func (s *userService) GetAllUsers() ([]entity.User, error) {
-	//Find
-	model, err := s.repository.FindAll()
-	if err != nil {
-		return model, err
-	}
-	return model, nil
-}
 func (s *userService) UpdateUser(form entity.EditUserForm) (entity.User, error) {
 	model, err := s.repository.FindOneByID(form.ID)
 	if err != nil {

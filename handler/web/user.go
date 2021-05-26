@@ -23,12 +23,14 @@ func UserHandlerInit(service services.UserInteractor) *userHandler {
 }
 
 func (h *userHandler) Index(c *gin.Context) {
-	models, err := h.service.GetAllUsers()
+	page, _ := strconv.Atoi(c.Query("page"))
+	pageSize, _ := strconv.Atoi(c.Query("page_size"))
+	models, err := h.service.GetAllUsers(page, pageSize)
 	if err != nil {
 		c.HTML(http.StatusInternalServerError, "error.html", nil)
 		return
 	}
-	c.HTML(http.StatusOK, "user_index.html", gin.H{"users": models})
+	c.HTML(http.StatusOK, "user_index.html", gin.H{"users": models.Data, "pagination": models.Pagination})
 }
 
 func (h *userHandler) Create(c *gin.Context) {

@@ -2,6 +2,7 @@ package services
 
 import (
 	"crowdfunding/entity"
+	"crowdfunding/helper"
 	"crowdfunding/repository"
 	"errors"
 	"fmt"
@@ -11,13 +12,15 @@ import (
 
 // CampaignInteractor Contract
 type CampaignInteractor interface {
-	CreateCampaign(form entity.FormCampaignRequest) (entity.Campaign, error)
-	GetCampaigns(userID int, page int, pageSize int) ([]entity.Campaign, error)
+	//Get Many
+	GetCampaigns(userID int, page int, pageSize int) (helper.ResponsePagination, error)
+	//Get One
 	GetCampaignByID(uri entity.CampaignIDRequest) (entity.Campaign, error)
+	//Action
+	CreateCampaign(form entity.FormCampaignRequest) (entity.Campaign, error)
 	EditCampaign(uri entity.CampaignIDRequest, form entity.FormCampaignRequest) (entity.Campaign, error)
 	UploadCampaignImages(form entity.UploadCampaignImageRequest, fileLocation string) (entity.CampaignImage, error)
-	// Search(form entity.FormRoleRequest) (entity.Role, error)
-	// Remove(form entity.FormRoleRequest) (entity.Role, error)
+	// RemoveCampaign(form entity.FormCampaignRequest) (entity.Campaign, error)
 }
 
 type campaignService struct {
@@ -29,6 +32,36 @@ func NewCampaignService(repository repository.CampaignInteractor) *campaignServi
 	return &campaignService{repository}
 }
 
+//Get Many
+func (s *campaignService) GetCampaigns(userID int, page int, pageSize int) (helper.ResponsePagination, error) {
+	query := entity.Paginate{
+		Page:     page,
+		PageSize: pageSize,
+	}
+	if userID != 0 {
+		models, err := s.repository.FindManyByCampaignerID(userID, query)
+		if err != nil {
+			return models, err
+		}
+		return models, nil
+	}
+	models, err := s.repository.FindAll(query)
+	if err != nil {
+		return models, err
+	}
+	return models, nil
+}
+
+//Get One
+func (s *campaignService) GetCampaignByID(uri entity.CampaignIDRequest) (entity.Campaign, error) {
+	model, err := s.repository.FindOneByID(uri.ID)
+	if err != nil {
+		return model, err
+	}
+	return model, nil
+}
+
+//Action
 func (s *campaignService) CreateCampaign(form entity.FormCampaignRequest) (entity.Campaign, error) {
 	slugString := fmt.Sprintf("%d %s", form.CampaignerID, form.Title)
 	model := entity.Campaign{
@@ -45,33 +78,6 @@ func (s *campaignService) CreateCampaign(form entity.FormCampaignRequest) (entit
 		return newCampaign, err
 	}
 	return newCampaign, nil
-}
-
-func (s *campaignService) GetCampaigns(userID int, page int, pageSize int) ([]entity.Campaign, error) {
-	if userID != 0 {
-		models, err := s.repository.FindManyByCampaignerID(userID)
-		if err != nil {
-			return models, err
-		}
-		return models, nil
-	}
-	query := entity.Paginate{
-		Page:     page,
-		PageSize: pageSize,
-	}
-	models, err := s.repository.FindAll(query)
-	if err != nil {
-		return models, err
-	}
-	return models, nil
-}
-
-func (s *campaignService) GetCampaignByID(uri entity.CampaignIDRequest) (entity.Campaign, error) {
-	model, err := s.repository.FindOneByID(uri.ID)
-	if err != nil {
-		return model, err
-	}
-	return model, nil
 }
 
 func (s *campaignService) EditCampaign(uri entity.CampaignIDRequest, form entity.FormCampaignRequest) (entity.Campaign, error) {

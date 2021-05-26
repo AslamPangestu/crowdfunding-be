@@ -24,5 +24,5 @@ func (h *transactionHandler) Index(c *gin.Context) {
 		c.HTML(http.StatusInternalServerError, "error.html", nil)
 		return
 	}
-	c.HTML(http.StatusOK, "transaction_index.html", gin.H{"transactions": models})
+	c.HTML(http.StatusOK, "transaction_index.html", gin.H{"transactions": models.Data, "pagination": models.Pagination})
 }

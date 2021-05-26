@@ -9,11 +9,14 @@ import (
 
 // TransactionInteractor Contract
 type TransactionInteractor interface {
-	Create(model entity.Transaction) (entity.Transaction, error)
-	FindManyByCampaignID(campaignID int) ([]entity.Transaction, error)
-	FindAll(query entity.Paginate) ([]entity.Transaction, error)
-	FindManyByUserID(userID int, query entity.Paginate) ([]entity.Transaction, error)
+	//Get Many
+	FindAll(query entity.Paginate) (helper.ResponsePagination, error)
+	FindManyByCampaignID(campaignID int, query entity.Paginate) (helper.ResponsePagination, error)
+	FindManyByUserID(userID int, query entity.Paginate) (helper.ResponsePagination, error)
+	//Get One
 	FindOneByTransactionID(transactionID int) (entity.Transaction, error)
+	//Action
+	Create(model entity.Transaction) (entity.Transaction, error)
 	Update(model entity.Transaction) (entity.Transaction, error)
 }
 
@@ -26,34 +29,52 @@ func NewTransactionRepository(db *gorm.DB) *trasactionRepository {
 	return &trasactionRepository{db}
 }
 
-const ORDER_BY_ID_DESC = "id desc"
+const (
+	TABLE_TRANSACTIONS = "transactions"
+	ORDER_BY_ID_DESC   = "id desc"
+)
 
-func (r *trasactionRepository) Create(model entity.Transaction) (entity.Transaction, error) {
-	err := r.db.Create(&model).Error
+//Get Many
+func (r *trasactionRepository) FindAll(query entity.Paginate) (helper.ResponsePagination, error) {
+	var models []entity.Transaction
+	var pagination helper.ResponsePagination
+	var total int64
+	err := r.db.Scopes(helper.PaginationScope(query.Page, query.PageSize)).Order("created_at desc").Preload("Campaign").Find(&models).Error
 	if err != nil {
-		return model, err
+		return pagination, err
 	}
-	return model, nil
+	r.db.Table(TABLE_TRANSACTIONS).Count(&total)
+	pagination = helper.PaginationAdapter(query.Page, query.PageSize, int(total), models)
+	return pagination, nil
 }
 
-func (r *trasactionRepository) FindManyByCampaignID(campaignID int) ([]entity.Transaction, error) {
+func (r *trasactionRepository) FindManyByCampaignID(campaignID int, query entity.Paginate) (helper.ResponsePagination, error) {
 	var models []entity.Transaction
+	var pagination helper.ResponsePagination
+	var total int64
 	err := r.db.Preload("User").Find(&models).Where("campaign_id = ?", campaignID).Order(ORDER_BY_ID_DESC).Error
 	if err != nil {
-		return models, err
+		return pagination, err
 	}
-	return models, nil
+	r.db.Table(TABLE_TRANSACTIONS).Preload("User").Where("campaign_id = ?", campaignID).Count(&total)
+	pagination = helper.PaginationAdapter(query.Page, query.PageSize, int(total), models)
+	return pagination, nil
 }
 
-func (r *trasactionRepository) FindManyByUserID(userID int, query entity.Paginate) ([]entity.Transaction, error) {
+func (r *trasactionRepository) FindManyByUserID(userID int, query entity.Paginate) (helper.ResponsePagination, error) {
 	var models []entity.Transaction
-	err := r.db.Scopes(helper.Pagination(query.Page, query.PageSize)).Preload("Campaign.CampaignImages", "campaign_images.is_primary = 1").Find(&models).Where("user_id = ?", userID).Order(ORDER_BY_ID_DESC).Error
+	var pagination helper.ResponsePagination
+	var total int64
+	err := r.db.Scopes(helper.PaginationScope(query.Page, query.PageSize)).Preload("Campaign.CampaignImages", "campaign_images.is_primary = 1").Find(&models).Where("user_id = ?", userID).Order(ORDER_BY_ID_DESC).Error
 	if err != nil {
-		return models, err
+		return pagination, err
 	}
-	return models, nil
+	r.db.Table(TABLE_TRANSACTIONS).Where("user_id = ?", userID).Count(&total)
+	pagination = helper.PaginationAdapter(query.Page, query.PageSize, int(total), models)
+	return pagination, nil
 }
 
+//Get One
 func (r *trasactionRepository) FindOneByTransactionID(transactionID int) (entity.Transaction, error) {
 	var model entity.Transaction
 	err := r.db.Find(&model).Where("id = ?", transactionID).Order(ORDER_BY_ID_DESC).Error
@@ -63,19 +84,18 @@ func (r *trasactionRepository) FindOneByTransactionID(transactionID int) (entity
 	return model, nil
 }
 
+//Action
+func (r *trasactionRepository) Create(model entity.Transaction) (entity.Transaction, error) {
+	err := r.db.Create(&model).Error
+	if err != nil {
+		return model, err
+	}
+	return model, nil
+}
 func (r *trasactionRepository) Update(model entity.Transaction) (entity.Transaction, error) {
 	err := r.db.Save(&model).Error
 	if err != nil {
 		return model, err
 	}
 	return model, nil
-}
-
-func (r *trasactionRepository) FindAll(query entity.Paginate) ([]entity.Transaction, error) {
-	var models []entity.Transaction
-	err := r.db.Scopes(helper.Pagination(query.Page, query.PageSize)).Order("created_at desc").Preload("Campaign").Find(&models).Error
-	if err != nil {
-		return models, err
-	}
-	return models, nil
 }

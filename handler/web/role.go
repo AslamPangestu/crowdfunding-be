@@ -3,9 +3,11 @@ package handler
 import (
 	"crowdfunding/entity"
 	"crowdfunding/services"
+	"fmt"
 	"net/http"
 	"strconv"
 
+	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 )
 
@@ -18,12 +20,17 @@ func RoleHandlerInit(service services.RoleInteractor) *roleHandler {
 }
 
 func (h *roleHandler) Index(c *gin.Context) {
-	models, err := h.service.GetRoles()
+	session := sessions.Default(c)
+	user := session.Get("user")
+	fmt.Println("USER", user)
+	page, _ := strconv.Atoi(c.Query("page"))
+	pageSize, _ := strconv.Atoi(c.Query("page_size"))
+	models, err := h.service.GetRoles(page, pageSize)
 	if err != nil {
 		c.HTML(http.StatusInternalServerError, "error.html", nil)
 		return
 	}
-	c.HTML(http.StatusOK, "role_index.html", gin.H{"roles": models})
+	c.HTML(http.StatusOK, "role_index.html", gin.H{"roles": models.Data, "pagination": models.Pagination})
 }
 
 func (h *roleHandler) Create(c *gin.Context) {

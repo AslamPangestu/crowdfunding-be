@@ -12,6 +12,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/mitchellh/mapstructure"
 )
 
 type campaignHandler struct {
@@ -31,18 +32,20 @@ func (h *campaignHandler) Index(c *gin.Context) {
 		c.HTML(http.StatusInternalServerError, "error.html", nil)
 		return
 	}
-	c.HTML(http.StatusOK, "campaign_index.html", gin.H{"campaigns": models})
+	c.HTML(http.StatusOK, "campaign_index.html", gin.H{"campaigns": models.Data, "pagination": models.Pagination})
 }
 
 func (h *campaignHandler) Create(c *gin.Context) {
-	users, err := h.userService.GetAllUsers()
+	users, err := h.userService.GetAllUsers(0, 0)
 	if err != nil {
 		c.HTML(http.StatusInternalServerError, "error.html", nil)
 		return
 	}
+	models := []entity.User{}
+	mapstructure.Decode(users.Data, &models)
 
 	form := entity.CreateCampaignForm{
-		Users: users,
+		Users: models,
 	}
 	c.HTML(http.StatusOK, "campaign_create.html", form)
 }
@@ -52,12 +55,14 @@ func (h *campaignHandler) PostCreate(c *gin.Context) {
 
 	err := c.ShouldBind(&form)
 	if err != nil {
-		users, errUsers := h.userService.GetAllUsers()
+		users, errUsers := h.userService.GetAllUsers(0, 0)
 		if errUsers != nil {
 			c.HTML(http.StatusInternalServerError, "error.html", nil)
 			return
 		}
-		form.Users = users
+		models := []entity.User{}
+		mapstructure.Decode(users.Data, &models)
+		form.Users = models
 		form.Error = err
 		c.HTML(http.StatusOK, "campaign_create.html", form)
 		return

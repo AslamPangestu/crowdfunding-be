@@ -9,6 +9,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/mitchellh/mapstructure"
 )
 
 type transactionHandler struct {
@@ -57,7 +58,7 @@ func (h *transactionHandler) MakeTransaction(c *gin.Context) {
 ROUTE: api/v1/campaigns/:id/transactions
 METHOD: GET
 */
-func (h *transactionHandler) GetCamapaignTransactions(c *gin.Context) {
+func (h *transactionHandler) GetCampaignTransactions(c *gin.Context) {
 	//Get User Logged
 	currentUser := c.MustGet("currentUser").(entity.User)
 	//GET ID CAMPAIGN
@@ -65,23 +66,31 @@ func (h *transactionHandler) GetCamapaignTransactions(c *gin.Context) {
 	err := c.ShouldBindUri(&request)
 	if err != nil {
 		errorMessage := gin.H{"errors": err.Error()}
-		errResponse := helper.ResponseHandler("GetCamapaignTransactions Failed", http.StatusBadRequest, "failed", errorMessage)
+		errResponse := helper.ResponseHandler("GetCampaignTransactions Failed", http.StatusBadRequest, "failed", errorMessage)
 		c.JSON(http.StatusBadRequest, errResponse)
 		return
 	}
 	//SET OWNER CAMPAIGN
 	request.CampaignerID = currentUser.ID
 	//GET TRANSACTIONS CAMPAIGN
-	transactions, err := h.service.GetTransactionsByCampaignID(request)
+	//Get Query
+	page, _ := strconv.Atoi(c.Query("page"))
+	pageSize, _ := strconv.Atoi(c.Query("page_size"))
+	transactions, err := h.service.GetTransactionsByCampaignID(request, page, pageSize)
 	if err != nil {
 		errorMessage := gin.H{"errors": err.Error()}
-		errResponse := helper.ResponseHandler("GetCamapaignTransactions Failed", http.StatusBadRequest, "failed", errorMessage)
+		errResponse := helper.ResponseHandler("GetCampaignTransactions Failed", http.StatusBadRequest, "failed", errorMessage)
 		c.JSON(http.StatusBadRequest, errResponse)
 		return
 	}
 	//RESPONSE
-	data := adapter.CampaignTransactionsAdapter(transactions)
-	res := helper.ResponseHandler("GetCamapaignTransactions Successful", http.StatusOK, "success", data)
+	models := []entity.Transaction{}
+	mapstructure.Decode(transactions.Data, &models)
+	data := adapter.CampaignTransactionsAdapter(models)
+	res := helper.ResponseHandler("GetCampaignTransactions Successful", http.StatusOK, "success", helper.ResponsePagination{
+		Data:       data,
+		Pagination: transactions.Pagination,
+	})
 	c.JSON(http.StatusOK, res)
 }
 
@@ -104,8 +113,13 @@ func (h *transactionHandler) GetUserTransactions(c *gin.Context) {
 		return
 	}
 	//RESPONSE
-	data := adapter.UserTransactionsAdapter(transactions)
-	res := helper.ResponseHandler("GetUserTransactions Successful", http.StatusOK, "success", data)
+	models := []entity.Transaction{}
+	mapstructure.Decode(transactions.Data, &models)
+	data := adapter.UserTransactionsAdapter(models)
+	res := helper.ResponseHandler("GetUserTransactions Successful", http.StatusOK, "success", helper.ResponsePagination{
+		Data:       data,
+		Pagination: transactions.Pagination,
+	})
 	c.JSON(http.StatusOK, res)
 }
 
