@@ -25,7 +25,11 @@ func CampaignHandlerInit(service services.CampaignInteractor, userService servic
 }
 
 func (h *campaignHandler) Index(c *gin.Context) {
-	user := helper.GetUserLoggedIn(c)
+	user, err := helper.GetUserLoggedIn(c)
+	if err != nil {
+		c.HTML(http.StatusInternalServerError, "error.html", nil)
+		return
+	}
 	page, _ := strconv.Atoi(c.Query("page"))
 	pageSize, _ := strconv.Atoi(c.Query("page_size"))
 	models, err := h.service.GetCampaigns(0, page, pageSize)
@@ -34,10 +38,15 @@ func (h *campaignHandler) Index(c *gin.Context) {
 		return
 	}
 	pagination := helper.PaginationAdapterHandler(models.Pagination)
-	c.HTML(http.StatusOK, "campaign_index.html", gin.H{"user": user, "campaigns": models.Data, "pagination": pagination})
+	c.HTML(http.StatusOK, "campaign_index.html", gin.H{"User": user, "campaigns": models.Data, "pagination": pagination})
 }
 
 func (h *campaignHandler) Create(c *gin.Context) {
+	user, err := helper.GetUserLoggedIn(c)
+	if err != nil {
+		c.HTML(http.StatusInternalServerError, "error.html", nil)
+		return
+	}
 	users, err := h.userService.GetAllUsers(1, 0)
 	if err != nil {
 		c.HTML(http.StatusInternalServerError, "error.html", nil)
@@ -48,6 +57,7 @@ func (h *campaignHandler) Create(c *gin.Context) {
 
 	form := entity.CreateCampaignForm{
 		Users: models,
+		User:  user,
 	}
 	c.HTML(http.StatusOK, "campaign_create.html", form)
 }
@@ -89,8 +99,13 @@ func (h *campaignHandler) PostCreate(c *gin.Context) {
 }
 
 func (h *campaignHandler) UploadImages(c *gin.Context) {
+	user, err := helper.GetUserLoggedIn(c)
+	if err != nil {
+		c.HTML(http.StatusInternalServerError, "error.html", nil)
+		return
+	}
 	id, _ := strconv.Atoi(c.Param("id"))
-	c.HTML(http.StatusOK, "campaign_image.html", gin.H{"ID": id})
+	c.HTML(http.StatusOK, "campaign_image.html", gin.H{"ID": id, "User": user})
 }
 
 func (h *campaignHandler) PostUploadImages(c *gin.Context) {
@@ -146,6 +161,11 @@ func (h *campaignHandler) PostUploadImages(c *gin.Context) {
 }
 
 func (h *campaignHandler) Edit(c *gin.Context) {
+	user, err := helper.GetUserLoggedIn(c)
+	if err != nil {
+		c.HTML(http.StatusInternalServerError, "error.html", nil)
+		return
+	}
 	id, _ := strconv.Atoi(c.Param("id"))
 	campaign, err := h.service.GetCampaignByID(entity.CampaignIDRequest{ID: id})
 	if err != nil {
@@ -160,6 +180,7 @@ func (h *campaignHandler) Edit(c *gin.Context) {
 		Description:      campaign.Description,
 		TargetAmount:     campaign.TargetAmount,
 		Perks:            campaign.Perks,
+		User:             user,
 	}
 	c.HTML(http.StatusOK, "campaign_edit.html", form)
 }
@@ -201,11 +222,25 @@ func (h *campaignHandler) PostEdit(c *gin.Context) {
 }
 
 func (h *campaignHandler) Detail(c *gin.Context) {
+	user, err := helper.GetUserLoggedIn(c)
+	if err != nil {
+		c.HTML(http.StatusInternalServerError, "error.html", nil)
+		return
+	}
 	id, _ := strconv.Atoi(c.Param("id"))
 	campaign, err := h.service.GetCampaignByID(entity.CampaignIDRequest{ID: id})
 	if err != nil {
 		c.HTML(http.StatusInternalServerError, "error.html", nil)
 		return
 	}
-	c.HTML(http.StatusOK, "campaign_detail.html", campaign)
+	form := entity.EditCampaignForm{
+		ID:               id,
+		Title:            campaign.Title,
+		ShortDescription: campaign.ShortDescription,
+		Description:      campaign.Description,
+		TargetAmount:     campaign.TargetAmount,
+		Perks:            campaign.Perks,
+		User:             user,
+	}
+	c.HTML(http.StatusOK, "campaign_detail.html", form)
 }

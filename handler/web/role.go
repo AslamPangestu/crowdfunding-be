@@ -19,7 +19,11 @@ func RoleHandlerInit(service services.RoleInteractor) *roleHandler {
 }
 
 func (h *roleHandler) Index(c *gin.Context) {
-	user := helper.GetUserLoggedIn(c)
+	user, err := helper.GetUserLoggedIn(c)
+	if err != nil {
+		c.HTML(http.StatusInternalServerError, "error.html", nil)
+		return
+	}
 	page, _ := strconv.Atoi(c.Query("page"))
 	pageSize, _ := strconv.Atoi(c.Query("page_size"))
 	models, err := h.service.GetRoles(page, pageSize)
@@ -28,11 +32,16 @@ func (h *roleHandler) Index(c *gin.Context) {
 		return
 	}
 	pagination := helper.PaginationAdapterHandler(models.Pagination)
-	c.HTML(http.StatusOK, "role_index.html", gin.H{"user": user, "roles": models.Data, "pagination": pagination})
+	c.HTML(http.StatusOK, "role_index.html", gin.H{"User": user, "roles": models.Data, "pagination": pagination})
 }
 
 func (h *roleHandler) Create(c *gin.Context) {
-	c.HTML(http.StatusOK, "role_create.html", nil)
+	user, err := helper.GetUserLoggedIn(c)
+	if err != nil {
+		c.HTML(http.StatusInternalServerError, "error.html", nil)
+		return
+	}
+	c.HTML(http.StatusOK, "role_create.html", gin.H{"User": user})
 }
 
 func (h *roleHandler) PostCreate(c *gin.Context) {
@@ -59,17 +68,23 @@ func (h *roleHandler) PostCreate(c *gin.Context) {
 }
 
 func (h *roleHandler) Edit(c *gin.Context) {
+	user, err := helper.GetUserLoggedIn(c)
+	if err != nil {
+		c.HTML(http.StatusInternalServerError, "error.html", nil)
+		return
+	}
 	id, _ := strconv.Atoi(c.Param("id"))
 	model, err := h.service.GetRoleByID(id)
 	if err != nil {
 		c.HTML(http.StatusInternalServerError, "error.html", nil)
 		return
 	}
-	user := entity.EditRoleForm{
+	form := entity.EditRoleForm{
 		ID:   id,
 		Name: model.Name,
+		User: user,
 	}
-	c.HTML(http.StatusOK, "role_edit.html", user)
+	c.HTML(http.StatusOK, "role_edit.html", form)
 }
 
 func (h *roleHandler) PostEdit(c *gin.Context) {

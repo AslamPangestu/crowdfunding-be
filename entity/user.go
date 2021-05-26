@@ -74,6 +74,7 @@ type CreateUserForm struct {
 	Occupation string `form:"occupation" binding:"required"`
 	Password   string `form:"password" binding:"required"`
 	Error      error
+	User       User
 }
 
 //EditUserForm : Mapping Form Create User
@@ -84,4 +85,5 @@ type EditUserForm struct {
 	Email      string `form:"email" binding:"required,email"`
 	Occupation string `form:"occupation" binding:"required"`
 	Error      error
+	User       User
 }

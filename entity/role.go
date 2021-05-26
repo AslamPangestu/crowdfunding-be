@@ -35,6 +35,7 @@ type RoleResponse struct {
 type CreateRoleForm struct {
 	Name  string `form:"name" binding:"required"`
 	Error error
+	User  User
 }
 
 //RoleNameRequest : Mapping Role Request by name
@@ -42,4 +43,5 @@ type EditRoleForm struct {
 	ID    int
 	Name  string `form:"name" binding:"required"`
 	Error error
+	User  User
 }

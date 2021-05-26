@@ -122,6 +122,7 @@ type CreateCampaignForm struct {
 	UserID           int    `form:"user_id" binding:"required"`
 	Users            []User
 	Error            error
+	User             User
 }
 
 //EditCampaignForm : Mapping Form Edit Campaign
@@ -133,4 +134,5 @@ type EditCampaignForm struct {
 	TargetAmount     int    `form:"target_amount" binding:"required"`
 	Perks            string `form:"perks" binding:"required"`
 	Error            error
+	User             User
 }

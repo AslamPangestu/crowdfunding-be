@@ -23,7 +23,11 @@ func UserHandlerInit(service services.UserInteractor) *userHandler {
 }
 
 func (h *userHandler) Index(c *gin.Context) {
-	user := helper.GetUserLoggedIn(c)
+	user, err := helper.GetUserLoggedIn(c)
+	if err != nil {
+		c.HTML(http.StatusInternalServerError, "error.html", nil)
+		return
+	}
 	page, _ := strconv.Atoi(c.Query("page"))
 	pageSize, _ := strconv.Atoi(c.Query("page_size"))
 	models, err := h.service.GetAllUsers(page, pageSize)
@@ -32,11 +36,16 @@ func (h *userHandler) Index(c *gin.Context) {
 		return
 	}
 	pagination := helper.PaginationAdapterHandler(models.Pagination)
-	c.HTML(http.StatusOK, "user_index.html", gin.H{"user": user, "users": models.Data, "pagination": pagination})
+	c.HTML(http.StatusOK, "user_index.html", gin.H{"User": user, "users": models.Data, "pagination": pagination})
 }
 
 func (h *userHandler) Create(c *gin.Context) {
-	c.HTML(http.StatusOK, "user_create.html", nil)
+	user, err := helper.GetUserLoggedIn(c)
+	if err != nil {
+		c.HTML(http.StatusInternalServerError, "error.html", nil)
+		return
+	}
+	c.HTML(http.StatusOK, "user_create.html", gin.H{"User": user})
 }
 
 func (h *userHandler) PostCreate(c *gin.Context) {
@@ -67,20 +76,26 @@ func (h *userHandler) PostCreate(c *gin.Context) {
 }
 
 func (h *userHandler) Edit(c *gin.Context) {
+	user, err := helper.GetUserLoggedIn(c)
+	if err != nil {
+		c.HTML(http.StatusInternalServerError, "error.html", nil)
+		return
+	}
 	id, _ := strconv.Atoi(c.Param("id"))
 	model, err := h.service.GetUserByID(id)
 	if err != nil {
 		c.HTML(http.StatusInternalServerError, "error.html", nil)
 		return
 	}
-	user := entity.EditUserForm{
+	form := entity.EditUserForm{
 		ID:         id,
 		Name:       model.Name,
 		Username:   model.Username,
 		Email:      model.Email,
 		Occupation: model.Occupation,
+		User:       user,
 	}
-	c.HTML(http.StatusOK, "user_edit.html", user)
+	c.HTML(http.StatusOK, "user_edit.html", form)
 }
 
 func (h *userHandler) PostEdit(c *gin.Context) {

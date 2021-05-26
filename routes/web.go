@@ -67,4 +67,6 @@ func WebRoute(route *gin.Engine, db *gorm.DB) {
 	route.GET("/login", authHandler.Login)
 	route.POST("/login", authHandler.PostLogin)
 	route.GET("/logout", authHandler.PostLogout)
+	route.GET("/profile", middleware.WebAuthMiddleware(), authHandler.Profile)
+	route.POST("/profile/:id", middleware.WebAuthMiddleware(), authHandler.PostProfile)
 }
