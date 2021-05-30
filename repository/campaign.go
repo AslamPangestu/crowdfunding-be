@@ -60,7 +60,7 @@ func (r *campaignRepository) FindManyByCampaignerID(userID int, query entity.Pag
 	if err != nil {
 		return pagination, err
 	}
-	r.db.Table(TABLE_CAMPAIGNS).Where("campaigner_id = ?", userID).Preload(TBL_CAMPAIGN_IMAGES, QUERY_CAMPAIGN_IMAGES).Count(&total)
+	r.db.Table(TABLE_CAMPAIGNS).Where("campaigner_id = ?", userID).Count(&total)
 	pagination = helper.PaginationAdapter(query.Page, query.PageSize, int(total), models)
 	return pagination, nil
 }

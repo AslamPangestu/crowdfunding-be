@@ -56,7 +56,7 @@ func (r *trasactionRepository) FindManyByCampaignID(campaignID int, query entity
 	if err != nil {
 		return pagination, err
 	}
-	r.db.Table(TABLE_TRANSACTIONS).Preload("User").Where("campaign_id = ?", campaignID).Count(&total)
+	r.db.Table(TABLE_TRANSACTIONS).Where("campaign_id = ?", campaignID).Count(&total)
 	pagination = helper.PaginationAdapter(query.Page, query.PageSize, int(total), models)
 	return pagination, nil
 }
