@@ -162,12 +162,19 @@ func (h *userHandler) UploadAvatar(c *gin.Context) {
 		path = helper.GenerateURL("avatars", filename)
 	}
 	if storageType == "cloud" {
-		var ctx = context.Background()
-		cloudinary := config.NewCloudStorage()
-		uploadResponse, err := cloudinary.Upload.Upload(ctx, file, config.ConfigCloudStorage("avatars"))
+		openedFile, err := file.Open()
 		if err != nil {
 			errorMessage := gin.H{"is_uploaded": false, "errors": err.Error()}
 			errResponse := helper.ResponseHandler("[Cloud]Get File Avatar Failed", http.StatusBadRequest, "failed", errorMessage)
+			c.JSON(http.StatusBadRequest, errResponse)
+			return
+		}
+		var ctx = context.Background()
+		cloudinary := config.NewCloudStorage()
+		uploadResponse, err := cloudinary.Upload.Upload(ctx, openedFile, config.ConfigCloudStorage("avatars"))
+		if err != nil {
+			errorMessage := gin.H{"is_uploaded": false, "errors": err.Error()}
+			errResponse := helper.ResponseHandler("[Cloud]Upload File Avatar Failed", http.StatusBadRequest, "failed", errorMessage)
 			c.JSON(http.StatusBadRequest, errResponse)
 			return
 		}
