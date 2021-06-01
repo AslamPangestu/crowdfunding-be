@@ -22,9 +22,6 @@ func NewCloudStorage() *cloudinary.Cloudinary {
 
 func ConfigCloudStorage(folder string) uploader.UploadParams {
 	return uploader.UploadParams{
-		Folder:         folder,
-		UseFilename:    false,
-		UniqueFilename: true,
-		ResourceType:   "image",
+		Folder: folder,
 	}
 }

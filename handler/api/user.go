@@ -178,6 +178,9 @@ func (h *userHandler) UploadAvatar(c *gin.Context) {
 			c.JSON(http.StatusBadRequest, errResponse)
 			return
 		}
+		fmt.Println("URL", uploadResponse.SecureURL)
+		fmt.Println("ERR", err)
+		fmt.Println("RESPONSE ERR", uploadResponse.Error.Message)
 		//Generate URL
 		path = uploadResponse.SecureURL
 	}

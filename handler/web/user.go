@@ -153,9 +153,14 @@ func (h *userHandler) PostUploadAvatar(c *gin.Context) {
 		path = helper.GenerateURL("avatars", filename)
 	}
 	if storageType == "cloud" {
+		openedFile, err := file.Open()
+		if err != nil {
+			c.HTML(http.StatusOK, "user_avatar.html", gin.H{"Error": err})
+			return
+		}
 		var ctx = context.Background()
 		cloudinary := config.NewCloudStorage()
-		uploadResponse, err := cloudinary.Upload.Upload(ctx, file, config.ConfigCloudStorage("avatars"))
+		uploadResponse, err := cloudinary.Upload.Upload(ctx, openedFile, config.ConfigCloudStorage("avatars"))
 		if err != nil {
 			c.HTML(http.StatusOK, "user_avatar.html", gin.H{"Error": err})
 			return

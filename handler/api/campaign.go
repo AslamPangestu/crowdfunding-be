@@ -199,9 +199,16 @@ func (h *campaignHandler) UploadImage(c *gin.Context) {
 		path = helper.GenerateURL("campaigns", filename)
 	}
 	if storageType == "cloud" {
+		openedFile, err := file.Open()
+		if err != nil {
+			errorMessage := gin.H{"is_uploaded": false, "errors": err.Error()}
+			errResponse := helper.ResponseHandler("[Cloud]Get UploadImage Failed", http.StatusBadRequest, "failed", errorMessage)
+			c.JSON(http.StatusBadRequest, errResponse)
+			return
+		}
 		var ctx = context.Background()
 		cloudinary := config.NewCloudStorage()
-		uploadResponse, err := cloudinary.Upload.Upload(ctx, file, config.ConfigCloudStorage("campaigns"))
+		uploadResponse, err := cloudinary.Upload.Upload(ctx, openedFile, config.ConfigCloudStorage("campaigns"))
 		if err != nil {
 			errorMessage := gin.H{"is_uploaded": false, "errors": err.Error()}
 			errResponse := helper.ResponseHandler("[Cloud]Store UploadImage Failed", http.StatusBadRequest, "failed", errorMessage)
