@@ -5,7 +5,6 @@ import (
 	"crowdfunding/entity"
 	"crowdfunding/repository"
 	"errors"
-	"strconv"
 
 	"github.com/veritrans/go-midtrans"
 )
@@ -48,8 +47,7 @@ func (s *paymentService) GeneratePaymentURL(transaction entity.Transaction, user
 }
 
 func (s *paymentService) ProcessPayment(form entity.TransactionNotificationRequest) error {
-	transsactionID, _ := strconv.Atoi(form.OrderID)
-	transaction, err := s.transactionRepository.FindOneByTransactionID(transsactionID)
+	transaction, err := s.transactionRepository.FindOneByTrxCode(form.OrderID)
 	if err != nil {
 		return err
 	}
@@ -59,7 +57,7 @@ func (s *paymentService) ProcessPayment(form entity.TransactionNotificationReque
 	//IF Credit Card
 	if form.PaymentType == "credit_card" && form.TransactionStatus == "capture" && form.FraudStatus == "accept" {
 		transaction.Status = "paid"
-	} else if form.TransactionStatus == "settelment" {
+	} else if form.TransactionStatus == "settlement" {
 		transaction.Status = "paid"
 	} else if form.TransactionStatus == "deny" || form.TransactionStatus == "expire" || form.TransactionStatus == "cancel" {
 		transaction.Status = "cancelled"

@@ -15,6 +15,7 @@ type TransactionInteractor interface {
 	FindManyByUserID(userID int, query entity.Paginate) (helper.ResponsePagination, error)
 	//Get One
 	FindOneByTransactionID(transactionID int) (entity.Transaction, error)
+	FindOneByTrxCode(trxCode string) (entity.Transaction, error)
 	//Action
 	Create(model entity.Transaction) (entity.Transaction, error)
 	Update(model entity.Transaction) (entity.Transaction, error)
@@ -77,7 +78,15 @@ func (r *trasactionRepository) FindManyByUserID(userID int, query entity.Paginat
 //Get One
 func (r *trasactionRepository) FindOneByTransactionID(transactionID int) (entity.Transaction, error) {
 	var model entity.Transaction
-	err := r.db.Find(&model).Where("id = ?", transactionID).Order(ORDER_BY_ID_DESC).Error
+	err := r.db.Where("id = ?", transactionID).Find(&model).Where("id = ?", transactionID).Error
+	if err != nil {
+		return model, err
+	}
+	return model, nil
+}
+func (r *trasactionRepository) FindOneByTrxCode(trxCode string) (entity.Transaction, error) {
+	var model entity.Transaction
+	err := r.db.Where("trx_code = ?", trxCode).Find(&model).Error
 	if err != nil {
 		return model, err
 	}
