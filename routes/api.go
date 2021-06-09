@@ -50,5 +50,5 @@ func APIRoute(api *gin.RouterGroup, db *gorm.DB) {
 	api.GET("/campaigns/:id/transactions", middleware.APIAuthMiddleware(authService, userService), transactionHandler.GetCampaignTransactions)
 	api.GET("/users/transactions", middleware.APIAuthMiddleware(authService, userService), transactionHandler.GetUserTransactions)
 	api.POST("/users/transactions", middleware.APIAuthMiddleware(authService, userService), transactionHandler.MakeTransaction)
-	api.GET("/users/notification", middleware.APIAuthMiddleware(authService, userService), transactionHandler.GetNotification)
+	api.POST("/users/notification", middleware.APIAuthMiddleware(authService, userService), transactionHandler.GetNotification)
 }
