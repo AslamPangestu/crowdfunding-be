@@ -13,7 +13,7 @@ func NewCloudStorage() *cloudinary.Cloudinary {
 	var CLOUD_NAME = os.Getenv("CLOUD_NAME")
 	var CLOUD_KEY = os.Getenv("CLOUD_API_KEY")
 	var CLOUD_SECRET = os.Getenv("CLOUD_API_SECRET")
-	config, err := cloudinary.CreateFromParams(CLOUD_NAME, CLOUD_KEY, CLOUD_SECRET)
+	config, err := cloudinary.NewFromParams(CLOUD_NAME, CLOUD_KEY, CLOUD_SECRET)
 	if err != nil {
 		log.Fatalf("Cloudinary Failure, %v\n", err.Error())
 	}
