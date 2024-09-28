@@ -1,0 +1,9 @@
+.git
+.gitignore
+vendor/
+_build/
+*.a
+*.so
+*.dylib
+*.o
+*.swp
