@@ -25,7 +25,8 @@ func CampaignHandlerInit(service services.CampaignInteractor) *campaignHandler {
 	return &campaignHandler{service}
 }
 
-/**
+/*
+*
 ROUTE: api/v1/campaigns
 METHOD: POST
 */
@@ -57,7 +58,8 @@ func (h *campaignHandler) CreateCampaign(c *gin.Context) {
 	c.JSON(http.StatusOK, res)
 }
 
-/**
+/*
+*
 ROUTE: api/v1/campaigns
 QUERY: user_id
 METHOD: GET
@@ -86,7 +88,8 @@ func (h *campaignHandler) GetCampaigns(c *gin.Context) {
 	c.JSON(http.StatusOK, res)
 }
 
-/**
+/*
+*
 ROUTE: api/v1/campaigns/:id
 METHOD: GET
 */
@@ -114,7 +117,8 @@ func (h *campaignHandler) GetCampaign(c *gin.Context) {
 	c.JSON(http.StatusOK, res)
 }
 
-/**
+/*
+*
 ROUTE: api/v1/campaigns
 METHOD: PATCH
 */
@@ -156,7 +160,8 @@ func (h *campaignHandler) EditCampaign(c *gin.Context) {
 	c.JSON(http.StatusOK, res)
 }
 
-/**
+/*
+*
 ROUTE: api/v1/campaigns
 METHOD: POST
 */

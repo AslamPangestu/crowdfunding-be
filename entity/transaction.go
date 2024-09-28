@@ -6,7 +6,7 @@ import (
 	"github.com/leekchan/accounting"
 )
 
-//Transaction : Mapping Transaction DB
+// Transaction : Mapping Transaction DB
 type Transaction struct {
 	ID         int
 	CampaignID int
@@ -21,13 +21,13 @@ type Transaction struct {
 	Campaign   Campaign `gorm:"foreignKey:CampaignID"`
 }
 
-//CampaignTransactionsRequest : Request Get Transactions
+// CampaignTransactionsRequest : Request Get Transactions
 type CampaignTransactionsRequest struct {
 	ID           int `uri:"id" binding:"required"`
 	CampaignerID int
 }
 
-//CampaignTransactionsResponse : Response Get Transactions for CampaignTransactionsRequest
+// CampaignTransactionsResponse : Response Get Transactions for CampaignTransactionsRequest
 type CampaignTransactionsResponse struct {
 	ID        int       `json:"id"`
 	Name      string    `json:"name"`
@@ -35,7 +35,7 @@ type CampaignTransactionsResponse struct {
 	CreatedAt time.Time `json:"created_at"`
 }
 
-//UserTransactionsResponse : Response Get Transactions for User
+// UserTransactionsResponse : Response Get Transactions for User
 type UserTransactionsResponse struct {
 	ID        int                 `json:"id"`
 	Amount    int                 `json:"amount"`
@@ -45,20 +45,20 @@ type UserTransactionsResponse struct {
 	Campaign  CampaignTransaction `json:"campaign"`
 }
 
-//CampaignTransaction : Detail Campaign Transaction for UserTransactionsResponse
+// CampaignTransaction : Detail Campaign Transaction for UserTransactionsResponse
 type CampaignTransaction struct {
 	Title    string `json:"title"`
 	ImageURL string `json:"image_url"`
 }
 
-//TransactionRequest : Transaction Request
+// TransactionRequest : Transaction Request
 type TransactionRequest struct {
 	Amount     int `json:"amount" binding:"required"`
 	CampaignID int `json:"campaign_id" binding:"required"`
 	Backer     User
 }
 
-//TransactionResponse : Transaction Response
+// TransactionResponse : Transaction Response
 type TransactionResponse struct {
 	ID         int    `json:"id"`
 	CampaignID int    `json:"campaign_id"`
@@ -69,7 +69,7 @@ type TransactionResponse struct {
 	PaymentURL string `json:"payment_url"`
 }
 
-//TransactionNotificationRequest : Transaction Notif Req
+// TransactionNotificationRequest : Transaction Notif Req
 type TransactionNotificationRequest struct {
 	TransactionStatus string `json:"transaction_status"`
 	OrderID           string `json:"order_id"`
@@ -77,7 +77,7 @@ type TransactionNotificationRequest struct {
 	FraudStatus       string `json:"fraud_status"`
 }
 
-//TargetAmountFormatIDR : Adapter Campaign Detail
+// TargetAmountFormatIDR : Adapter Campaign Detail
 func (t Transaction) AmountFormatIDR() string {
 	format := accounting.Accounting{Symbol: "IDR ", Precision: 2, Thousand: ".", Decimal: ","}
 	return format.FormatMoney(t.Amount)

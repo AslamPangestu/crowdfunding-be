@@ -32,7 +32,7 @@ func NewCampaignService(repository repository.CampaignInteractor) *campaignServi
 	return &campaignService{repository}
 }
 
-//Get Many
+// Get Many
 func (s *campaignService) GetCampaigns(userID int, page int, pageSize int) (helper.ResponsePagination, error) {
 	query := entity.Paginate{
 		Page:     page,
@@ -52,19 +52,19 @@ func (s *campaignService) GetCampaigns(userID int, page int, pageSize int) (help
 	return models, nil
 }
 
-//Get One
+// Get One
 func (s *campaignService) GetCampaignByID(uri entity.CampaignIDRequest) (entity.Campaign, error) {
 	model, err := s.repository.FindOneByID(uri.ID)
 	if err != nil {
 		return model, err
 	}
 	if model.ID == 0 {
-		return model, errors.New("Campaign not found")
+		return model, errors.New("CAMPAIGN NOT FOUND")
 	}
 	return model, nil
 }
 
-//Action
+// Action
 func (s *campaignService) CreateCampaign(form entity.FormCampaignRequest) (entity.Campaign, error) {
 	slugString := fmt.Sprintf("%d %s", form.CampaignerID, form.Title)
 	model := entity.Campaign{
@@ -89,11 +89,11 @@ func (s *campaignService) EditCampaign(uri entity.CampaignIDRequest, form entity
 		return model, err
 	}
 	if model.ID == 0 {
-		return model, errors.New("Campaign not found")
+		return model, errors.New("CAMPAIGN NOT FOUND")
 	}
 
 	if model.CampaignerID != form.CampaignerID {
-		return model, errors.New("User not Authorize for this action")
+		return model, errors.New("USER NOT AUTHORIZE FOR THIS ACTION")
 	}
 	model.Title = form.Title
 	model.ShortDescription = form.ShortDescription
@@ -114,10 +114,10 @@ func (s *campaignService) UploadCampaignImages(form entity.UploadCampaignImageRe
 		return entity.CampaignImage{}, err
 	}
 	if campaign.ID == 0 {
-		return entity.CampaignImage{}, errors.New("Campaign not found")
+		return entity.CampaignImage{}, errors.New("CAMPAIGN NOT FOUND")
 	}
 	if campaign.CampaignerID != form.UserID {
-		return entity.CampaignImage{}, errors.New("User not Authorize for this action")
+		return entity.CampaignImage{}, errors.New("USER NOT AUTHORIZE FOR THIS ACTION")
 	}
 	isPrimary := 0
 

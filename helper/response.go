@@ -4,8 +4,8 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-// Repsonse : Mapping Response
-type Repsonse struct {
+// Response : Mapping Response
+type Response struct {
 	Meta Meta        `json:"meta"`
 	Data interface{} `json:"data"`
 }
@@ -31,13 +31,13 @@ type paginationAdapterResponse struct {
 }
 
 // ResponseHandler : Handler response
-func ResponseHandler(message string, code int, status string, data interface{}) Repsonse {
+func ResponseHandler(message string, code int, status string, data interface{}) Response {
 	meta := Meta{
 		Message: message,
 		Code:    code,
 		Status:  status,
 	}
-	res := Repsonse{
+	res := Response{
 		Meta: meta,
 		Data: data,
 	}

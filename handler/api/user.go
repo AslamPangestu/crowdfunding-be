@@ -24,7 +24,8 @@ func UserHandlerInit(service services.UserInteractor, authService config.AuthSer
 	return &userHandler{service, authService}
 }
 
-/**
+/*
+*
 ROUTE: api/v1/register
 METHOD: POST
 */
@@ -55,12 +56,13 @@ func (h *userHandler) Register(c *gin.Context) {
 		return
 	}
 	//RESPONSE
-	data := adapter.RegsiterAdapter(user, token)
+	data := adapter.RegisterAdapter(user, token)
 	res := helper.ResponseHandler("Register Successful", http.StatusOK, "success", data)
 	c.JSON(http.StatusOK, res)
 }
 
-/**
+/*
+*
 ROUTE: api/v1/login
 METHOD: POST
 */
@@ -96,11 +98,12 @@ func (h *userHandler) Login(c *gin.Context) {
 	c.JSON(http.StatusOK, res)
 }
 
-/**
+/*
+*
 ROUTE: api/v1/email-validate
 METHOD: POST
 */
-func (h *userHandler) IsEmailAvaiable(c *gin.Context) {
+func (h *userHandler) IsEmailAvailable(c *gin.Context) {
 	//GET REQUEST EMAIL VALIDATE
 	var request entity.EmailValidationRequest
 	err := c.ShouldBindJSON(&request)
@@ -112,24 +115,25 @@ func (h *userHandler) IsEmailAvaiable(c *gin.Context) {
 	}
 
 	//GET EMAIL STATUS VALIDATE
-	isEmailAvaiable, err := h.service.IsEmailAvaiable(request)
+	isEmailAvailable, err := h.service.IsEmailAvailable(request)
 	if err != nil {
 		errorMessage := gin.H{"errors": err.Error()}
-		errResponse := helper.ResponseHandler("IsEmailAvaiable Failed", http.StatusBadRequest, "failed", errorMessage)
+		errResponse := helper.ResponseHandler("IsEmailAvailable Failed", http.StatusBadRequest, "failed", errorMessage)
 		c.JSON(http.StatusBadRequest, errResponse)
 		return
 	}
 	//RESPONSE
-	data := gin.H{"is_avaiable": isEmailAvaiable}
+	data := gin.H{"is_available": isEmailAvailable}
 	responseMessage := "Email already register"
-	if isEmailAvaiable {
-		responseMessage = "Email is avaiable"
+	if isEmailAvailable {
+		responseMessage = "Email is available"
 	}
 	res := helper.ResponseHandler(responseMessage, http.StatusOK, "success", data)
 	c.JSON(http.StatusOK, res)
 }
 
-/**
+/*
+*
 ROUTE: api/v1/upload-avatar
 METHOD: POST
 */
@@ -196,7 +200,8 @@ func (h *userHandler) UploadAvatar(c *gin.Context) {
 	c.JSON(http.StatusOK, res)
 }
 
-/**
+/*
+*
 ROUTE: api/v1/profile
 METHOD: GET
 */
@@ -209,7 +214,8 @@ func (h *userHandler) FetchUser(c *gin.Context) {
 	c.JSON(http.StatusOK, res)
 }
 
-/**
+/*
+*
 ROUTE: api/v1/profile
 METHOD: POST
 */

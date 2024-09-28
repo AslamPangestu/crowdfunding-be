@@ -2,7 +2,7 @@ package adapter
 
 import "crowdfunding/entity"
 
-//CampaignTransactionAdapter : Adapter Campaign Transaction
+// CampaignTransactionAdapter : Adapter Campaign Transaction
 func CampaignTransactionAdapter(transaction entity.Transaction) entity.CampaignTransactionsResponse {
 	return entity.CampaignTransactionsResponse{
 		ID:        transaction.ID,
@@ -12,7 +12,7 @@ func CampaignTransactionAdapter(transaction entity.Transaction) entity.CampaignT
 	}
 }
 
-//CampaignTransactionsAdapter : Adapter Campaign Transactions
+// CampaignTransactionsAdapter : Adapter Campaign Transactions
 func CampaignTransactionsAdapter(transactions []entity.Transaction) []entity.CampaignTransactionsResponse {
 	if len(transactions) == 0 {
 		return []entity.CampaignTransactionsResponse{}
@@ -26,7 +26,7 @@ func CampaignTransactionsAdapter(transactions []entity.Transaction) []entity.Cam
 	return transactionsResponse
 }
 
-//UserTransactionAdapter : Adapter User Transaction
+// UserTransactionAdapter : Adapter User Transaction
 func UserTransactionAdapter(transaction entity.Transaction) entity.UserTransactionsResponse {
 	imageURL := ""
 	if len(transaction.Campaign.CampaignImages) > 0 {
@@ -46,7 +46,7 @@ func UserTransactionAdapter(transaction entity.Transaction) entity.UserTransacti
 	}
 }
 
-//UserTransactionsAdapter : Adapter User Transactions
+// UserTransactionsAdapter : Adapter User Transactions
 func UserTransactionsAdapter(transactions []entity.Transaction) []entity.UserTransactionsResponse {
 	if len(transactions) == 0 {
 		return []entity.UserTransactionsResponse{}
@@ -60,7 +60,7 @@ func UserTransactionsAdapter(transactions []entity.Transaction) []entity.UserTra
 	return transactionsResponse
 }
 
-//TransactionAdapter : Adapter Transaction
+// TransactionAdapter : Adapter Transaction
 func TransactionAdapter(transaction entity.Transaction) entity.TransactionResponse {
 	return entity.TransactionResponse{
 		ID:         transaction.ID,

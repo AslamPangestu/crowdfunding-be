@@ -43,7 +43,7 @@ func (s *roleService) GetRoleByID(id int) (entity.Role, error) {
 		return model, err
 	}
 	if model.ID == 0 {
-		return model, errors.New("Role not found")
+		return model, errors.New("ROLE NOT FOUND")
 	}
 	return model, nil
 }
@@ -66,7 +66,7 @@ func (s *roleService) EditRole(id int, form entity.FormRoleRequest) (entity.Role
 		return model, err
 	}
 	if model.ID == 0 {
-		return model, errors.New("Role not found")
+		return model, errors.New("ROLE NOT FOUND")
 	}
 	model.Name = form.Name
 	updatedData, err := s.repository.Update(model)

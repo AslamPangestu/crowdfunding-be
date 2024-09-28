@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-//CampaignsAdapter : Adapter Campaigns
+// CampaignsAdapter : Adapter Campaigns
 func CampaignsAdapter(campaigns []entity.Campaign) []entity.CampaignResponse {
 	campaignsAdapter := []entity.CampaignResponse{}
 	for _, campaign := range campaigns {
@@ -15,7 +15,7 @@ func CampaignsAdapter(campaigns []entity.Campaign) []entity.CampaignResponse {
 	return campaignsAdapter
 }
 
-//CampaignAdapter : Adapter Campaign for Campaigns Adapter
+// CampaignAdapter : Adapter Campaign for Campaigns Adapter
 func CampaignAdapter(campaign entity.Campaign) entity.CampaignResponse {
 	imageURL := ""
 	if len(campaign.CampaignImages) > 0 {
@@ -33,7 +33,7 @@ func CampaignAdapter(campaign entity.Campaign) entity.CampaignResponse {
 	}
 }
 
-//CampaignDetailAdapter : Adapter Campaign Detail
+// CampaignDetailAdapter : Adapter Campaign Detail
 func CampaignDetailAdapter(campaign entity.Campaign) entity.CampaignDetailResponse {
 	imageURL := ""
 	var perks []string

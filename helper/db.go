@@ -4,7 +4,7 @@ import (
 	"gorm.io/gorm"
 )
 
-//Pagination : Mapping Role DB
+// Pagination : Mapping Role DB
 type Pagination struct {
 	Total       int  `json:"total"`
 	PerPage     int  `json:"per_page"`
@@ -14,7 +14,7 @@ type Pagination struct {
 	HasPrev     bool `json:"has_prev"`
 }
 
-//ResponsePagination : Mapping Role DB
+// ResponsePagination : Mapping Role DB
 type ResponsePagination struct {
 	Pagination Pagination  `json:"pagination"`
 	Data       interface{} `json:"data"`

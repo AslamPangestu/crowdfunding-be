@@ -2,7 +2,7 @@ package entity
 
 import "time"
 
-//User : Mapping User DB
+// User : Mapping User DB
 type User struct {
 	ID           int
 	Name         string
@@ -17,7 +17,7 @@ type User struct {
 	UpdatedAt    time.Time
 }
 
-//RegisterRequest : Mapping Register Request
+// RegisterRequest : Mapping Register Request
 type RegisterRequest struct {
 	Name       string `json:"name" binding:"required"`
 	Username   string `json:"username" binding:"required"`
@@ -26,7 +26,7 @@ type RegisterRequest struct {
 	Password   string `json:"password" binding:"required"`
 }
 
-//RegisterResponse : Mapping Register Response
+// RegisterResponse : Mapping Register Response
 type RegisterResponse struct {
 	ID         int    `json:"id"`
 	Name       string `json:"name"`
@@ -36,13 +36,13 @@ type RegisterResponse struct {
 	Token      string `json:"token"`
 }
 
-//LoginRequest : Mapping Login Request
+// LoginRequest : Mapping Login Request
 type LoginRequest struct {
 	Email    string `json:"email" form:"email" binding:"required,email"`
 	Password string `json:"password" form:"password" binding:"required"`
 }
 
-//LoginResponse : Mapping Register Response
+// LoginResponse : Mapping Register Response
 type LoginResponse struct {
 	ID         string `json:"id"`
 	Name       string `json:"name"`
@@ -53,7 +53,7 @@ type LoginResponse struct {
 	Token      string `json:"token"`
 }
 
-//UpdateUserRequest : Mapping Update User Request
+// UpdateUserRequest : Mapping Update User Request
 type UpdateUserRequest struct {
 	Name       string `json:"name" binding:"required"`
 	Username   string `json:"username" binding:"required"`
@@ -61,12 +61,12 @@ type UpdateUserRequest struct {
 	Occupation string `json:"occupation" binding:"required"`
 }
 
-//EmailValidationRequest : Mapping Email Validation Request
+// EmailValidationRequest : Mapping Email Validation Request
 type EmailValidationRequest struct {
 	Email string `json:"email" binding:"required,email"`
 }
 
-//CreateUserForm : Mapping Form Create User
+// CreateUserForm : Mapping Form Create User
 type CreateUserForm struct {
 	Name       string `form:"name" binding:"required"`
 	Username   string `form:"username" binding:"required"`
@@ -77,7 +77,7 @@ type CreateUserForm struct {
 	User       User
 }
 
-//EditUserForm : Mapping Form Create User
+// EditUserForm : Mapping Form Create User
 type EditUserForm struct {
 	ID         int
 	Name       string `form:"name" binding:"required"`

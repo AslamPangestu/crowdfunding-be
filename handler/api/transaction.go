@@ -22,7 +22,8 @@ func TransactionHandlerInit(service services.TransactionInteractor, paymentServi
 	return &transactionHandler{service, paymentService}
 }
 
-/**
+/*
+*
 ROUTE: api/users/transactions
 METHOD: POST
 */
@@ -54,7 +55,8 @@ func (h *transactionHandler) MakeTransaction(c *gin.Context) {
 	c.JSON(http.StatusOK, res)
 }
 
-/**
+/*
+*
 ROUTE: api/v1/campaigns/:id/transactions
 METHOD: GET
 */
@@ -94,7 +96,8 @@ func (h *transactionHandler) GetCampaignTransactions(c *gin.Context) {
 	c.JSON(http.StatusOK, res)
 }
 
-/**
+/*
+*
 ROUTE: api/v1/users/transactions
 METHOD: GET
 */
@@ -123,7 +126,8 @@ func (h *transactionHandler) GetUserTransactions(c *gin.Context) {
 	c.JSON(http.StatusOK, res)
 }
 
-/**
+/*
+*
 ROUTE: api/v1/users/transactions
 METHOD: GET
 */

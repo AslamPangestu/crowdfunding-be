@@ -21,13 +21,13 @@ type TransactionInteractor interface {
 	Update(model entity.Transaction) (entity.Transaction, error)
 }
 
-type trasactionRepository struct {
+type transactionRepository struct {
 	db *gorm.DB
 }
 
 // NewTransactionRepository Initiation
-func NewTransactionRepository(db *gorm.DB) *trasactionRepository {
-	return &trasactionRepository{db}
+func NewTransactionRepository(db *gorm.DB) *transactionRepository {
+	return &transactionRepository{db}
 }
 
 const (
@@ -35,8 +35,8 @@ const (
 	ORDER_BY_ID_DESC   = "id desc"
 )
 
-//Get Many
-func (r *trasactionRepository) FindAll(query entity.Paginate) (helper.ResponsePagination, error) {
+// Get Many
+func (r *transactionRepository) FindAll(query entity.Paginate) (helper.ResponsePagination, error) {
 	var models []entity.Transaction
 	var pagination helper.ResponsePagination
 	var total int64
@@ -49,7 +49,7 @@ func (r *trasactionRepository) FindAll(query entity.Paginate) (helper.ResponsePa
 	return pagination, nil
 }
 
-func (r *trasactionRepository) FindManyByCampaignID(campaignID int, query entity.Paginate) (helper.ResponsePagination, error) {
+func (r *transactionRepository) FindManyByCampaignID(campaignID int, query entity.Paginate) (helper.ResponsePagination, error) {
 	var models []entity.Transaction
 	var pagination helper.ResponsePagination
 	var total int64
@@ -62,7 +62,7 @@ func (r *trasactionRepository) FindManyByCampaignID(campaignID int, query entity
 	return pagination, nil
 }
 
-func (r *trasactionRepository) FindManyByUserID(userID int, query entity.Paginate) (helper.ResponsePagination, error) {
+func (r *transactionRepository) FindManyByUserID(userID int, query entity.Paginate) (helper.ResponsePagination, error) {
 	var models []entity.Transaction
 	var pagination helper.ResponsePagination
 	var total int64
@@ -75,8 +75,8 @@ func (r *trasactionRepository) FindManyByUserID(userID int, query entity.Paginat
 	return pagination, nil
 }
 
-//Get One
-func (r *trasactionRepository) FindOneByTransactionID(transactionID int) (entity.Transaction, error) {
+// Get One
+func (r *transactionRepository) FindOneByTransactionID(transactionID int) (entity.Transaction, error) {
 	var model entity.Transaction
 	err := r.db.Where("id = ?", transactionID).Find(&model).Where("id = ?", transactionID).Error
 	if err != nil {
@@ -84,7 +84,7 @@ func (r *trasactionRepository) FindOneByTransactionID(transactionID int) (entity
 	}
 	return model, nil
 }
-func (r *trasactionRepository) FindOneByTrxCode(trxCode string) (entity.Transaction, error) {
+func (r *transactionRepository) FindOneByTrxCode(trxCode string) (entity.Transaction, error) {
 	var model entity.Transaction
 	err := r.db.Where("trx_code = ?", trxCode).Find(&model).Error
 	if err != nil {
@@ -93,15 +93,15 @@ func (r *trasactionRepository) FindOneByTrxCode(trxCode string) (entity.Transact
 	return model, nil
 }
 
-//Action
-func (r *trasactionRepository) Create(model entity.Transaction) (entity.Transaction, error) {
+// Action
+func (r *transactionRepository) Create(model entity.Transaction) (entity.Transaction, error) {
 	err := r.db.Create(&model).Error
 	if err != nil {
 		return model, err
 	}
 	return model, nil
 }
-func (r *trasactionRepository) Update(model entity.Transaction) (entity.Transaction, error) {
+func (r *transactionRepository) Update(model entity.Transaction) (entity.Transaction, error) {
 	err := r.db.Save(&model).Error
 	if err != nil {
 		return model, err

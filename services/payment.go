@@ -52,7 +52,7 @@ func (s *paymentService) ProcessPayment(form entity.TransactionNotificationReque
 		return err
 	}
 	if transaction.ID == 0 {
-		return errors.New("Transaction not found")
+		return errors.New("TRANSACTION NOT FOUND")
 	}
 	//IF Credit Card
 	if form.PaymentType == "credit_card" && form.TransactionStatus == "capture" && form.FraudStatus == "accept" {
@@ -73,7 +73,7 @@ func (s *paymentService) ProcessPayment(form entity.TransactionNotificationReque
 		return err
 	}
 	if campaign.ID == 0 {
-		return errors.New("Campaign not found")
+		return errors.New("CAMPAIGN NOT FOUND")
 	}
 	if updatedTransaction.Status == "paid" {
 		campaign.BackerCount = campaign.BackerCount + 1

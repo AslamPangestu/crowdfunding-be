@@ -31,7 +31,7 @@ func NewTransactionService(repository repository.TransactionInteractor, campaign
 	return &transactionService{repository, campaignRepository, paymentService}
 }
 
-//Get Many
+// Get Many
 func (s *transactionService) GetTransactions(page int, pageSize int) (helper.ResponsePagination, error) {
 	query := entity.Paginate{
 		Page:     page,
@@ -50,10 +50,10 @@ func (s *transactionService) GetTransactionsByCampaignID(request entity.Campaign
 		return helper.ResponsePagination{}, err
 	}
 	if campaign.ID == 0 {
-		return helper.ResponsePagination{}, errors.New("Campaign not found")
+		return helper.ResponsePagination{}, errors.New("CAMPAIGN NOT FOUND")
 	}
 	if campaign.CampaignerID != request.CampaignerID {
-		return helper.ResponsePagination{}, errors.New("Not an owner of campaign")
+		return helper.ResponsePagination{}, errors.New("UNAUTHORIZED")
 	}
 	query := entity.Paginate{
 		Page:     page,
@@ -78,7 +78,7 @@ func (s *transactionService) GetTransactionsByUserID(userID int, page int, pageS
 	return models, nil
 }
 
-//Action
+// Action
 func (s *transactionService) MakeTransaction(form entity.TransactionRequest) (entity.Transaction, error) {
 	model := entity.Transaction{
 		CampaignID: form.CampaignID,
@@ -106,6 +106,6 @@ func (s *transactionService) MakeTransaction(form entity.TransactionRequest) (en
 
 func generateTRXCode(userID int, transactionID int, campaignID int) string {
 	currentDateTime := time.Now()
-	formatedDateTime := strings.ReplaceAll(currentDateTime.Format("2006-01-02"), "-", "")
-	return fmt.Sprintf("%d%d%d%s", transactionID, campaignID, userID, formatedDateTime)
+	formattedDateTime := strings.ReplaceAll(currentDateTime.Format("2006-01-02"), "-", "")
+	return fmt.Sprintf("%d%d%d%s", transactionID, campaignID, userID, formattedDateTime)
 }

@@ -30,7 +30,7 @@ func NewRoleRepository(db *gorm.DB) *roleRepo {
 
 const TABLE_ROLES = "roles"
 
-//Get Many
+// Get Many
 func (r *roleRepo) FindAll(query entity.Paginate) (helper.ResponsePagination, error) {
 	var models []entity.Role
 	var pagination helper.ResponsePagination
@@ -44,7 +44,7 @@ func (r *roleRepo) FindAll(query entity.Paginate) (helper.ResponsePagination, er
 	return pagination, nil
 }
 
-//Get One
+// Get One
 func (r *roleRepo) FindOneByID(id int) (entity.Role, error) {
 	var model entity.Role
 	err := r.db.Find(&model).Where("id = ?", id).Error
@@ -54,7 +54,7 @@ func (r *roleRepo) FindOneByID(id int) (entity.Role, error) {
 	return model, nil
 }
 
-//Action
+// Action
 func (r *roleRepo) Create(model entity.Role) (entity.Role, error) {
 	err := r.db.Create(&model).Error
 	if err != nil {

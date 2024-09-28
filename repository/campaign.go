@@ -38,7 +38,7 @@ const (
 	QUERY_CAMPAIGN_IMAGES = "campaign_images.is_primary = 1"
 )
 
-//Get Many
+// Get Many
 func (r *campaignRepository) FindAll(query entity.Paginate) (helper.ResponsePagination, error) {
 	var models []entity.Campaign
 	var pagination helper.ResponsePagination
@@ -65,7 +65,7 @@ func (r *campaignRepository) FindManyByCampaignerID(userID int, query entity.Pag
 	return pagination, nil
 }
 
-//Get One
+// Get One
 func (r *campaignRepository) FindOneByID(id int) (entity.Campaign, error) {
 	var model entity.Campaign
 	err := r.db.Preload("User").Preload(TBL_CAMPAIGN_IMAGES).Where("id = ?", id).Find(&model).Error
@@ -75,7 +75,7 @@ func (r *campaignRepository) FindOneByID(id int) (entity.Campaign, error) {
 	return model, nil
 }
 
-//Action
+// Action
 func (r *campaignRepository) Create(model entity.Campaign) (entity.Campaign, error) {
 	err := r.db.Create(&model).Error
 	if err != nil {
@@ -92,7 +92,7 @@ func (r *campaignRepository) Update(model entity.Campaign) (entity.Campaign, err
 	return model, nil
 }
 
-//Action Image
+// Action Image
 func (r *campaignRepository) CreateImage(model entity.CampaignImage) (entity.CampaignImage, error) {
 	err := r.db.Create(&model).Error
 	if err != nil {

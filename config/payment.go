@@ -6,7 +6,7 @@ import (
 	"github.com/veritrans/go-midtrans"
 )
 
-//NewPayment : Initialize Midtrans
+// NewPayment : Initialize Midtrans
 func NewPayment() midtrans.SnapGateway {
 	midclient := midtrans.NewClient()
 	midclient.ServerKey = os.Getenv("PAYMENT_SERVER_KEY")

@@ -8,7 +8,7 @@ import (
 
 //CAMPAIGN
 
-//Campaign : Mapping Campaign DB
+// Campaign : Mapping Campaign DB
 type Campaign struct {
 	ID               int
 	CampaignerID     int
@@ -26,7 +26,7 @@ type Campaign struct {
 	User             User `gorm:"foreignKey:CampaignerID"`
 }
 
-//CampaignResponse : Mapping Campaign Response
+// CampaignResponse : Mapping Campaign Response
 type CampaignResponse struct {
 	ID               int    `json:"id"`
 	CampaignerID     int    `json:"campaigner_id"`
@@ -38,12 +38,12 @@ type CampaignResponse struct {
 	ImageURL         string `json:"image_url"`
 }
 
-//CampaignIDRequest : Request Detail Campaign by ID uri
+// CampaignIDRequest : Request Detail Campaign by ID uri
 type CampaignIDRequest struct {
 	ID int `uri:"id" binding:"required"`
 }
 
-//CampaignDetailResponse : Response Detail Campaign
+// CampaignDetailResponse : Response Detail Campaign
 type CampaignDetailResponse struct {
 	ID               int                   `json:"id"`
 	Title            string                `json:"title"`
@@ -59,13 +59,13 @@ type CampaignDetailResponse struct {
 	Images           []ImageCampaignDetail `json:"images"`
 }
 
-//UserCampaignDetail : User Detail Campaign
+// UserCampaignDetail : User Detail Campaign
 type UserCampaignDetail struct {
 	Name     string `json:"name"`
 	ImageURL string `json:"image_url"`
 }
 
-//FormCampaignRequest : Request to create new campaign
+// FormCampaignRequest : Request to create new campaign
 type FormCampaignRequest struct {
 	Title            string `json:"title" binding:"required"`
 	ShortDescription string `json:"short_description" binding:"required"`
@@ -77,7 +77,7 @@ type FormCampaignRequest struct {
 
 //CAMPAIGN IMAGE
 
-//CampaignImage : Mapping CampaignImage DB
+// CampaignImage : Mapping CampaignImage DB
 type CampaignImage struct {
 	ID         int
 	CampaignID int
@@ -87,32 +87,32 @@ type CampaignImage struct {
 	UpdatedAt  time.Time
 }
 
-//ImageCampaignDetail : Response Detail Campaign for Image
+// ImageCampaignDetail : Response Detail Campaign for Image
 type ImageCampaignDetail struct {
 	ImageURL  string `json:"image_url"`
 	IsPrimary bool   `json:"is_primary"`
 }
 
-//UploadCampaignImageRequest : Request to upload images campaign
+// UploadCampaignImageRequest : Request to upload images campaign
 type UploadCampaignImageRequest struct {
 	CampaignID int  `form:"campaign_id" binding:"required"`
 	IsPrimary  bool `form:"is_primary"`
 	UserID     int
 }
 
-//TargetAmountFormatIDR : Adapter Campaign Detail
+// TargetAmountFormatIDR : Adapter Campaign Detail
 func (c Campaign) TargetAmountFormatIDR() string {
 	format := accounting.Accounting{Symbol: "IDR ", Precision: 2, Thousand: ".", Decimal: ","}
 	return format.FormatMoney(c.TargetAmount)
 }
 
-//TargetAmountFormatIDR : Adapter Campaign Detail
+// TargetAmountFormatIDR : Adapter Campaign Detail
 func (c Campaign) CurrentAmountFormatIDR() string {
 	format := accounting.Accounting{Symbol: "IDR ", Precision: 2, Thousand: ".", Decimal: ","}
 	return format.FormatMoney(c.CurrentAmount)
 }
 
-//CreateUserForm : Mapping Form Create Campaign
+// CreateUserForm : Mapping Form Create Campaign
 type CreateCampaignForm struct {
 	Title            string `form:"title" binding:"required"`
 	ShortDescription string `form:"short_description" binding:"required"`
@@ -125,7 +125,7 @@ type CreateCampaignForm struct {
 	User             User
 }
 
-//EditCampaignForm : Mapping Form Edit Campaign
+// EditCampaignForm : Mapping Form Edit Campaign
 type EditCampaignForm struct {
 	ID               int
 	Title            string `form:"title" binding:"required"`

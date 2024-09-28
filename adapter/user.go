@@ -5,8 +5,8 @@ import (
 	"strconv"
 )
 
-//RegsiterAdapter : Adapter Register
-func RegsiterAdapter(user entity.User, token string) entity.RegisterResponse {
+// RegisterAdapter : Adapter Register
+func RegisterAdapter(user entity.User, token string) entity.RegisterResponse {
 	return entity.RegisterResponse{
 		ID:         user.ID,
 		Name:       user.Name,
@@ -17,7 +17,7 @@ func RegsiterAdapter(user entity.User, token string) entity.RegisterResponse {
 	}
 }
 
-//LoginAdapter : Adapter Login
+// LoginAdapter : Adapter Login
 func LoginAdapter(user entity.User, token string) entity.LoginResponse {
 	return entity.LoginResponse{
 		ID:         strconv.Itoa(user.ID),

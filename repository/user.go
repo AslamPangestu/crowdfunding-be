@@ -31,7 +31,7 @@ func NewUserRepository(db *gorm.DB) *userRepository {
 
 const TABLE_USERS = "users"
 
-//Get Many
+// Get Many
 func (r *userRepository) FindAll(query entity.Paginate) (helper.ResponsePagination, error) {
 	var models []entity.User
 	var pagination helper.ResponsePagination
@@ -45,7 +45,7 @@ func (r *userRepository) FindAll(query entity.Paginate) (helper.ResponsePaginati
 	return pagination, nil
 }
 
-//Get One
+// Get One
 func (r *userRepository) FindOneByID(id int) (entity.User, error) {
 	var model entity.User
 	err := r.db.Where("id = ?", id).Find(&model).Error
@@ -64,7 +64,7 @@ func (r *userRepository) FindOneByEmail(email string) (entity.User, error) {
 	return model, nil
 }
 
-//Action
+// Action
 func (r *userRepository) Create(model entity.User) (entity.User, error) {
 	err := r.db.Create(&model).Error
 	if err != nil {

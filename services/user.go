@@ -15,7 +15,7 @@ type UserInteractor interface {
 	GetAllUsers(page int, pageSize int) (helper.ResponsePagination, error)
 	//Get One
 	GetUserByID(id int) (entity.User, error)
-	IsEmailAvaiable(form entity.EmailValidationRequest) (bool, error)
+	IsEmailAvailable(form entity.EmailValidationRequest) (bool, error)
 	//Action
 	Register(form entity.RegisterRequest) (entity.User, error)
 	Login(form entity.LoginRequest) (entity.User, error)
@@ -32,7 +32,7 @@ func NewUserService(repository repository.UserInteractor) *userService {
 	return &userService{repository}
 }
 
-//Get Many
+// Get Many
 func (s *userService) GetAllUsers(page int, pageSize int) (helper.ResponsePagination, error) {
 	//Find
 	request := entity.Paginate{Page: page, PageSize: pageSize}
@@ -43,7 +43,7 @@ func (s *userService) GetAllUsers(page int, pageSize int) (helper.ResponsePagina
 	return model, nil
 }
 
-//Get One
+// Get One
 func (s *userService) GetUserByID(id int) (entity.User, error) {
 	//Find
 	model, err := s.repository.FindOneByID(id)
@@ -52,12 +52,12 @@ func (s *userService) GetUserByID(id int) (entity.User, error) {
 	}
 	//Is Found?
 	if model.ID == 0 {
-		return model, errors.New("User not found")
+		return model, errors.New("USER NOT FOUND")
 	}
 	return model, nil
 }
 
-func (s *userService) IsEmailAvaiable(form entity.EmailValidationRequest) (bool, error) {
+func (s *userService) IsEmailAvailable(form entity.EmailValidationRequest) (bool, error) {
 	//Find
 	model, err := s.repository.FindOneByEmail(form.Email)
 	if err != nil {
@@ -70,7 +70,7 @@ func (s *userService) IsEmailAvaiable(form entity.EmailValidationRequest) (bool,
 	return true, nil
 }
 
-//Action
+// Action
 func (s *userService) Register(form entity.RegisterRequest) (entity.User, error) {
 	var model entity.User
 	passwordHash, err := bcrypt.GenerateFromPassword([]byte(form.Password), bcrypt.MinCost)
@@ -101,12 +101,12 @@ func (s *userService) Login(form entity.LoginRequest) (entity.User, error) {
 	}
 	//Is Found?
 	if model.ID == 0 {
-		return model, errors.New("User not found")
+		return model, errors.New("USER NOT FOUND")
 	}
 	//Decrypt Password Hash
 	err = bcrypt.CompareHashAndPassword([]byte(model.PasswordHash), []byte(form.Password))
 	if err != nil {
-		return model, errors.New("Password incorrect")
+		return model, errors.New("PASSWORD INCORRECT")
 	}
 	return model, nil
 }
@@ -118,7 +118,7 @@ func (s *userService) UploadAvatar(id int, fileLocation string) (entity.User, er
 		return model, err
 	}
 	if model.ID == 0 {
-		return model, errors.New("User not found")
+		return model, errors.New("USER NOT FOUND")
 	}
 	//Update DB
 	model.AvatarPath = fileLocation
@@ -135,7 +135,7 @@ func (s *userService) UpdateUser(form entity.EditUserForm) (entity.User, error) 
 		return model, err
 	}
 	if model.ID == 0 {
-		return model, errors.New("User not found")
+		return model, errors.New("USER NOT FOUND")
 	}
 	model.Name = form.Name
 	model.Username = form.Username
