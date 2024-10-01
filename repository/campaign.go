@@ -11,16 +11,16 @@ import (
 type CampaignInteractor interface {
 	//Get Many
 	FindAll(query entity.Paginate) (helper.ResponsePagination, error)
-	FindManyByCampaignerID(userID int, query entity.Paginate) (helper.ResponsePagination, error)
+	FindManyByCampaignerID(userID string, query entity.Paginate) (helper.ResponsePagination, error)
 	//Get One
-	FindOneByID(id int) (entity.Campaign, error)
+	FindOneByID(id string) (entity.Campaign, error)
 	//Action
 	Create(model entity.Campaign) (entity.Campaign, error)
 	Update(model entity.Campaign) (entity.Campaign, error)
 	// Delete(id int) (entity.Role, error)
 	//Action Image
 	CreateImage(model entity.CampaignImage) (entity.CampaignImage, error)
-	MarkAllImagesAsNonPrimary(campaignID int) (bool, error)
+	MarkAllImagesAsNonPrimary(campaignID string) (bool, error)
 }
 
 type campaignRepository struct {
@@ -52,7 +52,7 @@ func (r *campaignRepository) FindAll(query entity.Paginate) (helper.ResponsePagi
 	return pagination, nil
 }
 
-func (r *campaignRepository) FindManyByCampaignerID(userID int, query entity.Paginate) (helper.ResponsePagination, error) {
+func (r *campaignRepository) FindManyByCampaignerID(userID string, query entity.Paginate) (helper.ResponsePagination, error) {
 	var models []entity.Campaign
 	var pagination helper.ResponsePagination
 	var total int64
@@ -66,9 +66,9 @@ func (r *campaignRepository) FindManyByCampaignerID(userID int, query entity.Pag
 }
 
 // Get One
-func (r *campaignRepository) FindOneByID(id int) (entity.Campaign, error) {
+func (r *campaignRepository) FindOneByID(id string) (entity.Campaign, error) {
 	var model entity.Campaign
-	err := r.db.Preload("User").Preload(TBL_CAMPAIGN_IMAGES).Where("id = ?", id).Find(&model).Error
+	err := r.db.Preload("User").Preload(TBL_CAMPAIGN_IMAGES).Where("xata_id = ?", id).Find(&model).Error
 	if err != nil {
 		return model, err
 	}
@@ -101,7 +101,7 @@ func (r *campaignRepository) CreateImage(model entity.CampaignImage) (entity.Cam
 	return model, nil
 }
 
-func (r *campaignRepository) MarkAllImagesAsNonPrimary(campaignID int) (bool, error) {
+func (r *campaignRepository) MarkAllImagesAsNonPrimary(campaignID string) (bool, error) {
 	err := r.db.Model(&entity.CampaignImage{}).Where("campaign_id = ?", campaignID).Update("is_primary", false).Error
 	if err != nil {
 		return false, err

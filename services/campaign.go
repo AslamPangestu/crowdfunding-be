@@ -13,7 +13,7 @@ import (
 // CampaignInteractor Contract
 type CampaignInteractor interface {
 	//Get Many
-	GetCampaigns(userID int, page int, pageSize int) (helper.ResponsePagination, error)
+	GetCampaigns(userID string, page int, pageSize int) (helper.ResponsePagination, error)
 	//Get One
 	GetCampaignByID(uri entity.CampaignIDRequest) (entity.Campaign, error)
 	//Action
@@ -33,12 +33,12 @@ func NewCampaignService(repository repository.CampaignInteractor) *campaignServi
 }
 
 // Get Many
-func (s *campaignService) GetCampaigns(userID int, page int, pageSize int) (helper.ResponsePagination, error) {
+func (s *campaignService) GetCampaigns(userID string, page int, pageSize int) (helper.ResponsePagination, error) {
 	query := entity.Paginate{
 		Page:     page,
 		PageSize: pageSize,
 	}
-	if userID != 0 {
+	if userID != "" {
 		models, err := s.repository.FindManyByCampaignerID(userID, query)
 		if err != nil {
 			return models, err
@@ -58,7 +58,7 @@ func (s *campaignService) GetCampaignByID(uri entity.CampaignIDRequest) (entity.
 	if err != nil {
 		return model, err
 	}
-	if model.ID == 0 {
+	if model.ID == "" {
 		return model, errors.New("CAMPAIGN NOT FOUND")
 	}
 	return model, nil
@@ -88,7 +88,7 @@ func (s *campaignService) EditCampaign(uri entity.CampaignIDRequest, form entity
 	if err != nil {
 		return model, err
 	}
-	if model.ID == 0 {
+	if model.ID == "" {
 		return model, errors.New("CAMPAIGN NOT FOUND")
 	}
 
@@ -113,7 +113,7 @@ func (s *campaignService) UploadCampaignImages(form entity.UploadCampaignImageRe
 	if err != nil {
 		return entity.CampaignImage{}, err
 	}
-	if campaign.ID == 0 {
+	if campaign.ID == "" {
 		return entity.CampaignImage{}, errors.New("CAMPAIGN NOT FOUND")
 	}
 	if campaign.CampaignerID != form.UserID {

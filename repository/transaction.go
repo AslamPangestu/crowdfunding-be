@@ -11,10 +11,10 @@ import (
 type TransactionInteractor interface {
 	//Get Many
 	FindAll(query entity.Paginate) (helper.ResponsePagination, error)
-	FindManyByCampaignID(campaignID int, query entity.Paginate) (helper.ResponsePagination, error)
-	FindManyByUserID(userID int, query entity.Paginate) (helper.ResponsePagination, error)
+	FindManyByCampaignID(campaignID string, query entity.Paginate) (helper.ResponsePagination, error)
+	FindManyByUserID(userID string, query entity.Paginate) (helper.ResponsePagination, error)
 	//Get One
-	FindOneByTransactionID(transactionID int) (entity.Transaction, error)
+	FindOneByTransactionID(transactionID string) (entity.Transaction, error)
 	FindOneByTrxCode(trxCode string) (entity.Transaction, error)
 	//Action
 	Create(model entity.Transaction) (entity.Transaction, error)
@@ -49,7 +49,7 @@ func (r *transactionRepository) FindAll(query entity.Paginate) (helper.ResponseP
 	return pagination, nil
 }
 
-func (r *transactionRepository) FindManyByCampaignID(campaignID int, query entity.Paginate) (helper.ResponsePagination, error) {
+func (r *transactionRepository) FindManyByCampaignID(campaignID string, query entity.Paginate) (helper.ResponsePagination, error) {
 	var models []entity.Transaction
 	var pagination helper.ResponsePagination
 	var total int64
@@ -62,7 +62,7 @@ func (r *transactionRepository) FindManyByCampaignID(campaignID int, query entit
 	return pagination, nil
 }
 
-func (r *transactionRepository) FindManyByUserID(userID int, query entity.Paginate) (helper.ResponsePagination, error) {
+func (r *transactionRepository) FindManyByUserID(userID string, query entity.Paginate) (helper.ResponsePagination, error) {
 	var models []entity.Transaction
 	var pagination helper.ResponsePagination
 	var total int64
@@ -76,9 +76,9 @@ func (r *transactionRepository) FindManyByUserID(userID int, query entity.Pagina
 }
 
 // Get One
-func (r *transactionRepository) FindOneByTransactionID(transactionID int) (entity.Transaction, error) {
+func (r *transactionRepository) FindOneByTransactionID(transactionID string) (entity.Transaction, error) {
 	var model entity.Transaction
-	err := r.db.Where("id = ?", transactionID).Find(&model).Where("id = ?", transactionID).Error
+	err := r.db.Where("xata_id = ?", transactionID).Find(&model).Where("xata_id = ?", transactionID).Error
 	if err != nil {
 		return model, err
 	}

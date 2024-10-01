@@ -10,8 +10,8 @@ import (
 
 // Campaign : Mapping Campaign DB
 type Campaign struct {
-	ID               int
-	CampaignerID     int
+	ID               string `gorm:"column:xata_id"`
+	CampaignerID     string
 	Title            string
 	ShortDescription string
 	Description      string
@@ -28,8 +28,8 @@ type Campaign struct {
 
 // CampaignResponse : Mapping Campaign Response
 type CampaignResponse struct {
-	ID               int    `json:"id"`
-	CampaignerID     int    `json:"campaigner_id"`
+	ID               string `json:"id"`
+	CampaignerID     string `json:"campaigner_id"`
 	Title            string `json:"title"`
 	ShortDescription string `json:"short_description"`
 	TargetAmount     int    `json:"target_amount"`
@@ -40,12 +40,12 @@ type CampaignResponse struct {
 
 // CampaignIDRequest : Request Detail Campaign by ID uri
 type CampaignIDRequest struct {
-	ID int `uri:"id" binding:"required"`
+	ID string `uri:"id" binding:"required"`
 }
 
 // CampaignDetailResponse : Response Detail Campaign
 type CampaignDetailResponse struct {
-	ID               int                   `json:"id"`
+	ID               string                `json:"id"`
 	Title            string                `json:"title"`
 	ShortDescription string                `json:"short_description"`
 	Description      string                `json:"description"`
@@ -72,15 +72,15 @@ type FormCampaignRequest struct {
 	Description      string `json:"description" binding:"required"`
 	Perks            string `json:"perks" binding:"required"`
 	TargetAmount     int    `json:"target_amount" binding:"required"`
-	CampaignerID     int
+	CampaignerID     string
 }
 
 //CAMPAIGN IMAGE
 
 // CampaignImage : Mapping CampaignImage DB
 type CampaignImage struct {
-	ID         int
-	CampaignID int
+	ID         string `gorm:"column:xata_id"`
+	CampaignID string
 	ImagePath  string
 	IsPrimary  int
 	CreatedAt  time.Time
@@ -95,9 +95,9 @@ type ImageCampaignDetail struct {
 
 // UploadCampaignImageRequest : Request to upload images campaign
 type UploadCampaignImageRequest struct {
-	CampaignID int  `form:"campaign_id" binding:"required"`
-	IsPrimary  bool `form:"is_primary"`
-	UserID     int
+	CampaignID string `form:"campaign_id" binding:"required"`
+	IsPrimary  bool   `form:"is_primary"`
+	UserID     string
 }
 
 // TargetAmountFormatIDR : Adapter Campaign Detail
@@ -119,7 +119,7 @@ type CreateCampaignForm struct {
 	Description      string `form:"description" binding:"required"`
 	TargetAmount     int    `form:"target_amount" binding:"required"`
 	Perks            string `form:"perks" binding:"required"`
-	UserID           int    `form:"user_id" binding:"required"`
+	UserID           string `form:"user_id" binding:"required"`
 	Users            []User
 	Error            error
 	User             User
@@ -127,7 +127,7 @@ type CreateCampaignForm struct {
 
 // EditCampaignForm : Mapping Form Edit Campaign
 type EditCampaignForm struct {
-	ID               int
+	ID               string
 	Title            string `form:"title" binding:"required"`
 	ShortDescription string `form:"short_description" binding:"required"`
 	Description      string `form:"description" binding:"required"`

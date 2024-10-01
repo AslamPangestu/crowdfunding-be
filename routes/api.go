@@ -17,10 +17,11 @@ func APIRoute(api *gin.RouterGroup, db *gorm.DB) {
 	userRepository := repository.NewUserRepository(db)
 	campaignRepository := repository.NewCampaignRepository(db)
 	transactionRepository := repository.NewTransactionRepository(db)
+	roleRepository := repository.NewRoleRepository(db)
 
 	//SERVICE
 	authService := config.NewAuthService()
-	userService := services.NewUserService(userRepository)
+	userService := services.NewUserService(userRepository, roleRepository)
 	campaignService := services.NewCampaignService(campaignRepository)
 	paymentService := services.NewPaymentService(transactionRepository, campaignRepository)
 	transactionService := services.NewTransactionService(transactionRepository, campaignRepository, paymentService)

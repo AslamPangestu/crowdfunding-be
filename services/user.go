@@ -14,22 +14,23 @@ type UserInteractor interface {
 	//Get Many
 	GetAllUsers(page int, pageSize int) (helper.ResponsePagination, error)
 	//Get One
-	GetUserByID(id int) (entity.User, error)
+	GetUserByID(id string) (entity.User, error)
 	IsEmailAvailable(form entity.EmailValidationRequest) (bool, error)
 	//Action
 	Register(form entity.RegisterRequest) (entity.User, error)
 	Login(form entity.LoginRequest) (entity.User, error)
-	UploadAvatar(id int, fileLocation string) (entity.User, error)
+	UploadAvatar(id string, fileLocation string) (entity.User, error)
 	UpdateUser(form entity.EditUserForm) (entity.User, error)
 }
 
 type userService struct {
-	repository repository.UserInteractor
+	repository     repository.UserInteractor
+	roleRepository repository.RoleInteractor
 }
 
 // NewUserService Initiation
-func NewUserService(repository repository.UserInteractor) *userService {
-	return &userService{repository}
+func NewUserService(repository repository.UserInteractor, roleRepository repository.RoleInteractor) *userService {
+	return &userService{repository, roleRepository}
 }
 
 // Get Many
@@ -44,14 +45,14 @@ func (s *userService) GetAllUsers(page int, pageSize int) (helper.ResponsePagina
 }
 
 // Get One
-func (s *userService) GetUserByID(id int) (entity.User, error) {
+func (s *userService) GetUserByID(id string) (entity.User, error) {
 	//Find
 	model, err := s.repository.FindOneByID(id)
 	if err != nil {
 		return model, err
 	}
 	//Is Found?
-	if model.ID == 0 {
+	if model.ID == "" {
 		return model, errors.New("USER NOT FOUND")
 	}
 	return model, nil
@@ -64,7 +65,7 @@ func (s *userService) IsEmailAvailable(form entity.EmailValidationRequest) (bool
 		return false, err
 	}
 	//Is Available
-	if model.ID != 0 {
+	if model.ID != "" {
 		return false, nil
 	}
 	return true, nil
@@ -77,12 +78,16 @@ func (s *userService) Register(form entity.RegisterRequest) (entity.User, error)
 	if err != nil {
 		return model, err
 	}
+	roleModel, roleError := s.roleRepository.FindOneByName("Backer")
+	if roleError != nil {
+		return model, roleError
+	}
 	model = entity.User{
 		Name:         form.Name,
 		Username:     form.Username,
 		Email:        form.Email,
 		Occupation:   form.Occupation,
-		RoleID:       2,
+		RoleID:       roleModel.ID,
 		PasswordHash: string(passwordHash),
 	}
 
@@ -100,7 +105,7 @@ func (s *userService) Login(form entity.LoginRequest) (entity.User, error) {
 		return model, err
 	}
 	//Is Found?
-	if model.ID == 0 {
+	if model.ID == "" {
 		return model, errors.New("USER NOT FOUND")
 	}
 	//Decrypt Password Hash
@@ -111,13 +116,13 @@ func (s *userService) Login(form entity.LoginRequest) (entity.User, error) {
 	return model, nil
 }
 
-func (s *userService) UploadAvatar(id int, fileLocation string) (entity.User, error) {
+func (s *userService) UploadAvatar(id string, fileLocation string) (entity.User, error) {
 	//Find
 	model, err := s.repository.FindOneByID(id)
 	if err != nil {
 		return model, err
 	}
-	if model.ID == 0 {
+	if model.ID == "" {
 		return model, errors.New("USER NOT FOUND")
 	}
 	//Update DB
@@ -134,7 +139,7 @@ func (s *userService) UpdateUser(form entity.EditUserForm) (entity.User, error) 
 	if err != nil {
 		return model, err
 	}
-	if model.ID == 0 {
+	if model.ID == "" {
 		return model, errors.New("USER NOT FOUND")
 	}
 	model.Name = form.Name

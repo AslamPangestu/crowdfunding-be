@@ -12,7 +12,7 @@ type UserInteractor interface {
 	//Get Many
 	FindAll(query entity.Paginate) (helper.ResponsePagination, error)
 	//Get One
-	FindOneByID(id int) (entity.User, error)
+	FindOneByID(id string) (entity.User, error)
 	FindOneByEmail(email string) (entity.User, error)
 	//Action
 	Create(user entity.User) (entity.User, error)
@@ -46,9 +46,9 @@ func (r *userRepository) FindAll(query entity.Paginate) (helper.ResponsePaginati
 }
 
 // Get One
-func (r *userRepository) FindOneByID(id int) (entity.User, error) {
+func (r *userRepository) FindOneByID(id string) (entity.User, error) {
 	var model entity.User
-	err := r.db.Where("id = ?", id).Find(&model).Error
+	err := r.db.Where("xata_id = ?", id).Find(&model).Error
 	if err != nil {
 		return model, err
 	}

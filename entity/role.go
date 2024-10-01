@@ -4,7 +4,7 @@ import "time"
 
 // Role : Mapping Role DB
 type Role struct {
-	ID        int
+	ID        string `gorm:"column:xata_id"`
 	Name      string
 	CreatedAt time.Time
 	UpdatedAt time.Time
@@ -12,7 +12,7 @@ type Role struct {
 
 // RoleIDRequest : Mapping Role Request by ID uri
 type RoleIDRequest struct {
-	ID int `uri:"id" binding:"required"`
+	ID string `uri:"id" binding:"required"`
 }
 
 // RoleNameRequest : Mapping Role Request by name
@@ -27,7 +27,7 @@ type FormRoleRequest struct {
 
 // RoleResponse : Mapping Role Response
 type RoleResponse struct {
-	ID   int    `json:"id"`
+	ID   string `json:"id"`
 	Name string `json:"name"`
 }
 
@@ -40,7 +40,7 @@ type CreateRoleForm struct {
 
 // RoleNameRequest : Mapping Role Request by name
 type EditRoleForm struct {
-	ID    int
+	ID    string
 	Name  string `form:"name" binding:"required"`
 	Error error
 	User  User

@@ -4,7 +4,7 @@ import "time"
 
 // User : Mapping User DB
 type User struct {
-	ID           int
+	ID           string `gorm:"column:xata_id"`
 	Name         string
 	Occupation   string
 	Username     string
@@ -12,9 +12,10 @@ type User struct {
 	PasswordHash string
 	AvatarPath   string
 	Token        string
-	RoleID       int
+	RoleID       string
 	CreatedAt    time.Time
 	UpdatedAt    time.Time
+	Role         Role `gorm:"foreignKey:RoleID"`
 }
 
 // RegisterRequest : Mapping Register Request
@@ -28,7 +29,7 @@ type RegisterRequest struct {
 
 // RegisterResponse : Mapping Register Response
 type RegisterResponse struct {
-	ID         int    `json:"id"`
+	ID         string `json:"id"`
 	Name       string `json:"name"`
 	Username   string `json:"username"`
 	Email      string `json:"email"`
@@ -79,7 +80,7 @@ type CreateUserForm struct {
 
 // EditUserForm : Mapping Form Create User
 type EditUserForm struct {
-	ID         int
+	ID         string
 	Name       string `form:"name" binding:"required"`
 	Username   string `form:"username" binding:"required"`
 	Email      string `form:"email" binding:"required,email"`

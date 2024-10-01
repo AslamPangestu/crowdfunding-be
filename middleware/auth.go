@@ -43,7 +43,7 @@ func APIAuthMiddleware(authService config.AuthService, userService services.User
 			return
 		}
 		//Find user
-		userID := int(claim["user_id"].(float64))
+		userID := claim["user_id"].(string)
 		user, err := userService.GetUserByID(userID)
 		if err != nil {
 			errResponse := helper.ResponseHandler("Unauthorize", http.StatusUnauthorized, "failed", nil)

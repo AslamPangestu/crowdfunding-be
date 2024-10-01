@@ -81,7 +81,7 @@ func (h *userHandler) Edit(c *gin.Context) {
 		c.HTML(http.StatusInternalServerError, "error.html", nil)
 		return
 	}
-	id, _ := strconv.Atoi(c.Param("id"))
+	id := c.Param("id")
 	model, err := h.service.GetUserByID(id)
 	if err != nil {
 		c.HTML(http.StatusInternalServerError, "error.html", nil)
@@ -99,7 +99,7 @@ func (h *userHandler) Edit(c *gin.Context) {
 }
 
 func (h *userHandler) PostEdit(c *gin.Context) {
-	id, _ := strconv.Atoi(c.Param("id"))
+	id := c.Param("id")
 	var form entity.EditUserForm
 	err := c.ShouldBind(&form)
 	if err != nil {
@@ -128,7 +128,7 @@ func (h *userHandler) UploadAvatar(c *gin.Context) {
 
 func (h *userHandler) PostUploadAvatar(c *gin.Context) {
 	var path string
-	id, _ := strconv.Atoi(c.Param("id"))
+	id := c.Param("id")
 	file, err := c.FormFile("avatar")
 	if err != nil {
 		c.HTML(http.StatusInternalServerError, "error.html", nil)

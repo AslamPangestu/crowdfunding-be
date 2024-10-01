@@ -73,7 +73,7 @@ func (h *roleHandler) Edit(c *gin.Context) {
 		c.HTML(http.StatusInternalServerError, "error.html", nil)
 		return
 	}
-	id, _ := strconv.Atoi(c.Param("id"))
+	id := c.Param("id")
 	model, err := h.service.GetRoleByID(id)
 	if err != nil {
 		c.HTML(http.StatusInternalServerError, "error.html", nil)
@@ -88,7 +88,7 @@ func (h *roleHandler) Edit(c *gin.Context) {
 }
 
 func (h *roleHandler) PostEdit(c *gin.Context) {
-	id, _ := strconv.Atoi(c.Param("id"))
+	id := c.Param("id")
 	var form entity.EditRoleForm
 	err := c.ShouldBind(&form)
 	if err != nil {
@@ -108,7 +108,7 @@ func (h *roleHandler) PostEdit(c *gin.Context) {
 }
 
 func (h *roleHandler) Remove(c *gin.Context) {
-	id, _ := strconv.Atoi(c.Param("id"))
+	id := c.Param("id")
 	err := h.service.RemoveRole(id)
 	if err != nil {
 		c.HTML(http.StatusInternalServerError, "error.html", nil)

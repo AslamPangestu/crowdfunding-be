@@ -15,7 +15,7 @@ type TransactionInteractor interface {
 	//Get Many
 	GetTransactions(page int, pageSize int) (helper.ResponsePagination, error)
 	GetTransactionsByCampaignID(request entity.CampaignTransactionsRequest, page int, pageSize int) (helper.ResponsePagination, error)
-	GetTransactionsByUserID(userID int, page int, pageSize int) (helper.ResponsePagination, error)
+	GetTransactionsByUserID(userID string, page int, pageSize int) (helper.ResponsePagination, error)
 	//Action
 	MakeTransaction(form entity.TransactionRequest) (entity.Transaction, error)
 }
@@ -49,7 +49,7 @@ func (s *transactionService) GetTransactionsByCampaignID(request entity.Campaign
 	if err != nil {
 		return helper.ResponsePagination{}, err
 	}
-	if campaign.ID == 0 {
+	if campaign.ID == "" {
 		return helper.ResponsePagination{}, errors.New("CAMPAIGN NOT FOUND")
 	}
 	if campaign.CampaignerID != request.CampaignerID {
@@ -66,7 +66,7 @@ func (s *transactionService) GetTransactionsByCampaignID(request entity.Campaign
 	return models, nil
 }
 
-func (s *transactionService) GetTransactionsByUserID(userID int, page int, pageSize int) (helper.ResponsePagination, error) {
+func (s *transactionService) GetTransactionsByUserID(userID string, page int, pageSize int) (helper.ResponsePagination, error) {
 	query := entity.Paginate{
 		Page:     page,
 		PageSize: pageSize,
@@ -104,7 +104,7 @@ func (s *transactionService) MakeTransaction(form entity.TransactionRequest) (en
 	return newTransaction, nil
 }
 
-func generateTRXCode(userID int, transactionID int, campaignID int) string {
+func generateTRXCode(userID string, transactionID string, campaignID string) string {
 	currentDateTime := time.Now()
 	formattedDateTime := strings.ReplaceAll(currentDateTime.Format("2006-01-02"), "-", "")
 	return fmt.Sprintf("%d%d%d%s", transactionID, campaignID, userID, formattedDateTime)

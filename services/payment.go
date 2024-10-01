@@ -51,7 +51,7 @@ func (s *paymentService) ProcessPayment(form entity.TransactionNotificationReque
 	if err != nil {
 		return err
 	}
-	if transaction.ID == 0 {
+	if transaction.ID == "" {
 		return errors.New("TRANSACTION NOT FOUND")
 	}
 	//IF Credit Card
@@ -72,7 +72,7 @@ func (s *paymentService) ProcessPayment(form entity.TransactionNotificationReque
 	if err != nil {
 		return err
 	}
-	if campaign.ID == 0 {
+	if campaign.ID == "" {
 		return errors.New("CAMPAIGN NOT FOUND")
 	}
 	if updatedTransaction.Status == "paid" {

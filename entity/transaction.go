@@ -8,9 +8,9 @@ import (
 
 // Transaction : Mapping Transaction DB
 type Transaction struct {
-	ID         int
-	CampaignID int
-	BackerID   int
+	ID         string `gorm:"column:xata_id"`
+	CampaignID string
+	BackerID   string
 	Amount     int
 	Status     string
 	TRXCode    string
@@ -23,13 +23,13 @@ type Transaction struct {
 
 // CampaignTransactionsRequest : Request Get Transactions
 type CampaignTransactionsRequest struct {
-	ID           int `uri:"id" binding:"required"`
-	CampaignerID int
+	ID           string `uri:"id" binding:"required"`
+	CampaignerID string
 }
 
 // CampaignTransactionsResponse : Response Get Transactions for CampaignTransactionsRequest
 type CampaignTransactionsResponse struct {
-	ID        int       `json:"id"`
+	ID        string    `json:"id"`
 	Name      string    `json:"name"`
 	Amount    int       `json:"amount"`
 	CreatedAt time.Time `json:"created_at"`
@@ -37,7 +37,7 @@ type CampaignTransactionsResponse struct {
 
 // UserTransactionsResponse : Response Get Transactions for User
 type UserTransactionsResponse struct {
-	ID        int                 `json:"id"`
+	ID        string              `json:"id"`
 	Amount    int                 `json:"amount"`
 	Status    string              `json:"status"`
 	TRXCode   string              `json:"trx_code"`
@@ -53,16 +53,16 @@ type CampaignTransaction struct {
 
 // TransactionRequest : Transaction Request
 type TransactionRequest struct {
-	Amount     int `json:"amount" binding:"required"`
-	CampaignID int `json:"campaign_id" binding:"required"`
+	Amount     int    `json:"amount" binding:"required"`
+	CampaignID string `json:"campaign_id" binding:"required"`
 	Backer     User
 }
 
 // TransactionResponse : Transaction Response
 type TransactionResponse struct {
-	ID         int    `json:"id"`
-	CampaignID int    `json:"campaign_id"`
-	BackerID   int    `json:"backer_id"`
+	ID         string `json:"id"`
+	CampaignID string `json:"campaign_id"`
+	BackerID   string `json:"backer_id"`
 	Amount     int    `json:"amount"`
 	Status     string `json:"status"`
 	TRXCode    string `json:"trx_code"`

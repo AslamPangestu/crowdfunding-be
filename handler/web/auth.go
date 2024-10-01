@@ -6,7 +6,6 @@ import (
 	"crowdfunding/services"
 	"encoding/json"
 	"net/http"
-	"strconv"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
@@ -33,7 +32,7 @@ func (h *authHandler) PostLogin(c *gin.Context) {
 	}
 
 	model, err := h.service.Login(form)
-	if err != nil || model.RoleID != 1 {
+	if err != nil || model.RoleID != "" {
 		c.Redirect(http.StatusFound, "/login")
 		return
 	}
@@ -44,7 +43,7 @@ func (h *authHandler) PostLogin(c *gin.Context) {
 		return
 	}
 	session := sessions.Default(c)
-	session.Set("userID", strconv.Itoa(model.ID))
+	session.Set("userID", model.ID)
 	session.Set("user", stringify)
 	session.Save()
 
@@ -76,7 +75,7 @@ func (h *authHandler) Profile(c *gin.Context) {
 }
 
 func (h *authHandler) PostProfile(c *gin.Context) {
-	id, _ := strconv.Atoi(c.Param("id"))
+	id := c.Param("id")
 	user, err := helper.GetUserLoggedIn(c)
 	if err != nil {
 		c.HTML(http.StatusInternalServerError, "error.html", nil)

@@ -9,7 +9,7 @@ import (
 
 // AuthService : JWT Service Contract
 type AuthService interface {
-	GenerateToken(userID int) (string, error)
+	GenerateToken(userID string) (string, error)
 	ValidateToken(token string) (*jwt.Token, error)
 }
 
@@ -24,7 +24,7 @@ func NewAuthService() *authService {
 var SECRET_KEY = []byte(os.Getenv("SECRET_JWT"))
 
 // GenerateToken : Service Generate JWT Token
-func (s *authService) GenerateToken(userID int) (string, error) {
+func (s *authService) GenerateToken(userID string) (string, error) {
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := token.Claims.(jwt.MapClaims)
 	claims["user_id"] = userID

@@ -12,11 +12,12 @@ type RoleInteractor interface {
 	//Get Many
 	FindAll(query entity.Paginate) (helper.ResponsePagination, error)
 	//Get One
-	FindOneByID(id int) (entity.Role, error)
+	FindOneByID(id string) (entity.Role, error)
+	FindOneByName(name string) (entity.Role, error)
 	//Action
 	Create(model entity.Role) (entity.Role, error)
 	Update(model entity.Role) (entity.Role, error)
-	Delete(id int) error
+	Delete(id string) error
 }
 
 type roleRepo struct {
@@ -45,9 +46,18 @@ func (r *roleRepo) FindAll(query entity.Paginate) (helper.ResponsePagination, er
 }
 
 // Get One
-func (r *roleRepo) FindOneByID(id int) (entity.Role, error) {
+func (r *roleRepo) FindOneByID(id string) (entity.Role, error) {
 	var model entity.Role
-	err := r.db.Find(&model).Where("id = ?", id).Error
+	err := r.db.Find(&model).Where("xata_id = ?", id).Error
+	if err != nil {
+		return model, err
+	}
+	return model, nil
+}
+
+func (r *roleRepo) FindOneByName(name string) (entity.Role, error) {
+	var model entity.Role
+	err := r.db.Where("name = ?", name).First(&model).Error
 	if err != nil {
 		return model, err
 	}
@@ -71,7 +81,7 @@ func (r *roleRepo) Update(model entity.Role) (entity.Role, error) {
 	return model, nil
 }
 
-func (r *roleRepo) Delete(id int) error {
+func (r *roleRepo) Delete(id string) error {
 	err := r.db.Delete(&entity.Role{}, id).Error
 	if err != nil {
 		return err

@@ -32,7 +32,7 @@ func (h *campaignHandler) Index(c *gin.Context) {
 	}
 	page, _ := strconv.Atoi(c.Query("page"))
 	pageSize, _ := strconv.Atoi(c.Query("page_size"))
-	models, err := h.service.GetCampaigns(0, page, pageSize)
+	models, err := h.service.GetCampaigns("", page, pageSize)
 	if err != nil {
 		c.HTML(http.StatusInternalServerError, "error.html", nil)
 		return
@@ -110,7 +110,7 @@ func (h *campaignHandler) UploadImages(c *gin.Context) {
 
 func (h *campaignHandler) PostUploadImages(c *gin.Context) {
 	var path string
-	id, _ := strconv.Atoi(c.Param("id"))
+	id := c.Param("id")
 	file, err := c.FormFile("file")
 	if err != nil {
 		c.HTML(http.StatusInternalServerError, "error.html", nil)
@@ -171,7 +171,7 @@ func (h *campaignHandler) Edit(c *gin.Context) {
 		c.HTML(http.StatusInternalServerError, "error.html", nil)
 		return
 	}
-	id, _ := strconv.Atoi(c.Param("id"))
+	id := c.Param("id")
 	campaign, err := h.service.GetCampaignByID(entity.CampaignIDRequest{ID: id})
 	if err != nil {
 		c.HTML(http.StatusInternalServerError, "error.html", nil)
@@ -191,7 +191,7 @@ func (h *campaignHandler) Edit(c *gin.Context) {
 }
 
 func (h *campaignHandler) PostEdit(c *gin.Context) {
-	id, _ := strconv.Atoi(c.Param("id"))
+	id := c.Param("id")
 	var form entity.EditCampaignForm
 
 	err := c.ShouldBind(&form)
@@ -232,7 +232,7 @@ func (h *campaignHandler) Detail(c *gin.Context) {
 		c.HTML(http.StatusInternalServerError, "error.html", nil)
 		return
 	}
-	id, _ := strconv.Atoi(c.Param("id"))
+	id := c.Param("id")
 	campaign, err := h.service.GetCampaignByID(entity.CampaignIDRequest{ID: id})
 	if err != nil {
 		c.HTML(http.StatusInternalServerError, "error.html", nil)

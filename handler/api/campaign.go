@@ -65,7 +65,7 @@ QUERY: user_id
 METHOD: GET
 */
 func (h *campaignHandler) GetCampaigns(c *gin.Context) {
-	userID, _ := strconv.Atoi(c.Query("user_id"))
+	userID := c.Query("user_id")
 	page, _ := strconv.Atoi(c.Query("page"))
 	pageSize, _ := strconv.Atoi(c.Query("page_size"))
 

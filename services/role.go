@@ -12,11 +12,11 @@ type RoleInteractor interface {
 	//Get Many
 	GetRoles(page int, pageSize int) (helper.ResponsePagination, error)
 	//Get One
-	GetRoleByID(id int) (entity.Role, error)
+	GetRoleByID(id string) (entity.Role, error)
 	//Action
 	AddRole(form entity.FormRoleRequest) (entity.Role, error)
-	EditRole(id int, form entity.FormRoleRequest) (entity.Role, error)
-	RemoveRole(id int) error
+	EditRole(id string, form entity.FormRoleRequest) (entity.Role, error)
+	RemoveRole(id string) error
 }
 
 type roleService struct {
@@ -37,12 +37,12 @@ func (s *roleService) GetRoles(page int, pageSize int) (helper.ResponsePaginatio
 	return models, nil
 }
 
-func (s *roleService) GetRoleByID(id int) (entity.Role, error) {
+func (s *roleService) GetRoleByID(id string) (entity.Role, error) {
 	model, err := s.repository.FindOneByID(id)
 	if err != nil {
 		return model, err
 	}
-	if model.ID == 0 {
+	if model.ID == "" {
 		return model, errors.New("ROLE NOT FOUND")
 	}
 	return model, nil
@@ -60,12 +60,12 @@ func (s *roleService) AddRole(form entity.FormRoleRequest) (entity.Role, error) 
 	return newRole, nil
 }
 
-func (s *roleService) EditRole(id int, form entity.FormRoleRequest) (entity.Role, error) {
+func (s *roleService) EditRole(id string, form entity.FormRoleRequest) (entity.Role, error) {
 	model, err := s.repository.FindOneByID(id)
 	if err != nil {
 		return model, err
 	}
-	if model.ID == 0 {
+	if model.ID == "" {
 		return model, errors.New("ROLE NOT FOUND")
 	}
 	model.Name = form.Name
@@ -76,7 +76,7 @@ func (s *roleService) EditRole(id int, form entity.FormRoleRequest) (entity.Role
 	return updatedData, nil
 }
 
-func (s *roleService) RemoveRole(id int) error {
+func (s *roleService) RemoveRole(id string) error {
 	err := s.repository.Delete(id)
 	if err != nil {
 		return err

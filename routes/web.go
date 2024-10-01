@@ -19,7 +19,7 @@ func WebRoute(route *gin.Engine, db *gorm.DB) {
 	roleRepository := repository.NewRoleRepository(db)
 
 	//SERVICE
-	userService := services.NewUserService(userRepository)
+	userService := services.NewUserService(userRepository, roleRepository)
 	campaignService := services.NewCampaignService(campaignRepository)
 	paymentService := services.NewPaymentService(transactionRepository, campaignRepository)
 	transactionService := services.NewTransactionService(transactionRepository, campaignRepository, paymentService)
